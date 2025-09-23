@@ -211,9 +211,9 @@ from amplifier.ccsdk_toolkit.defensive import (
 
 # Parse JSON from any LLM response format
 llm_response = """Here's the analysis:
-```json
+` ``json
 {"summary": "Code looks good", "issues": []}
-```
+` ``
 Hope that helps!"""
 
 data = parse_llm_json(llm_response, default={"error": "parse_failed"})
