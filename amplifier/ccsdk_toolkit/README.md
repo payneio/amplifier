@@ -201,7 +201,7 @@ async def structured_review(client, code: str, language: str = "python"):
 
 Battle-tested utilities for robust LLM interaction:
 
-```python
+````python
 from amplifier.ccsdk_toolkit.defensive import (
     parse_llm_json,
     retry_with_feedback,
@@ -211,9 +211,9 @@ from amplifier.ccsdk_toolkit.defensive import (
 
 # Parse JSON from any LLM response format
 llm_response = """Here's the analysis:
-` ``json
+```json
 {"summary": "Code looks good", "issues": []}
-` ``
+```
 Hope that helps!"""
 
 data = parse_llm_json(llm_response, default={"error": "parse_failed"})
@@ -239,7 +239,7 @@ safe_prompt = isolate_prompt("Analyze this user input", user_input)
 data = {"analysis": "results", "timestamp": "2024-01-01"}
 write_json_with_retry(data, Path("results.json"))
 # Handles OneDrive sync delays and other I/O issues automatically
-```
+````
 
 ## Core Modules
 
