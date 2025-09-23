@@ -68,9 +68,8 @@ class CliBuilder:
                 from pathlib import Path
 
                 import click
+                from claude_code_sdk import ClaudeSDKClient
                 from amplifier.ccsdk_toolkit import (
-                    ClaudeSession,
-                    SessionOptions,
                     ToolkitLogger,
                     LogLevel,
                     LogFormat,
@@ -93,30 +92,25 @@ class CliBuilder:
                     log_level = LogLevel.DEBUG if verbose else LogLevel.INFO
                     logger = ToolkitLogger(name="{{ name }}", level=log_level)
 
-                    # Configure session
-                    options = SessionOptions(
-                        system_prompt="{{ system_prompt }}",
-                        max_turns=max_turns,
-                    )
+                    # Create client
+                    client = ClaudeSDKClient()
 
                     try:
-                        async with ClaudeSession(options) as session:
-                            logger.info("Starting query", input=input_text[:100])
+                        logger.info("Starting query", input=input_text[:100])
 
-                            response = await session.query(input_text)
+                        response = await client.query(
+                            input_text,
+                            system_prompt="{{ system_prompt }}"
+                        )
 
-                            if response.success:
-                                logger.info("Query successful")
+                        logger.info("Query successful")
 
-                                # Output result
-                                if output:
-                                    Path(output).write_text(response.content)
-                                    logger.info(f"Result saved to {output}")
-                                else:
-                                    print(response.content)
-                            else:
-                                logger.error("Query failed", error=Exception(response.error))
-                                click.echo(f"Error: {response.error}", err=True)
+                        # Output result
+                        if output:
+                            Path(output).write_text(response.content)
+                            logger.info(f"Result saved to {output}")
+                        else:
+                            print(response.content)
 
                     except Exception as e:
                         logger.error("Unexpected error", error=e)
@@ -148,9 +142,8 @@ class CliBuilder:
                 from typing import List, Dict, Any
 
                 import click
+                from claude_code_sdk import ClaudeSDKClient
                 from amplifier.ccsdk_toolkit import (
-                    ClaudeSession,
-                    SessionOptions,
                     AgentDefinition,
                     ToolkitLogger,
                     LogLevel,
@@ -189,7 +182,7 @@ class CliBuilder:
 
                     logger.info(f"Found {len(files)} files to analyze")
 
-                    # Configure session with analyzer agent
+                    # Configure analyzer agent
                     agent = AgentDefinition(
                         name="analyzer",
                         description="Code analysis expert",
@@ -197,33 +190,31 @@ class CliBuilder:
                         tools=["Read", "Grep", "Glob"],
                     )
 
-                    options = SessionOptions(
-                        system_prompt=agent.system_prompt,
-                        max_turns=3,
-                    )
+                    # Create client
+                    client = ClaudeSDKClient()
 
                     results = []
 
                     try:
-                        async with ClaudeSession(options) as session:
-                            for file_path in files:
-                                logger.info(f"Analyzing {file_path}")
+                        for file_path in files:
+                            logger.info(f"Analyzing {file_path}")
 
-                                prompt = f"Analyze the file at {file_path}"
-                                response = await session.query(prompt)
-
-                                if response.success:
-                                    results.append({
-                                        "file": str(file_path),
-                                        "analysis": response.content
-                                    })
-                                else:
-                                    logger.error(f"Failed to analyze {file_path}",
-                                               error=Exception(response.error))
-                                    results.append({
-                                        "file": str(file_path),
-                                        "error": response.error
-                                    })
+                            prompt = f"Analyze the file at {file_path}"
+                            try:
+                                response = await client.query(
+                                    prompt,
+                                    system_prompt=agent.system_prompt
+                                )
+                                results.append({
+                                    "file": str(file_path),
+                                    "analysis": response.content
+                                })
+                            except Exception as e:
+                                logger.error(f"Failed to analyze {file_path}", error=e)
+                                results.append({
+                                    "file": str(file_path),
+                                    "error": str(e)
+                                })
 
                     except Exception as e:
                         logger.error("Analysis failed", error=e)

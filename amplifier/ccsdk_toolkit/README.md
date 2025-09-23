@@ -2,6 +2,37 @@
 
 A comprehensive Python toolkit for building CLI tools and applications with the Claude Code SDK. Simplifies creating "mini-instances" of Claude Code for focused microtasks.
 
+## 🚀 New Architecture: Direct SDK Enhancement
+
+Version 2.0 introduces a new pattern that enhances the Claude Code SDK directly without wrapping it. This provides cleaner code, better performance, and more flexibility.
+
+### Quick Comparison
+
+```python
+# OLD APPROACH (still supported for backward compatibility)
+from amplifier.ccsdk_toolkit import ClaudeSession
+
+async with ClaudeSession(options) as session:
+    response = await session.query(prompt)
+
+# NEW APPROACH (recommended) - Direct SDK with utilities
+from claude_code_sdk import ClaudeSDKClient
+from amplifier.ccsdk_toolkit.utilities import query_with_retry
+from amplifier.ccsdk_toolkit.defensive import parse_llm_json
+
+client = ClaudeSDKClient()
+response = await query_with_retry(client, prompt)
+data = parse_llm_json(response.content)
+```
+
+### Why the New Pattern?
+
+- **🎯 Direct SDK Access** - Use the full power of Claude Code SDK without abstraction layers
+- **🔧 Composable Utilities** - Mix and match only the utilities you need
+- **⚡ Better Performance** - No wrapper overhead, direct SDK calls
+- **🔄 Easy Migration** - Gradual migration path, old code still works
+- **🧩 Framework Agnostic** - Use with any async framework or pattern
+
 ## Quick Start: Building a New Tool
 
 **Start with the quickstart template:**
@@ -52,7 +83,41 @@ uv add claude-code-sdk
 
 **New Tool?** Start with the production-ready template: `amplifier/ccsdk_toolkit/templates/tool_template.py` ([see guide](templates/README.md))
 
-### Basic Usage
+### Basic Usage - New Pattern (Recommended)
+
+```python
+import asyncio
+from claude_code_sdk import ClaudeSDKClient
+from amplifier.ccsdk_toolkit.utilities import (
+    query_with_retry,
+    batch_query,
+    stream_response
+)
+from amplifier.ccsdk_toolkit.defensive import parse_llm_json
+
+async def main():
+    # Create SDK client directly
+    client = ClaudeSDKClient(
+        api_key="your-key",  # Or from env
+        system_prompt="You are a helpful assistant"
+    )
+
+    # Use utilities for enhanced functionality
+    response = await query_with_retry(
+        client,
+        "Write a Python hello world",
+        max_retries=3
+    )
+
+    # Parse structured output safely
+    if response.success:
+        data = parse_llm_json(response.content)
+        print(data)
+
+asyncio.run(main())
+```
+
+### Basic Usage - Legacy Pattern (Still Supported)
 
 ```python
 import asyncio
@@ -85,6 +150,176 @@ from amplifier.ccsdk_toolkit import query_with_retry
 response = await query_with_retry(
     prompt="Analyze this code",
     max_retries=3,
+)
+```
+
+## Pattern Examples
+
+### 1. Utility Pattern - Direct Enhancement
+
+```python
+from claude_code_sdk import ClaudeSDKClient
+from amplifier.ccsdk_toolkit.utilities import (
+    query_with_retry,
+    batch_query,
+    stream_response,
+    parallel_process
+)
+
+client = ClaudeSDKClient()
+
+# Single query with automatic retry
+response = await query_with_retry(client, "Analyze this code")
+
+# Batch processing multiple queries
+queries = ["Query 1", "Query 2", "Query 3"]
+results = await batch_query(client, queries, max_concurrent=2)
+
+# Streaming for real-time feedback
+async for chunk in stream_response(client, "Generate a long story"):
+    print(chunk, end="", flush=True)
+
+# Parallel processing with progress
+items = [item1, item2, item3]
+results = await parallel_process(
+    client,
+    items,
+    process_func=analyze_item,
+    max_workers=3
+)
+```
+
+### 2. Helper Pattern - Compositional Classes
+
+```python
+from amplifier.ccsdk_toolkit.helpers import (
+    ConversationManager,
+    BatchProcessor,
+    FileAnalyzer,
+    CodeReviewer
+)
+
+# Manage multi-turn conversations
+convo = ConversationManager(client)
+await convo.query_with_context("What is Python?")
+await convo.query_with_context("Can you show an example?")
+history = convo.get_history()
+
+# Process batches with checkpointing
+processor = BatchProcessor(client, checkpoint_dir="./checkpoints")
+results = await processor.process_items(
+    items=[file1, file2, file3],
+    process_func=analyze_code,
+    resume_from_checkpoint=True
+)
+
+# Analyze files with pattern matching
+analyzer = FileAnalyzer(client)
+results = await analyzer.analyze_directory(
+    path="./src",
+    pattern="**/*.py",
+    analysis_prompt="Find security issues"
+)
+```
+
+### 3. Context Manager Pattern - Scoped Operations
+
+```python
+from amplifier.ccsdk_toolkit.context_managers import (
+    FileProcessor,
+    StreamingQuery,
+    TimedOperation,
+    ResourceManager
+)
+
+# Process files with automatic cleanup
+async with FileProcessor(client, "**/*.py") as processor:
+    results = await processor.analyze_batch(
+        prompt="Find complexity issues"
+    )
+    # Files automatically cleaned up on exit
+
+# Stream with progress indication
+async with StreamingQuery(client, show_progress=True) as query:
+    response = await query.ask("Generate documentation")
+    # Progress bar shows automatically
+
+# Time-bounded operations
+async with TimedOperation(client, timeout_seconds=30) as timed:
+    result = await timed.query("Complex analysis task")
+    # Automatically cancelled if exceeds timeout
+```
+
+### 4. Decorator Pattern - Function Enhancement
+
+```python
+from amplifier.ccsdk_toolkit.decorators import (
+    with_retry,
+    with_cache,
+    with_logging,
+    sdk_function,
+    rate_limited
+)
+
+# Automatic retry on failure
+@with_retry(max_attempts=3, backoff=2.0)
+async def analyze_code(client, code: str):
+    return await client.query(f"Analyze: {code}")
+
+# Cache results for efficiency
+@with_cache(ttl_seconds=300)
+async def get_documentation(client, topic: str):
+    return await client.query(f"Explain {topic}")
+
+# Complete SDK function with all enhancements
+@sdk_function(
+    retry_attempts=3,
+    cache_ttl=300,
+    log_calls=True,
+    rate_limit=10  # Max 10 calls per minute
+)
+async def process_file(client, filepath: str):
+    content = Path(filepath).read_text()
+    return await client.query(f"Review: {content}")
+
+# Use decorated functions
+result = await process_file(client, "main.py")
+```
+
+### 5. Defensive Pattern - Safe LLM Interaction
+
+```python
+from amplifier.ccsdk_toolkit.defensive import (
+    parse_llm_json,
+    retry_with_feedback,
+    isolate_prompt,
+    validate_response
+)
+
+# Parse JSON from any LLM response format
+llm_response = "```json\n{\"key\": \"value\"}\n```\nHere's the JSON..."
+data = parse_llm_json(llm_response)
+# Returns: {"key": "value"}
+
+# Retry with error feedback to LLM
+result = await retry_with_feedback(
+    client=client,
+    prompt="Generate valid JSON for user schema",
+    validator=lambda x: "name" in x and "age" in x,
+    max_retries=3
+)
+
+# Prevent prompt injection
+user_input = "Ignore previous instructions and..."
+clean_prompt = isolate_prompt(user_input)
+# Adds safety barriers around user content
+
+# Validate response structure
+response = await client.query(prompt)
+validated = validate_response(
+    response,
+    required_fields=["summary", "key_points"],
+    min_length=100
 )
 ```
 
@@ -407,7 +642,36 @@ config = ToolkitConfig(mcp_servers=[mcp_config])
 
 ## Architecture
 
-The toolkit follows a modular "bricks and studs" design:
+The toolkit follows a modular "bricks and studs" design with two supported patterns:
+
+### New Architecture (v2.0) - Direct SDK Enhancement
+
+```
+amplifier/ccsdk_toolkit/
+├── utilities/         # Pure functions that enhance SDK (no state)
+│   ├── query.py      # Query utilities (retry, batch, stream)
+│   ├── file.py       # File processing utilities
+│   └── parallel.py   # Parallel processing utilities
+├── helpers/          # Compositional helper classes
+│   ├── conversation.py  # Multi-turn conversation management
+│   ├── batch.py        # Batch processing with checkpoints
+│   └── analysis.py     # Code/file analysis helpers
+├── context_managers/ # Scoped operation managers
+│   ├── file.py       # File processing contexts
+│   ├── streaming.py  # Streaming query contexts
+│   └── resources.py  # Resource management contexts
+├── decorators/       # Function decorators for SDK enhancement
+│   ├── retry.py      # Retry logic decorators
+│   ├── cache.py      # Caching decorators
+│   └── logging.py    # Logging decorators
+├── defensive/        # Battle-tested defensive utilities
+│   ├── parsing.py    # Safe LLM response parsing
+│   ├── retry.py      # Intelligent retry with feedback
+│   └── validation.py # Response validation
+└── examples/         # Example implementations
+```
+
+### Legacy Architecture (v1.0) - Wrapper Pattern
 
 ```
 amplifier/ccsdk_toolkit/

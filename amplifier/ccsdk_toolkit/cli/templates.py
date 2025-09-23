@@ -20,7 +20,7 @@ A Claude Code SDK powered CLI tool with optional desktop notification support.
 import asyncio
 import click
 from pathlib import Path
-from amplifier.ccsdk_toolkit.core import ClaudeSession, SessionOptions
+from claude_code_sdk import ClaudeSDKClient
 from amplifier.ccsdk_toolkit.logger import ToolkitLogger
 
 
@@ -48,19 +48,20 @@ async def process(input_path: str, logger: ToolkitLogger) -> str:
     """Process input file with Claude."""
     content = Path(input_path).read_text()
 
-    options = SessionOptions(
-        system_prompt="You are a helpful assistant",
-        max_turns=1
-    )
+    # Use Claude Code SDK directly with utilities
+    client = ClaudeSDKClient()
 
-    async with ClaudeSession(options) as session:
-        response = await session.query(content)
+    try:
+        response = await client.query(
+            content,
+            system_prompt="You are a helpful assistant"
+        )
 
-        if response.error:
-            logger.error("Failed to process", error=response.error)
-            raise click.ClickException(response.error)
-
+        logger.info("Successfully processed file", input=input_path)
         return response.content
+    except Exception as e:
+        logger.error("Failed to process", error=str(e))
+        raise click.ClickException(str(e))
 
 
 if __name__ == "__main__":
@@ -85,7 +86,7 @@ import click
 import json
 from pathlib import Path
 from typing import List, Dict, Any
-from amplifier.ccsdk_toolkit.core import ClaudeSession, SessionOptions
+from claude_code_sdk import ClaudeSDKClient
 from amplifier.ccsdk_toolkit.logger import ToolkitLogger
 
 
@@ -129,19 +130,24 @@ async def analyze_files(
     Return a structured analysis.
     """)
 
-    options = SessionOptions(system_prompt=system_prompt, max_turns=1)
+    client = ClaudeSDKClient()
 
-    async with ClaudeSession(options) as session:
-        for path in paths:
-            logger.info(f"Analyzing {path}")
+    for path in paths:
+        logger.info(f"Analyzing {path}")
 
-            content = Path(path).read_text()
-            response = await session.query(f"Analyze this code:\\n\\n{content}")
-
+        content = Path(path).read_text()
+        try:
+            response = await client.query(f"Analyze this code:\\n\\n{content}", system_prompt=system_prompt)
             results.append({
                 "file": path,
-                "analysis": response.content if response.success else None,
-                "error": response.error
+                "analysis": response.content,
+                "error": None
+            })
+        except Exception as e:
+            results.append({
+                "file": path,
+                "analysis": None,
+                "error": str(e)
             })
 
     return results

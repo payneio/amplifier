@@ -21,9 +21,8 @@ from pathlib import Path
 from typing import Any
 
 import click
+from claude_code_sdk import ClaudeSDKClient
 
-from amplifier.ccsdk_toolkit import ClaudeSession
-from amplifier.ccsdk_toolkit import SessionOptions
 from amplifier.ccsdk_toolkit.defensive import parse_llm_json
 from amplifier.ccsdk_toolkit.defensive.file_io import read_json_with_retry
 from amplifier.ccsdk_toolkit.defensive.file_io import write_json_with_retry
@@ -68,19 +67,16 @@ class ToolProcessor:
             return {}
 
         # AI processing with defensive parsing
-        options = SessionOptions(
-            system_prompt="You are a helpful assistant.",
-            retry_attempts=2,
-        )
+        client = ClaudeSDKClient()
 
-        async with ClaudeSession(options) as session:
-            prompt = f"Analyze this item: {item.name}"
-            response = await session.query(prompt)
+        prompt = f"You are a helpful assistant. Analyze this item: {item.name}"
+        response = await client.query(prompt)
 
-            # Parse with defensive utilities
-            parsed = parse_llm_json(response.content, default={})
-            # Ensure we always return a dict
-            result = parsed if isinstance(parsed, dict) else {"data": parsed}
+        # Parse with defensive utilities
+        content = getattr(response, "content", str(response)) if response else ""
+        parsed = parse_llm_json(content, default={})
+        # Ensure we always return a dict
+        result = parsed if isinstance(parsed, dict) else {"data": parsed}
 
         # Save progress immediately
         self.state["processed"].append(str(item))
