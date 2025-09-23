@@ -1,794 +1,431 @@
 # Claude Code SDK Toolkit
 
-A comprehensive Python toolkit for building CLI tools and applications with the Claude Code SDK. Simplifies creating "mini-instances" of Claude Code for focused microtasks.
+A modern Python toolkit that provides composable utilities, helpers, context managers, and decorators for building robust CLI tools with the Claude Code SDK. Embraces direct SDK usage with optional enhancements.
 
-## 🚀 New Architecture: Direct SDK Enhancement
+## 🚀 Architecture: Composition over Wrappers
 
-Version 2.0 introduces a new pattern that enhances the Claude Code SDK directly without wrapping it. This provides cleaner code, better performance, and more flexibility.
+The toolkit follows a **composition-based architecture** that enhances the Claude Code SDK without wrapping it. This provides cleaner code, better performance, and more flexibility.
 
-### Quick Comparison
+### Quick Example
 
 ```python
-# OLD APPROACH (still supported for backward compatibility)
-from amplifier.ccsdk_toolkit import ClaudeSession
-
-async with ClaudeSession(options) as session:
-    response = await session.query(prompt)
-
-# NEW APPROACH (recommended) - Direct SDK with utilities
 from claude_code_sdk import ClaudeSDKClient
 from amplifier.ccsdk_toolkit.utilities import query_with_retry
 from amplifier.ccsdk_toolkit.defensive import parse_llm_json
 
+# Use SDK directly with optional enhancements
 client = ClaudeSDKClient()
-response = await query_with_retry(client, prompt)
-data = parse_llm_json(response.content)
+response = await query_with_retry(client, "Analyze this code")
+data = parse_llm_json(response.content, default={})
 ```
 
-### Why the New Pattern?
+### Why Composition?
 
 - **🎯 Direct SDK Access** - Use the full power of Claude Code SDK without abstraction layers
 - **🔧 Composable Utilities** - Mix and match only the utilities you need
 - **⚡ Better Performance** - No wrapper overhead, direct SDK calls
-- **🔄 Easy Migration** - Gradual migration path, old code still works
 - **🧩 Framework Agnostic** - Use with any async framework or pattern
+- **🛡️ Battle-Tested** - Defensive utilities proven through real-world usage
 
-## Quick Start: Building a New Tool
+## Quick Start
 
-**Start with the quickstart template:**
+**Building a new tool?** Start with the production-ready template:
 
 ```bash
 # Copy template to create your tool
-cp amplifier/ccsdk_toolkit/templates/tool_template.py ai_working/your_tool.py
+cp amplifier/ccsdk_toolkit/templates/tool_template.py your_tool.py
 
-# Template includes ALL defensive patterns:
+# Template includes ALL proven patterns:
 # ✓ Recursive file discovery (**/*.ext)
 # ✓ Input validation and error handling
 # ✓ Progress visibility and logging
-# ✓ Resume capability
-# ✓ Defensive LLM parsing
-# ✓ Cloud sync aware I/O
-
-Remove or modify sections as needed.
-
+# ✓ Resume capability with checkpoints
+# ✓ Defensive LLM response parsing
+# ✓ Cloud-aware file I/O with retries
 ```
-
-The template includes patterns proven through learnings from real failures. See `templates/README.md` for details.
-
-## Features
-
-- **🚀 Simple Async Wrapper** - Clean async/await patterns with automatic retry logic
-- **⚙️ Configuration Management** - Type-safe configuration with Pydantic models
-- **💾 Session Persistence** - Save and resume conversations across sessions
-- **📊 Structured Logging** - JSON, plaintext, or rich console output with full tracking
-- **🛠️ CLI Builder** - Generate new CLI tools from templates in seconds
-- **🔄 Re-entrant Sessions** - Continue previous conversations seamlessly
-- **🌊 Natural Completion** - Operations run to completion without artificial time limits
-- **🎯 Agent Support** - Load and use specialized agents from files or inline
 
 ## Installation
 
 ```bash
-# Install Python package
+# Install Claude Code SDK
 pip install claude-code-sdk
 
-# Install Claude CLI (required)
-npm install -g @anthropic-ai/claude-code
-
-# Or if using the amplifier project
+# Or with uv in the amplifier project
 uv add claude-code-sdk
-```
-
-## Quick Start
-
-**New Tool?** Start with the production-ready template: `amplifier/ccsdk_toolkit/templates/tool_template.py` ([see guide](templates/README.md))
-
-### Basic Usage - New Pattern (Recommended)
-
-```python
-import asyncio
-from claude_code_sdk import ClaudeSDKClient
-from amplifier.ccsdk_toolkit.utilities import (
-    query_with_retry,
-    batch_query,
-    stream_response
-)
-from amplifier.ccsdk_toolkit.defensive import parse_llm_json
-
-async def main():
-    # Create SDK client directly
-    client = ClaudeSDKClient(
-        api_key="your-key",  # Or from env
-        system_prompt="You are a helpful assistant"
-    )
-
-    # Use utilities for enhanced functionality
-    response = await query_with_retry(
-        client,
-        "Write a Python hello world",
-        max_retries=3
-    )
-
-    # Parse structured output safely
-    if response.success:
-        data = parse_llm_json(response.content)
-        print(data)
-
-asyncio.run(main())
-```
-
-### Basic Usage - Legacy Pattern (Still Supported)
-
-```python
-import asyncio
-from amplifier.ccsdk_toolkit import ClaudeSession, SessionOptions
-
-async def main():
-    # Create session with options
-    options = SessionOptions(
-        system_prompt="You are a helpful code assistant",
-        max_turns=1,
-        # Operations run to natural completion
-    )
-
-    async with ClaudeSession(options) as session:
-        response = await session.query("Write a Python hello world")
-
-        if response.success:
-            print(response.content)
-        else:
-            print(f"Error: {response.error}")
-
-asyncio.run(main())
-```
-
-### With Retry Logic
-
-```python
-from amplifier.ccsdk_toolkit import query_with_retry
-
-response = await query_with_retry(
-    prompt="Analyze this code",
-    max_retries=3,
-)
 ```
 
 ## Pattern Examples
 
 ### 1. Utility Pattern - Direct Enhancement
 
+Pure functions that enhance SDK capabilities without state:
+
 ```python
 from claude_code_sdk import ClaudeSDKClient
 from amplifier.ccsdk_toolkit.utilities import (
     query_with_retry,
     batch_query,
-    stream_response,
-    parallel_process
+    parse_sdk_response,
+    save_response
 )
 
 client = ClaudeSDKClient()
 
 # Single query with automatic retry
-response = await query_with_retry(client, "Analyze this code")
+response = await query_with_retry(client, "Analyze this code", max_retries=3)
 
 # Batch processing multiple queries
 queries = ["Query 1", "Query 2", "Query 3"]
 results = await batch_query(client, queries, max_concurrent=2)
 
-# Streaming for real-time feedback
-async for chunk in stream_response(client, "Generate a long story"):
-    print(chunk, end="", flush=True)
-
-# Parallel processing with progress
-items = [item1, item2, item3]
-results = await parallel_process(
-    client,
-    items,
-    process_func=analyze_item,
-    max_workers=3
-)
+# Parse and save responses
+parsed = parse_sdk_response(response)
+save_response(response, Path("output.json"))
 ```
 
 ### 2. Helper Pattern - Compositional Classes
+
+Stateful classes that compose around the SDK:
 
 ```python
 from amplifier.ccsdk_toolkit.helpers import (
     ConversationManager,
     BatchProcessor,
-    FileAnalyzer,
-    CodeReviewer
+    SessionManager
 )
 
 # Manage multi-turn conversations
-convo = ConversationManager(client)
-await convo.query_with_context("What is Python?")
-await convo.query_with_context("Can you show an example?")
-history = convo.get_history()
+conversation = ConversationManager(client)
+await conversation.query_with_context("What is Python?")
+await conversation.query_with_context("Show me an example")
+history = conversation.get_context()
 
-# Process batches with checkpointing
-processor = BatchProcessor(client, checkpoint_dir="./checkpoints")
-results = await processor.process_items(
-    items=[file1, file2, file3],
-    process_func=analyze_code,
-    resume_from_checkpoint=True
-)
+# Process batches with progress tracking
+processor = BatchProcessor(client, max_concurrent=3)
+async def analyze_file(client, filepath):
+    content = filepath.read_text()
+    return await client.query(f"Analyze: {content}")
 
-# Analyze files with pattern matching
-analyzer = FileAnalyzer(client)
-results = await analyzer.analyze_directory(
-    path="./src",
-    pattern="**/*.py",
-    analysis_prompt="Find security issues"
-)
+results = await processor.process_items(files, analyze_file)
+
+# Manage persistent sessions
+session_mgr = SessionManager(client)
+session = session_mgr.create_session("code-analysis")
+session_mgr.set_session_data("context", {"project": "amplifier"})
 ```
 
 ### 3. Context Manager Pattern - Scoped Operations
 
+Manage resources and provide clean scoped operations:
+
 ```python
 from amplifier.ccsdk_toolkit.context_managers import (
     FileProcessor,
-    StreamingQuery,
-    TimedOperation,
-    ResourceManager
+    SessionContext,
+    TimedExecution,
+    RetryContext
 )
 
 # Process files with automatic cleanup
-async with FileProcessor(client, "**/*.py") as processor:
-    results = await processor.analyze_batch(
-        prompt="Find complexity issues"
-    )
-    # Files automatically cleaned up on exit
+async with FileProcessor(client, "src/", "**/*.py") as processor:
+    async def analyze_code(file_path, content):
+        return f"Analysis of {file_path.name}: {content[:100]}"
 
-# Stream with progress indication
-async with StreamingQuery(client, show_progress=True) as query:
-    response = await query.ask("Generate documentation")
-    # Progress bar shows automatically
+    results = await processor.process_batch(analyze_code)
+
+# Session with automatic persistence
+async with SessionContext(client, session_name="analysis") as session:
+    response1 = await session.query("First question")
+    response2 = await session.query("Follow-up question")
+    # Session automatically saved on exit
 
 # Time-bounded operations
-async with TimedOperation(client, timeout_seconds=30) as timed:
-    result = await timed.query("Complex analysis task")
-    # Automatically cancelled if exceeds timeout
+async with TimedExecution(timeout_seconds=30):
+    result = await client.query("Complex analysis task")
+
+# Retry with context
+async with RetryContext(max_attempts=3, backoff_factor=2.0):
+    result = await client.query("Potentially failing operation")
 ```
 
 ### 4. Decorator Pattern - Function Enhancement
 
+Enhance functions with cross-cutting concerns:
+
 ```python
 from amplifier.ccsdk_toolkit.decorators import (
     with_retry,
-    with_cache,
     with_logging,
     sdk_function,
-    rate_limited
+    with_validation
 )
 
 # Automatic retry on failure
-@with_retry(max_attempts=3, backoff=2.0)
+@with_retry(attempts=3, backoff=2.0)
 async def analyze_code(client, code: str):
     return await client.query(f"Analyze: {code}")
 
-# Cache results for efficiency
-@with_cache(ttl_seconds=300)
-async def get_documentation(client, topic: str):
-    return await client.query(f"Explain {topic}")
+# Add structured logging
+@with_logging()
+async def process_file(client, filepath: Path):
+    content = filepath.read_text()
+    return await client.query(f"Process: {content}")
 
 # Complete SDK function with all enhancements
-@sdk_function(
-    retry_attempts=3,
-    cache_ttl=300,
-    log_calls=True,
-    rate_limit=10  # Max 10 calls per minute
-)
-async def process_file(client, filepath: str):
-    content = Path(filepath).read_text()
-    return await client.query(f"Review: {content}")
+@sdk_function()
+@with_logging()
+@with_retry(attempts=3)
+async def review_code(client, code: str):
+    return await client.query(f"Review this code: {code}")
 
-# Use decorated functions
-result = await process_file(client, "main.py")
+# Input/output validation with Pydantic
+from pydantic import BaseModel
+
+class CodeInput(BaseModel):
+    code: str
+    language: str = "python"
+
+class ReviewOutput(BaseModel):
+    summary: str
+    issues: list[str]
+    score: float
+
+@with_validation(input_schema=CodeInput, output_schema=ReviewOutput)
+async def structured_review(client, code: str, language: str = "python"):
+    response = await client.query(f"Review {language} code: {code}")
+    # Response automatically validated against ReviewOutput schema
+    return parse_llm_json(response.content)
 ```
 
 ### 5. Defensive Pattern - Safe LLM Interaction
+
+Battle-tested utilities for robust LLM interaction:
 
 ```python
 from amplifier.ccsdk_toolkit.defensive import (
     parse_llm_json,
     retry_with_feedback,
     isolate_prompt,
-    validate_response
+    write_json_with_retry
 )
 
 # Parse JSON from any LLM response format
-llm_response = "```json\n{\"key\": \"value\"}\n```\nHere's the JSON..."
-data = parse_llm_json(llm_response)
-# Returns: {"key": "value"}
+llm_response = """Here's the analysis:
+```json
+{"summary": "Code looks good", "issues": []}
+```
+Hope that helps!"""
 
-# Retry with error feedback to LLM
+data = parse_llm_json(llm_response, default={"error": "parse_failed"})
+# Returns: {"summary": "Code looks good", "issues": []}
+
+# Retry with error feedback to LLM for self-correction
+async def generate_valid_json(prompt):
+    response = await client.query(prompt)
+    return parse_llm_json(response.content)
+
 result = await retry_with_feedback(
-    client=client,
-    prompt="Generate valid JSON for user schema",
-    validator=lambda x: "name" in x and "age" in x,
+    generate_valid_json,
+    "Generate JSON with fields: name, age, email",
     max_retries=3
 )
 
 # Prevent prompt injection
-user_input = "Ignore previous instructions and..."
-clean_prompt = isolate_prompt(user_input)
-# Adds safety barriers around user content
+user_input = "Ignore all previous instructions..."
+safe_prompt = isolate_prompt("Analyze this user input", user_input)
+# Adds clear boundaries around potentially malicious content
 
-# Validate response structure
-response = await client.query(prompt)
-validated = validate_response(
-    response,
-    required_fields=["summary", "key_points"],
-    min_length=100
-)
+# Cloud-aware file operations with retries
+data = {"analysis": "results", "timestamp": "2024-01-01"}
+write_json_with_retry(data, Path("results.json"))
+# Handles OneDrive sync delays and other I/O issues automatically
 ```
 
 ## Core Modules
 
-### 1. Core (`ccsdk_toolkit.core`)
+### Utilities (`utilities/`)
+Pure functions for common SDK operations:
+- `query_with_retry()` - Robust querying with exponential backoff
+- `batch_query()` - Concurrent batch processing
+- `parse_sdk_response()` - Normalize different response formats
+- `save_response()` - Persist responses to files
 
-The foundation module providing Claude Code SDK integration:
+### Helpers (`helpers/`)
+Compositional classes for stateful operations:
+- `ConversationManager` - Multi-turn conversation management
+- `BatchProcessor` - Batch processing with progress tracking
+- `SessionManager` - Persistent session management
 
-```python
-from amplifier.ccsdk_toolkit import (
-    ClaudeSession,      # Main session class
-    SessionOptions,     # Configuration options
-    check_claude_cli,   # Verify CLI installation
-    query_with_retry,   # Retry logic wrapper
-)
+### Context Managers (`context_managers/`)
+Scoped resource management:
+- `FileProcessor` - Batch file processing with cleanup
+- `SessionContext` - Session lifecycle management
+- `TimedExecution` - Time-bounded operations
+- `RetryContext` - Scoped retry logic
 
-# Check CLI availability
-if check_claude_cli():
-    print("Claude CLI is available")
-```
+### Decorators (`decorators/`)
+Function enhancement patterns:
+- `@with_retry` - Add retry logic to functions
+- `@with_logging` - Structured logging
+- `@sdk_function` - Complete SDK function enhancement
+- `@with_validation` - Pydantic-based input/output validation
 
-### 2. Configuration (`ccsdk_toolkit.config`)
+### Defensive (`defensive/`)
+Battle-tested utilities for robust LLM interaction:
+- `parse_llm_json()` - Extract JSON from any LLM response format
+- `retry_with_feedback()` - Self-correcting retry with error feedback
+- `isolate_prompt()` - Prevent prompt injection
+- `write_json_with_retry()` - Cloud-aware file I/O
 
-Type-safe configuration management:
+## Example Tools
 
-```python
-from amplifier.ccsdk_toolkit import (
-    ToolkitConfig,
-    AgentDefinition,
-    ToolPermissions,
-)
-
-# Define agent configuration
-agent = AgentDefinition(
-    name="code-reviewer",
-    system_prompt="You are an expert code reviewer",
-    tool_permissions=ToolPermissions(
-        allowed=["Read", "Grep", "Glob"],
-        disallowed=["Write", "Execute"]
-    )
-)
-
-# Save/load configurations
-config = ToolkitConfig(agents=[agent])
-config.save("config.yaml")
-loaded = ToolkitConfig.load("config.yaml")
-```
-
-### 3. Session Management (`ccsdk_toolkit.sessions`)
-
-Persist and resume conversations:
-
-```python
-from amplifier.ccsdk_toolkit import SessionManager
-
-# Create manager
-manager = SessionManager()
-
-# Create new session
-session = manager.create_session(
-    name="code-analysis",
-    tags=["analysis", "python"]
-)
-
-# Add messages
-session.add_message("user", "Analyze this function")
-session.add_message("assistant", "Here's my analysis...")
-
-# Save session
-manager.save_session(session)
-
-# Resume later
-resumed = manager.load_session(session.metadata.session_id)
-```
-
-### 4. Logging (`ccsdk_toolkit.logger`)
-
-Comprehensive structured logging:
-
-```python
-from amplifier.ccsdk_toolkit import (
-    ToolkitLogger,
-    LogLevel,
-    LogFormat,
-    create_logger,
-)
-
-# Create logger with different formats
-logger = create_logger(
-    name="my_tool",
-    level=LogLevel.DEBUG,
-    format=LogFormat.JSON,  # or PLAIN, RICH
-    output_file=Path("tool.log")
-)
-
-# Log at different levels
-logger.info("Starting process", task="analysis")
-logger.error("Failed", error=Exception("operation failed"))
-
-# Track queries
-logger.log_query(prompt="Analyze code", response="...")
-
-# Track sessions
-logger.log_session_start(session_id, config)
-logger.log_session_end(session_id, duration_ms, cost)
-```
-
-### 5. CLI Builder (`ccsdk_toolkit.cli`)
-
-Generate new CLI tools from templates:
-
-```python
-from amplifier.ccsdk_toolkit import CliBuilder, CliTemplate
-
-# Create builder
-builder = CliBuilder(tools_dir=Path("./tools"))
-
-# Create from template
-tool_dir = builder.create_tool(
-    name="code_analyzer",
-    description="Analyze code complexity",
-    template=CliTemplate.ANALYZER,
-    system_prompt="You are a code complexity expert"
-)
-
-# List available templates
-templates = builder.list_templates()
-# ['basic', 'analyzer', 'generator', 'orchestrator']
-```
-
-## Example CLI Tools
-
-### Idea Synthesis Tool
-
-A multi-stage pipeline tool that demonstrates the "code for structure, AI for intelligence" pattern:
-
-```bash
-# Synthesize ideas from markdown documentation
-python -m amplifier.ccsdk_toolkit.examples.idea_synthesis ai_context/
-
-# Process with limits and custom output
-python -m amplifier.ccsdk_toolkit.examples.idea_synthesis docs/ --limit 5 --output results/
-
-# Resume interrupted synthesis
-python -m amplifier.ccsdk_toolkit.examples.idea_synthesis docs/ --resume session-id
-
-# Export as JSON for programmatic use
-python -m amplifier.ccsdk_toolkit.examples.idea_synthesis docs/ --json-output
-```
-
-**Features:**
-
-- 4-stage pipeline: Read → Summarize → Synthesize → Expand
-- Incremental saves after each item processed
-- Full resume capability at any stage
-- Markdown and JSON output formats
-- Demonstrates hybrid code/AI architecture
-
-### Code Complexity Analyzer
-
-A complete example tool included with the toolkit:
-
-```bash
-# First ensure Claude CLI is installed
-which claude  # Should return a path
-
-# Run from project root directory
-cd /path/to/amplifier-ccsdk-sdk
-
-# Analyze a single file
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py main.py
-
-# Analyze directory recursively
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py src/ --recursive --pattern "*.py"
-
-# Output as JSON
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py src/ --json --output results.json
-
-# Resume previous session
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py src/ --resume session-id
-
-# Example analyzing the toolkit itself
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py amplifier/ccsdk_toolkit/core/__init__.py
-
-# Process large codebases in manageable chunks
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py src/ --recursive --pattern "*.py" --limit 5
-
-# Process next batch of files using resume
-python amplifier/ccsdk_toolkit/examples/code_complexity_analyzer.py src/ --recursive --pattern "*.py" --limit 5 --resume session-id
-```
-
-**Note:** The CLI tool can be run directly thanks to automatic sys.path adjustment when run as a script. If importing it as a module, ensure the project root is in your Python path.
-
-**Batch Processing with --limit:** The `--limit` flag allows processing large codebases in manageable chunks. When combined with `--resume`, it intelligently processes the NEXT N files, skipping any that were already analyzed. This is perfect for:
-
-- Testing on a small sample before processing everything
-- Breaking up large analysis jobs into smaller sessions
-- Managing API rate limits or timeouts
-- Incrementally processing new files added to a codebase
-
-### Creating Your Own Tool
+### Create Your Own Tool
 
 ```python
 #!/usr/bin/env python3
-"""My custom CCSDK tool"""
+"""My custom CCSDK tool using composition patterns"""
 
 import asyncio
-import click
-from amplifier.ccsdk_toolkit import (
-    ClaudeSession,
-    SessionOptions,
-    ToolkitLogger,
-    LogLevel,
-)
+from pathlib import Path
+from claude_code_sdk import ClaudeSDKClient
+from amplifier.ccsdk_toolkit.utilities import query_with_retry
+from amplifier.ccsdk_toolkit.defensive import parse_llm_json
+from amplifier.ccsdk_toolkit.helpers import BatchProcessor
 
-@click.command()
-@click.argument("input_text")
-@click.option("--verbose", is_flag=True)
-def main(input_text: str, verbose: bool):
-    """Process input with Claude"""
-    asyncio.run(process(input_text, verbose))
+async def analyze_file(client, filepath: Path):
+    """Analyze a single file"""
+    content = filepath.read_text()
+    prompt = f"Analyze this {filepath.suffix} file for complexity:\n\n{content}"
 
-async def process(input_text: str, verbose: bool):
-    # Set up logging
-    logger = ToolkitLogger(
-        name="my_tool",
-        level=LogLevel.DEBUG if verbose else LogLevel.INFO
-    )
+    response = await query_with_retry(client, prompt, max_retries=3)
+    return parse_llm_json(response.content, default={"error": "Failed to parse"})
 
-    # Configure session
-    options = SessionOptions(
-        system_prompt="You are a helpful assistant",
-        max_turns=1
-    )
+async def main():
+    # Create SDK client directly
+    client = ClaudeSDKClient()
 
-    async with ClaudeSession(options) as session:
-        response = await session.query(input_text)
-        if response.success:
-            print(response.content)
+    # Find all Python files
+    files = list(Path(".").glob("**/*.py"))
+    print(f"Found {len(files)} Python files")
+
+    # Process in batches
+    processor = BatchProcessor(client, max_concurrent=3)
+    results = await processor.process_items(files, analyze_file)
+
+    # Show results
+    for result in results:
+        if result.status == "success":
+            print(f"✓ {result.item_id}: {result.result.get('summary', 'No summary')}")
+        else:
+            print(f"✗ {result.item_id}: {result.error}")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 ```
-
-## Advanced Usage
-
-### Loading Agents from Files
-
-Create an agent definition file (`agent.yaml`):
-
-```yaml
-name: code-reviewer
-description: Expert code review agent
-system_prompt: |
-  You are an expert code reviewer focused on:
-  - Security vulnerabilities
-  - Performance issues
-  - Best practices
-tool_permissions:
-  allowed:
-    - Read
-    - Grep
-    - Glob
-  disallowed:
-    - Write
-    - Execute
-```
-
-Load and use:
-
-```python
-from amplifier.ccsdk_toolkit import AgentDefinition, ClaudeSession
-
-agent = AgentDefinition.from_file("agent.yaml")
-
-options = SessionOptions(
-    system_prompt=agent.system_prompt,
-    # Use other agent settings
-)
-
-async with ClaudeSession(options) as session:
-    response = await session.query("Review main.py")
-```
-
-### Parallel Processing
-
-Process multiple items concurrently:
-
-```python
-import asyncio
-
-async def process_file(file_path: Path):
-    async with ClaudeSession(options) as session:
-        return await session.query(f"Analyze {file_path}")
-
-# Process files in parallel
-files = Path("src").glob("*.py")
-results = await asyncio.gather(
-    *[process_file(f) for f in files]
-)
-```
-
-### Custom MCP Servers
-
-Integrate with Model Context Protocol servers:
-
-```python
-from amplifier.ccsdk_toolkit import MCPServerConfig
-
-mcp_config = MCPServerConfig(
-    name="custom-tools",
-    command="npx",
-    args=["-y", "@modelcontextprotocol/server-example"],
-    env={"API_KEY": "your-key"}
-)
-
-config = ToolkitConfig(mcp_servers=[mcp_config])
-```
-
-## Architecture
-
-The toolkit follows a modular "bricks and studs" design with two supported patterns:
-
-### New Architecture (v2.0) - Direct SDK Enhancement
-
-```
-amplifier/ccsdk_toolkit/
-├── utilities/         # Pure functions that enhance SDK (no state)
-│   ├── query.py      # Query utilities (retry, batch, stream)
-│   ├── file.py       # File processing utilities
-│   └── parallel.py   # Parallel processing utilities
-├── helpers/          # Compositional helper classes
-│   ├── conversation.py  # Multi-turn conversation management
-│   ├── batch.py        # Batch processing with checkpoints
-│   └── analysis.py     # Code/file analysis helpers
-├── context_managers/ # Scoped operation managers
-│   ├── file.py       # File processing contexts
-│   ├── streaming.py  # Streaming query contexts
-│   └── resources.py  # Resource management contexts
-├── decorators/       # Function decorators for SDK enhancement
-│   ├── retry.py      # Retry logic decorators
-│   ├── cache.py      # Caching decorators
-│   └── logging.py    # Logging decorators
-├── defensive/        # Battle-tested defensive utilities
-│   ├── parsing.py    # Safe LLM response parsing
-│   ├── retry.py      # Intelligent retry with feedback
-│   └── validation.py # Response validation
-└── examples/         # Example implementations
-```
-
-### Legacy Architecture (v1.0) - Wrapper Pattern
-
-```
-amplifier/ccsdk_toolkit/
-├── core/           # Core SDK wrapper (the foundation brick)
-├── config/         # Configuration management (settings brick)
-├── sessions/       # Session persistence (state brick)
-├── logger/         # Structured logging (monitoring brick)
-├── cli/            # CLI tool builder (generation brick)
-└── examples/       # Example CLI tools (implementation examples)
-```
-
-Each module is:
-
-- **Self-contained** - Can be used independently
-- **Well-defined interfaces** - Clear contracts between modules
-- **Regeneratable** - Can be rebuilt without affecting others
-- **Following ruthless simplicity** - Minimal abstractions
 
 ## Configuration
 
-### Environment Variables
-
-```bash
-# Set API key
-export ANTHROPIC_API_KEY="your-key"
-
-# Use alternative providers
-export CLAUDE_CODE_USE_BEDROCK=1  # Amazon Bedrock
-export CLAUDE_CODE_USE_VERTEX=1   # Google Vertex AI
-```
-
-### Toolkit Configuration
+The toolkit uses direct SDK configuration:
 
 ```python
-from amplifier.ccsdk_toolkit import EnvironmentConfig
+from claude_code_sdk import ClaudeSDKClient
 
-env_config = EnvironmentConfig(
-    working_directory=Path("/project"),
-    session_directory=Path("~/.ccsdk/sessions"),
-    log_directory=Path("~/.ccsdk/logs"),
-    debug=True
+# Basic configuration
+client = ClaudeSDKClient(
+    api_key="your-key",  # Or from ANTHROPIC_API_KEY env var
+    system_prompt="You are a helpful assistant"
+)
+
+# Advanced configuration
+client = ClaudeSDKClient(
+    api_key="your-key",
+    timeout_seconds=60,
+    max_retries=3,
+    system_prompt="Custom system prompt"
 )
 ```
 
 ## Error Handling
 
-The toolkit provides clear error messages and recovery:
+The toolkit provides clear error handling:
 
 ```python
-from amplifier.ccsdk_toolkit import SDKNotAvailableError
+from claude_code_sdk import ClaudeSDKClient
+from amplifier.ccsdk_toolkit.utilities import query_with_retry
 
 try:
-    async with ClaudeSession(options) as session:
-        response = await session.query("...")
-except SDKNotAvailableError as e:
-    print(f"SDK not available: {e}")
-    print("Install with: npm install -g @anthropic-ai/claude-code")
+    client = ClaudeSDKClient()
+    response = await query_with_retry(client, "Analyze this code")
+    print(response.content)
+
 except Exception as e:
-    logger.error("Unexpected error", error=e)
+    print(f"Error: {e}")
+    # Handle specific error types as needed
 ```
 
-## Known Issues & Solutions
+## Architecture Philosophy
 
-### Long-Running Operations
+The toolkit follows these principles:
 
-The toolkit trusts operations to complete naturally. Use streaming for visibility:
+- **Composition over Inheritance** - Use the SDK directly, enhance with utilities
+- **Ruthless Simplicity** - Every abstraction must justify its existence
+- **Modular Design** - Self-contained modules with clear interfaces
+- **Defensive Programming** - Assume LLMs will return unexpected formats
+- **Battle-Tested Patterns** - Utilities proven through real-world usage
 
-```python
-# Enable streaming to see progress
-options = SessionOptions(stream_output=True)
-```
+## Testing
 
-### Claude CLI Not Found
-
-The SDK requires the Claude CLI to be installed globally:
+All modules include comprehensive tests:
 
 ```bash
-# Check if installed
-which claude
+# Run all tests
+make test
 
-# Install if missing
-npm install -g @anthropic-ai/claude-code
+# Run specific test file
+uv run pytest amplifier/ccsdk_toolkit/tests/test_utilities.py -v
 
-# Or with bun
-bun install -g @anthropic-ai/claude-code
+# Run with coverage
+make test-coverage
 ```
-
-### Session Not Found
-
-When resuming sessions, ensure the session ID exists:
-
-```python
-session = manager.load_session(session_id)
-if not session:
-    print(f"Session {session_id} not found")
-    # Create new session instead
-```
-
-## Philosophy
-
-This toolkit embodies:
-
-- **Ruthless Simplicity** - Every abstraction must justify its existence
-- **Modular Design** - Self-contained bricks with clear interfaces
-- **Pragmatic Defaults** - Sensible defaults that work for most cases
-- **Progressive Enhancement** - Start simple, add complexity only when needed
-- **Clear Error Messages** - When things fail, tell users exactly what to do
-
-See [IMPLEMENTATION_PHILOSOPHY.md](../../ai_context/IMPLEMENTATION_PHILOSOPHY.md) for detailed principles.
 
 ## Contributing
 
-Contributions are welcome! Please follow the modular design philosophy and ensure all code passes:
+Contributions welcome! Please ensure:
+
+1. **Follow the composition pattern** - Enhance SDK, don't wrap it
+2. **Include tests** - Every utility/helper needs tests
+3. **Document defensive patterns** - Explain why edge cases are handled
+4. **Pass all checks** - `make check` must pass
 
 ```bash
 make check  # Format, lint, and type-check
 make test   # Run tests
+```
+
+## Known Issues & Solutions
+
+### Cloud Sync File I/O Errors
+
+If you encounter intermittent I/O errors (especially in OneDrive/Dropbox folders):
+
+```python
+# The toolkit handles this automatically
+from amplifier.ccsdk_toolkit.defensive import write_json_with_retry
+
+# This will retry on cloud sync delays
+write_json_with_retry(data, filepath)
+```
+
+### LLM JSON Parsing Failures
+
+LLMs don't always return clean JSON:
+
+```python
+# Use defensive parsing
+from amplifier.ccsdk_toolkit.defensive import parse_llm_json
+
+# This handles markdown blocks, explanations, malformed JSON
+data = parse_llm_json(llm_response, default={})
 ```
 
 ## License
@@ -797,11 +434,9 @@ make test   # Run tests
 
 ## Support
 
-For issues or questions:
-
 - GitHub Issues: [Project Issues]
 - Documentation: See `/ai_context/claude_code/` for SDK details
 
 ---
 
-Built with the Claude Code SDK and a commitment to ruthless simplicity.
+Built with the Claude Code SDK and a commitment to ruthless simplicity through composition.
