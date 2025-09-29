@@ -34,7 +34,7 @@ commands:
   - test-webapp-ui.md
   - transcripts.md
   - ultrathink-task.md
-context:
+contexts:
   - claude_code/
   - git_collector/CLAUDE_CODE_SDK_PYTHON_REPO.md
   - module_generator/
