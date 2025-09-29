@@ -420,9 +420,141 @@ def main() -> None:
     pass
 
 
+@click.group(name="worktree")
+def worktree_cmd() -> None:
+    """Manage git worktrees for parallel development."""
+    pass
+
+
+@worktree_cmd.command(name="create")
+@click.argument("branch_name")
+@click.option("--adopt-remote", is_flag=True, help="Create from remote branch")
+@click.option("--eval", "eval_mode", is_flag=True, help="Output for shell evaluation")
+def worktree_create(branch_name: str, adopt_remote: bool, eval_mode: bool) -> None:
+    """Create a new worktree for a branch."""
+    from amplifier.worktree import copy_data_directory
+    from amplifier.worktree import create_worktree
+    from amplifier.worktree import setup_worktree_venv
+
+    # Create the worktree
+    worktree_path = create_worktree(branch_name, adopt_remote, eval_mode)
+
+    # Copy .data directory if it exists
+    data_dir = Path.cwd() / ".data"
+    if data_dir.exists():
+        target_data_dir = worktree_path / ".data"
+        copy_data_directory(data_dir, target_data_dir, eval_mode)
+
+    # Set up virtual environment
+    venv_created = setup_worktree_venv(worktree_path, eval_mode)
+
+    # Output based on mode
+    if eval_mode:
+        if venv_created:
+            print(f"cd {worktree_path} && source .venv/bin/activate && echo '\\n✓ Switched to worktree'")
+        else:
+            print(f"cd {worktree_path} && echo '\\n✓ Switched to worktree (run make install to set up)'")
+    else:
+        print("\\n✓ Worktree created successfully!")
+        print(f"  📁 Location: {worktree_path}")
+        if venv_created:
+            print("  🐍 Virtual environment: Ready")
+        else:
+            print("  ⚠️  Virtual environment: Setup required")
+
+        print("\\n" + "─" * 60)
+        print("To switch to your new worktree, run:")
+        print("─" * 60)
+        print(f"\\ncd {worktree_path}")
+        if venv_created:
+            print("source .venv/bin/activate")
+        else:
+            print("make install  # Set up virtual environment")
+            print("source .venv/bin/activate")
+
+
+@worktree_cmd.command(name="remove")
+@click.argument("branch_name")
+@click.option("--force", is_flag=True, help="Force removal even with uncommitted changes")
+def worktree_remove(branch_name: str, force: bool) -> None:
+    """Remove a worktree and optionally its branch."""
+    from amplifier.worktree import remove_worktree
+
+    remove_worktree(branch_name, force)
+
+
+@worktree_cmd.command(name="list")
+def worktree_list() -> None:
+    """List all git worktrees."""
+    from amplifier.worktree import list_worktrees
+
+    worktrees = list_worktrees()
+
+    if not worktrees:
+        click.echo("No worktrees found.")
+        return
+
+    click.echo("Git worktrees:")
+    for wt in worktrees:
+        branch = wt.get("branch", "detached")
+        click.echo(f"  {wt['path']}")
+        click.echo(f"    Branch: {branch}")
+        click.echo(f"    Commit: {wt.get('commit', 'unknown')[:8]}")
+
+
+@worktree_cmd.command(name="stash")
+@click.argument("feature_name")
+def worktree_stash(feature_name: str) -> None:
+    """Hide a worktree from git tracking without deleting it."""
+    from amplifier.worktree import WorktreeManager
+
+    manager = WorktreeManager()
+    manager.stash_by_name(feature_name)
+
+
+@worktree_cmd.command(name="unstash")
+@click.argument("feature_name")
+def worktree_unstash(feature_name: str) -> None:
+    """Restore a stashed worktree back to git tracking."""
+    from amplifier.worktree import WorktreeManager
+
+    manager = WorktreeManager()
+    manager.unstash_by_name(feature_name)
+
+
+@worktree_cmd.command(name="adopt")
+@click.argument("branch_name")
+@click.option("--name", "worktree_name", help="Custom worktree directory name")
+def worktree_adopt(branch_name: str, worktree_name: str | None) -> None:
+    """Create local worktree from remote branch."""
+    from amplifier.worktree import WorktreeManager
+
+    manager = WorktreeManager()
+    manager.adopt(branch_name, worktree_name)
+
+
+@worktree_cmd.command(name="list-stashed")
+def worktree_list_stashed() -> None:
+    """List all stashed worktrees."""
+    from amplifier.worktree import WorktreeManager
+
+    manager = WorktreeManager()
+    stashed = manager.list_stashed()
+
+    if not stashed:
+        click.echo("No stashed worktrees.")
+        return
+
+    click.echo("Stashed worktrees:")
+    for entry in stashed:
+        click.echo(f"  {entry['path']}")
+        click.echo(f"    Branch: {entry.get('branch', 'unknown')}")
+
+
 main.add_command(init)
 main.add_command(mode)
 main.add_command(fetch_directory_cmd)
+main.add_command(worktree_cmd)
 
 
 if __name__ == "__main__":

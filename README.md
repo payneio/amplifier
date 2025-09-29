@@ -124,12 +124,12 @@ Want Amplifier's power on your own code? Easy:
 
 ```bash
 # Try different approaches in parallel
-make worktree feature-jwt     # JWT authentication approach
-make worktree feature-oauth   # OAuth approach in parallel
+amplifier worktree create feature-jwt     # JWT authentication approach
+amplifier worktree create feature-oauth   # OAuth approach in parallel
 
 # Compare and choose
-make worktree-list            # See all experiments
-make worktree-rm feature-jwt  # Remove the one you don't want
+amplifier worktree list            # See all experiments
+amplifier worktree remove feature-jwt  # Remove the one you don't want
 ```
 
 Each worktree is completely isolated with its own branch, environment, and context.
