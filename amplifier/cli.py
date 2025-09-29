@@ -6,6 +6,7 @@ Amplifier CLI
 import json
 import os
 import shutil
+from datetime import UTC
 from pathlib import Path
 from typing import Any
 
@@ -420,6 +421,109 @@ def main() -> None:
     pass
 
 
+# Transcript commands
+@click.group(name="transcript")
+def transcript_cmd() -> None:
+    """Manage conversation transcripts."""
+    pass
+
+
+@transcript_cmd.command(name="list")
+@click.option("--last", type=int, help="Show last N transcripts")
+@click.option("--json", is_flag=True, help="Output as JSON")
+def transcript_list(last: int | None, json: bool) -> None:
+    """List available conversation transcripts."""
+    from amplifier.transcript import TranscriptManager
+
+    manager = TranscriptManager()
+
+    if json:
+        click.echo(manager.list_transcripts_json(last_n=last))
+    else:
+        transcripts = manager.list_transcripts(last_n=last)
+        if not transcripts:
+            click.echo("No transcripts found")
+        else:
+            for t in transcripts:
+                # Extract session ID
+                import re
+                from datetime import datetime
+
+                match = re.search(r"compact_\d+_\d+_([a-f0-9-]+)\.txt", t.name)
+                session_id = match.group(1) if match else "unknown"
+
+                mtime = datetime.fromtimestamp(t.stat().st_mtime, tz=UTC)
+                size_kb = t.stat().st_size / 1024
+                click.echo(f"{session_id[:8]}... | {mtime.strftime('%Y-%m-%d %H:%M')} | {size_kb:.1f}KB | {t.name}")
+
+
+@transcript_cmd.command(name="load")
+@click.argument("session_id")
+def transcript_load(session_id: str) -> None:
+    """Load and output a specific transcript."""
+    from amplifier.transcript import TranscriptManager
+
+    manager = TranscriptManager()
+    content = manager.load_transcript_content(session_id)
+
+    if content:
+        click.echo(content)
+    else:
+        click.echo(f"Error: Transcript not found for '{session_id}'", err=True)
+        raise click.ClickException("Transcript not found")
+
+
+@transcript_cmd.command(name="search")
+@click.argument("term")
+@click.option("--max", "max_results", type=int, default=10, help="Maximum results")
+def transcript_search(term: str, max_results: int) -> None:
+    """Search transcripts for a term."""
+    from amplifier.transcript import TranscriptManager
+
+    manager = TranscriptManager()
+    results = manager.search_transcripts(term, max_results=max_results)
+
+    if results:
+        click.echo(results)
+    else:
+        click.echo(f"No matches found for '{term}'")
+
+
+@transcript_cmd.command(name="restore")
+@click.option("--session-id", help="Session ID to restore (default: current/latest)")
+def transcript_restore(session_id: str | None) -> None:
+    """Restore entire conversation lineage."""
+    from amplifier.transcript import TranscriptManager
+
+    manager = TranscriptManager()
+    content = manager.restore_conversation_lineage(session_id=session_id)
+
+    if content:
+        click.echo(content)
+    else:
+        click.echo("Error: No transcripts found to restore", err=True)
+        raise click.ClickException("No transcripts found")
+
+
+@transcript_cmd.command(name="export")
+@click.option("--session-id", help="Session ID to export (default: current)")
+@click.option(
+    "--format", "output_format", type=click.Choice(["text", "markdown"]), default="text", help="Export format"
+)
+def transcript_export(session_id: str | None, output_format: str) -> None:
+    """Export transcript to file."""
+    from amplifier.transcript import TranscriptManager
+
+    manager = TranscriptManager()
+    output_file = manager.export_transcript(session_id=session_id, output_format=output_format)
+
+    if output_file:
+        click.echo(f"Exported to: {output_file}")
+    else:
+        click.echo("Error: Failed to export transcript", err=True)
+        raise click.ClickException("Export failed")
+
+
 @click.group(name="worktree")
 def worktree_cmd() -> None:
     """Manage git worktrees for parallel development."""
@@ -554,6 +658,7 @@ def worktree_list_stashed() -> None:
 main.add_command(init)
 main.add_command(mode)
 main.add_command(fetch_directory_cmd)
+main.add_command(transcript_cmd)
 main.add_command(worktree_cmd)
 
 

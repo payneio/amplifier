@@ -36,6 +36,10 @@ default: ## Show essential commands
 	@echo "AI Context:"
 	@echo "  make ai-context-files Build AI context documentation"
 	@echo ""
+	@echo "CLI Commands:"
+	@echo "  amplifier worktree  Manage git worktrees (create, remove, list, etc.)"
+	@echo "  amplifier transcript Manage conversation transcripts (list, search, restore, etc.)"
+	@echo ""
 	@echo "Other:"
 	@echo "  make clean          Clean build artifacts"
 	@echo "  make help           Show ALL available commands"
@@ -250,35 +254,6 @@ knowledge-query: ## Query the knowledge base. Usage: make knowledge-query Q="you
 knowledge-mine: knowledge-sync  ## DEPRECATED: Use knowledge-sync instead
 knowledge-extract: knowledge-sync  ## DEPRECATED: Use knowledge-sync instead
 
-# Transcript Management
-transcript-list: ## List available conversation transcripts. Usage: make transcript-list [LAST=10]
-	@last="$${LAST:-10}"; \
-	python ./amplifier/tools/transcript_manager.py list --last $$last
-
-transcript-load: ## Load a specific transcript. Usage: make transcript-load SESSION=id
-	@if [ -z "$(SESSION)" ]; then \
-		echo "Error: Please provide a session ID. Usage: make transcript-load SESSION=abc123"; \
-		exit 1; \
-	fi
-	@python .amplifier/directory/tools/transcript_manager.py load $(SESSION)
-
-transcript-search: ## Search transcripts for a term. Usage: make transcript-search TERM="your search"
-	@if [ -z "$(TERM)" ]; then \
-		echo "Error: Please provide a search term. Usage: make transcript-search TERM=\"API\""; \
-		exit 1; \
-	fi
-	@python .amplifier/directory/tools/transcript_manager.py search "$(TERM)"
-
-transcript-restore: ## Restore entire conversation lineage. Usage: make transcript-restore
-	@python tools/transcript_manager.py restore
-
-transcript-export: ## Export transcript to file. Usage: make transcript-export SESSION=id [FORMAT=text]
-	@if [ -z "$(SESSION)" ]; then \
-		echo "Error: Please provide a session ID. Usage: make transcript-export SESSION=abc123"; \
-		exit 1; \
-	fi
-	@format="$${FORMAT:-text}"; \
-	python .amplifier/directory/tools/transcript_manager.py export --session-id $(SESSION) --format $$format
 
 
 # Knowledge Graph Commands
