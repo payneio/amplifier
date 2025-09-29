@@ -283,11 +283,11 @@ def init(target: str, force: bool) -> None:
     amplifier_yaml = target_amplifier_dir / "config.yaml"
     if amplifier_yaml.exists() and not force:
         raise click.ClickException(f"config.yaml already exists at {amplifier_yaml}. Use --force to overwrite.")
-    default_config = {
-        "directory": "git+microsoft/amplifier/directory",
-    }
+    from amplifier.config.config import AmplifierConfig
+
+    default_config = AmplifierConfig.default_config()
     with open(amplifier_yaml, "w") as f:
-        yaml.dump(default_config, f)
+        yaml.dump(default_config, f, default_flow_style=False, sort_keys=False)
 
     click.echo(f"✅ Created configuration at {amplifier_yaml}")
 
