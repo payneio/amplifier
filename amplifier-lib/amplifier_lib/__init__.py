@@ -1,11 +1,15 @@
-"""Amplifier Foundation - Bundle composition mechanism layer.
+"""Amplifier Foundation - Bundle composition and session runtime.
 
-Foundation provides an ultra-thin mechanism layer for bundle composition
-that sits between amplifier-core (kernel) and applications.
+Provides bundle composition, session lifecycle, and the core types for
+LLM agent orchestration.
 
-Core concept: Bundle = composable unit that produces mount plans.
+Core concepts:
+- Bundle = composable unit that produces mount plans
+- AmplifierSession = session lifecycle (initialize, execute, cleanup)
+- Coordinator = module registry with mount points, capabilities, and hooks
+- core/ = domain-specific types (HookResult, ToolResult, HookRegistry, events)
 
-One mechanism: `includes:` (declarative) + `compose()` (imperative)
+Composition: `includes:` (declarative) + `compose()` (imperative)
 
 Philosophy: Mechanism not policy, ruthless simplicity.
 

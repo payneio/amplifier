@@ -1,9 +1,8 @@
-"""Lightweight session runtime — foundation-owned replacement for amplifier-core's
-AmplifierSession + ModuleCoordinator + ModuleLoader.
+"""Session runtime — AmplifierSession, Coordinator, and module loading.
 
-Depends only on core-lite surface area:
-  - amplifier_core.models.HookResult (action protocol)
-  - amplifier_core.hooks.HookRegistry (emit with action precedence)
+Uses core types from amplifier_lib.core:
+  - amplifier_lib.core.models.HookResult (action protocol)
+  - amplifier_lib.core.hooks.HookRegistry (emit with action precedence)
 
 Everything else is plain Python: a dict-with-methods coordinator, importlib-based
 module loading, and a thin session lifecycle wrapper.
@@ -47,19 +46,19 @@ class CancellationToken:
         self.is_cancelled = False
         self.is_immediate = False
 
-    # -- Backward-compat stubs for old ModuleCoordinator API --
+    # -- Legacy API stubs (unused, kept for module compatibility) --
 
     def register_tool_start(self, tool_call_id: str, tool_name: str) -> None:
-        """No-op shim: old API tracked in-flight tools for graceful cancellation."""
+        """No-op stub: reserved for future graceful cancellation tracking."""
 
     def register_tool_complete(self, tool_call_id: str) -> None:
-        """No-op shim: old API tracked in-flight tools for graceful cancellation."""
+        """No-op stub: reserved for future graceful cancellation tracking."""
 
     def register_child(self, child: "CancellationToken") -> None:
-        """No-op shim: old API propagated cancellation to child sessions."""
+        """No-op stub: reserved for future child session cancellation propagation."""
 
     def unregister_child(self, child: "CancellationToken") -> None:
-        """No-op shim: old API propagated cancellation to child sessions."""
+        """No-op stub: reserved for future child session cancellation propagation."""
 
 
 # ---------------------------------------------------------------------------
@@ -72,9 +71,6 @@ class Coordinator:
 
     This is the object passed to every module's ``mount(coordinator, config)``
     function. Modules use it to register themselves and discover each other.
-
-    API-compatible with amplifier-core's ModuleCoordinator so existing
-    modules work without changes.
     """
 
     def __init__(
@@ -152,13 +148,10 @@ class Coordinator:
         return value
 
     def register_contributor(self, channel: str, name: str, callback: Any) -> None:
-        """Backward-compat shim for amplifier-core's contribution system.
+        """Register a contributor callback for a named channel.
 
-        Old API: register_contributor(channel, name, callback)
-        where callback is a zero-arg callable returning a list of values.
-
-        New API equivalent: register_capability(channel, value).  This shim
-        calls the callback immediately and extends the channel's current list.
+        Calls the callback immediately and extends the channel's current list.
+        Equivalent to register_capability(channel, value) for static values.
         """
         current: list[Any] = list(self._capabilities.get(channel) or [])
         if callable(callback):
@@ -345,9 +338,7 @@ async def _load_module(
 
 
 class AmplifierSession:
-    """Lightweight session that loads modules and calls the orchestrator.
-
-    Drop-in replacement for amplifier-core's AmplifierSession.
+    """Session lifecycle: loads modules, calls the orchestrator, manages cleanup.
     """
 
     def __init__(

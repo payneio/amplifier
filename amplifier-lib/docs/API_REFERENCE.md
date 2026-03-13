@@ -1,6 +1,6 @@
 # API Reference
 
-The amplifier-foundation API is fully documented via Python docstrings and type hints. This overview lists what's exported; for details, read the source files directly.
+The amplifier-lib API is fully documented via Python docstrings and type hints. This overview lists what's exported; for details, read the source files directly.
 
 **Why this approach?** Documentation that duplicates code becomes context poisoning when it drifts. The code IS the authoritative reference.
 
@@ -8,9 +8,47 @@ The amplifier-foundation API is fully documented via Python docstrings and type 
 
 ```python
 from amplifier_lib import Bundle, BundleRegistry, load_bundle
+from amplifier_lib.runtime import AmplifierSession, Coordinator
+from amplifier_lib.core import HookResult, ToolResult, HookRegistry
 ```
 
-## Core Classes
+## Runtime (`amplifier_lib.runtime`)
+
+Session lifecycle and module coordination.
+
+| Export | Purpose |
+|--------|---------|
+| `AmplifierSession` | Session lifecycle: initialize, execute, cleanup |
+| `Coordinator` | Module registry with mount points, capabilities, and hooks |
+| `CancellationToken` | Cooperative cancellation flag for sessions |
+
+## Core Types (`amplifier_lib.core`)
+
+Domain-specific types for LLM agent orchestration.
+
+| Export | Source | Purpose |
+|--------|--------|---------|
+| `HookResult` | `core/models.py` | Hook action protocol (inject_context, ask_user, deny, etc.) |
+| `ToolResult` | `core/models.py` | Tool execution result with LLM-safe serialization |
+| `ModelInfo` | `core/models.py` | Provider model metadata |
+| `HookRegistry` | `core/hooks.py` | Event registry with action precedence (deny > ask_user > inject > continue) |
+| `Message` | `core/message_models.py` | Chat message model |
+| `ChatRequest` | `core/message_models.py` | Chat completion request model |
+| `ApprovalRequest` | `core/approval.py` | Approval protocol request |
+| `ApprovalResponse` | `core/approval.py` | Approval protocol response |
+| `ApprovalTimeoutError` | `core/approval.py` | Approval timeout exception |
+| `LLMError` | `core/llm_errors.py` | Base LLM error (12 subclasses: `RateLimitError`, `AuthenticationError`, etc.) |
+| `ModuleLoader` | `core/loader.py` | Entry-point + filesystem module discovery |
+| `ModuleValidationError` | `core/loader.py` | Module loading validation error |
+| `ToolValidator` | `core/validation/` | Tool module contract validator |
+| `ProviderValidator` | `core/validation/` | Provider module contract validator |
+| `HookValidator` | `core/validation/` | Hook module contract validator |
+| `OrchestratorValidator` | `core/validation/` | Orchestrator module contract validator |
+| `ContextValidator` | `core/validation/` | Context module contract validator |
+
+Event constants (35 named events) are in `amplifier_lib.core.events`.
+
+## Bundle Classes
 
 | Export | Source | Purpose |
 |--------|--------|---------|

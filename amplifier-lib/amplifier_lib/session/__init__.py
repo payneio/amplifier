@@ -31,9 +31,9 @@ Example usage:
     result = fork_session_in_memory(messages, turn=2)
     await new_context.set_messages(result.messages)
 
-The kernel (amplifier-core) already provides the mechanism for session forking
-via the `parent_id` parameter in AmplifierSession and the `session:fork` event.
-These utilities provide the policy layer for actually performing forks.
+The runtime provides the mechanism for session forking via the `parent_id`
+parameter in AmplifierSession and the `session:fork` event. These utilities
+provide the policy layer for actually performing forks.
 """
 
 from __future__ import annotations

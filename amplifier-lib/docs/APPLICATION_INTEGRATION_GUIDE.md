@@ -75,6 +75,7 @@ Every Amplifier application follows this core pattern, regardless of application
 
 ```python
 from amplifier_lib import load_bundle
+from amplifier_lib.runtime import AmplifierSession
 
 # Steps 1-3: Once at startup
 bundle = await load_bundle("./bundle.md")
@@ -391,6 +392,8 @@ async def analyze(request: AnalyzeRequest):
 **Lifecycle**: First message → lookup or create session (keyed by conversation ID) → execute → persist. Subsequent messages → lookup existing session → execute → persist.
 
 ```python
+from amplifier_lib.runtime import AmplifierSession
+
 # Session map: one session per conversation
 sessions: dict[str, AmplifierSession] = {}
 locks: dict[str, asyncio.Lock] = {}
@@ -519,6 +522,8 @@ class VoiceBridge:
 **When to use**: Your application manages multiple independent sessions with different bundles, configurations, or users. Multi-tenant platforms, A/B testing, ensemble patterns where multiple agents work on the same problem.
 
 ```python
+from amplifier_lib.runtime import AmplifierSession
+
 class SessionManager:
     def __init__(self):
         self.bundles: dict[str, PreparedBundle] = {}
@@ -800,6 +805,8 @@ class SSEStreamingHook:
 **Spawn Capability** — Registered on the coordinator, called when any component needs to create a new Amplifier session. This is how your application controls session creation for delegates, sub-tasks, recipe steps, and anything else that needs an isolated execution context.
 
 ```python
+from amplifier_lib.runtime import AmplifierSession
+
 async def spawn_session(config: dict) -> AmplifierSession:
     """Application-controlled session creation."""
     bundle_name = config.get("bundle", "default")
