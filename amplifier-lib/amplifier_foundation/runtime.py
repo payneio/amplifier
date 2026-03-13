@@ -42,6 +42,25 @@ class CancellationToken:
         self.is_cancelled = True
         self.is_immediate = immediate
 
+    def reset(self) -> None:
+        """Reset flags so the token can be reused across interactive turns."""
+        self.is_cancelled = False
+        self.is_immediate = False
+
+    # -- Backward-compat stubs for old ModuleCoordinator API --
+
+    def register_tool_start(self, tool_call_id: str, tool_name: str) -> None:
+        """No-op shim: old API tracked in-flight tools for graceful cancellation."""
+
+    def register_tool_complete(self, tool_call_id: str) -> None:
+        """No-op shim: old API tracked in-flight tools for graceful cancellation."""
+
+    def register_child(self, child: "CancellationToken") -> None:
+        """No-op shim: old API propagated cancellation to child sessions."""
+
+    def unregister_child(self, child: "CancellationToken") -> None:
+        """No-op shim: old API propagated cancellation to child sessions."""
+
 
 # ---------------------------------------------------------------------------
 # Coordinator — the "dict with methods" that modules mount into
@@ -131,6 +150,30 @@ class Coordinator:
         if isinstance(value, dict):
             return value.get(name) if name else value
         return value
+
+    def register_contributor(self, channel: str, name: str, callback: Any) -> None:
+        """Backward-compat shim for amplifier-core's contribution system.
+
+        Old API: register_contributor(channel, name, callback)
+        where callback is a zero-arg callable returning a list of values.
+
+        New API equivalent: register_capability(channel, value).  This shim
+        calls the callback immediately and extends the channel's current list.
+        """
+        current: list[Any] = list(self._capabilities.get(channel) or [])
+        if callable(callback):
+            try:
+                new_items = callback()
+                if isinstance(new_items, (list, tuple)):
+                    current.extend(new_items)
+            except Exception as e:
+                logger.debug(
+                    f"register_contributor callback failed for channel "
+                    f"'{channel}' (contributor '{name}'): {e}"
+                )
+        elif isinstance(callback, (list, tuple)):
+            current.extend(callback)
+        self._capabilities[channel] = current
 
     def register_capability(self, name: str, value: Any) -> None:
         self._capabilities[name] = value

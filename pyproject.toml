@@ -5,4 +5,4 @@ description = "Amplifier SDK monorepo"
 requires-python = ">=3.11"
 
 [tool.uv.workspace]
-members = ["amplifier-lib", "amplifier-app-cli"]
+members = ["amplifier-lib", "amplifier-cli"]

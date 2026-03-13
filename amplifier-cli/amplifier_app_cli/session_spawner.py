@@ -315,7 +315,6 @@ async def spawn_sub_session(
     display_system = parent_session.coordinator.display_system
     child_session = AmplifierSession(
         config=merged_config,
-        loader=None,  # Let child create its own loader to respect its config
         session_id=sub_session_id,
         parent_id=parent_session.session_id,  # Links to parent
         approval_system=parent_session.coordinator.approval_system,  # Inherit from parent
@@ -673,7 +672,6 @@ async def resume_sub_session(sub_session_id: str, instruction: str) -> dict:
 
     child_session = AmplifierSession(
         config=merged_config,
-        loader=None,  # Use default loader
         session_id=sub_session_id,  # REUSE same ID
         parent_id=parent_id,
         approval_system=approval_system,
