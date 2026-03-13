@@ -34,7 +34,7 @@ shadow.create(local_sources=["~/repos/amplifier-foundation:microsoft/amplifier-f
 shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
 
 # Verify bundle loading works with your changes
-shadow.exec(shadow_id, "python -c 'from amplifier_foundation import load_bundle; print(\"OK\")'")
+shadow.exec(shadow_id, "python -c 'from amplifier_lib import load_bundle; print(\"OK\")'")
 ```
 
 ### Testing amplifier-app-cli Changes

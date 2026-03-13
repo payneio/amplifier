@@ -131,10 +131,10 @@ Agent definitions with proper frontmatter and instructions.
 
 For implementation details beyond the docs, you may read these source files if needed:
 
-- `foundation:amplifier_foundation/bundle.py` - Bundle loading and composition
-- `foundation:amplifier_foundation/dicts/merge.py` - Deep merge utilities for configs
-- `foundation:amplifier_foundation/mentions/parser.py` - @-mention parsing
-- `foundation:amplifier_foundation/mentions/resolver.py` - @-mention resolution
+- `foundation:amplifier_lib/bundle.py` - Bundle loading and composition
+- `foundation:amplifier_lib/dicts/merge.py` - Deep merge utilities for configs
+- `foundation:amplifier_lib/mentions/parser.py` - @-mention parsing
+- `foundation:amplifier_lib/mentions/resolver.py` - @-mention resolution
 
 **Note**: These are soft references. Read them via filesystem tools when you need implementation details. Code is authoritative; docs may drift out of sync.
 

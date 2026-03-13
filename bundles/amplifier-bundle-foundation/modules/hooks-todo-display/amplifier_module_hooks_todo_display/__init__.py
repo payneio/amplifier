@@ -14,7 +14,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
-from amplifier_foundation.core import HookResult
+from amplifier_lib.core import HookResult
 
 
 def _write(text: str) -> None:

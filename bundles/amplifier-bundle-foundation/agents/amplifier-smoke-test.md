@@ -184,7 +184,7 @@ print(f\"Coordinator: {type(c).__name__}\")
 ```bash
 # Verify bundle loading
 shadow exec <id> "python -c '
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 print(\"Bundle loading available\")
 '"
 ```

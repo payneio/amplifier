@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 
-from amplifier_foundation.core import HookResult
+from amplifier_lib.core import HookResult
 
 
 # Read operation tools

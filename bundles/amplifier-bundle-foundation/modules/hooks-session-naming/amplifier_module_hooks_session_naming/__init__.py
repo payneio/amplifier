@@ -14,7 +14,7 @@ from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
-from amplifier_foundation.core import HookResult
+from amplifier_lib.core import HookResult
 
 logger = logging.getLogger(__name__)
 

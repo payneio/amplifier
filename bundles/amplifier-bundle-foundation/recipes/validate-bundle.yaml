@@ -60,13 +60,13 @@ steps:
       }
 
       try:
-          import amplifier_foundation
+          import amplifier_lib
           results["foundation_available"] = True
-          results["foundation_version"] = getattr(amplifier_foundation, "__version__", "unknown")
+          results["foundation_version"] = getattr(amplifier_lib, "__version__", "unknown")
       except ImportError as e:
           results["errors"].append({
               "type": "import_error",
-              "message": f"amplifier_foundation not importable: {e}"
+              "message": f"amplifier_lib not importable: {e}"
           })
 
       # Try to auto-install if not available
@@ -79,9 +79,9 @@ steps:
                   check=True,
                   capture_output=True
               )
-              import amplifier_foundation
+              import amplifier_lib
               results["foundation_available"] = True
-              results["foundation_version"] = getattr(amplifier_foundation, "__version__", "unknown")
+              results["foundation_version"] = getattr(amplifier_lib, "__version__", "unknown")
               results["errors"] = []
               results["auto_installed"] = True
           except Exception as e:

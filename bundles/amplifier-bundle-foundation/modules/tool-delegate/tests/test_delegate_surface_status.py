@@ -5,7 +5,7 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from amplifier_foundation.core import ToolResult
+from amplifier_lib.core import ToolResult
 
 from amplifier_module_tool_delegate import DelegateTool
 

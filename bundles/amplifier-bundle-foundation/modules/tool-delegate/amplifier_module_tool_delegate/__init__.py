@@ -38,9 +38,9 @@ import asyncio
 import logging
 from typing import Any
 
-from amplifier_foundation.core import ToolResult
-from amplifier_foundation import ProviderPreference
-from amplifier_foundation.tracing import generate_sub_session_id
+from amplifier_lib.core import ToolResult
+from amplifier_lib import ProviderPreference
+from amplifier_lib.tracing import generate_sub_session_id
 
 logger = logging.getLogger(__name__)
 

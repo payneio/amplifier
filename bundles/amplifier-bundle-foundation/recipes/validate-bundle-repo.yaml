@@ -6,7 +6,7 @@
 # CHANGELOG:
 # v3.2.0 - Graceful environment handling
 #        - Phase 0 now checks prerequisites without auto-install attempts
-#        - Detects hatchling, amplifier_foundation, pip wheel capability
+#        - Detects hatchling, amplifier_lib, pip wheel capability
 #        - Sets validation_mode: full | hygiene_only | structural_only
 #        - Build check gracefully SKIPS when hatchling unavailable (not ERROR)
 #        - Foundation unavailability no longer classified as "critical"
@@ -153,14 +153,14 @@ steps:
           "install_instructions": []
       }
 
-      # Check 1: amplifier_foundation (enables BundleRegistry validation)
+      # Check 1: amplifier_lib (enables BundleRegistry validation)
       try:
-          import amplifier_foundation
+          import amplifier_lib
           results["capabilities"]["foundation_available"] = True
-          results["capabilities"]["foundation_version"] = getattr(amplifier_foundation, "__version__", "unknown")
+          results["capabilities"]["foundation_version"] = getattr(amplifier_lib, "__version__", "unknown")
       except ImportError:
           results["limitations"].append({
-              "component": "amplifier_foundation",
+              "component": "amplifier_lib",
               "impact": "Cannot validate individual bundles via BundleRegistry",
               "skipped_checks": ["individual_validation", "standalone_completeness (full)"]
           })
@@ -704,14 +704,14 @@ steps:
               "phase": "individual_validation",
               "skipped": True,
               "environment_limitation": True,  # v3.2.0: Flag this as env issue
-              "reason": "amplifier_foundation not available - BundleRegistry validation skipped",
+              "reason": "amplifier_lib not available - BundleRegistry validation skipped",
               "validation_mode": env_check.get("validation_mode", "structural_only"),
-              "note": "Structural checks still performed; install amplifier_foundation for full validation"
+              "note": "Structural checks still performed; install amplifier_lib for full validation"
           }))
           sys.exit(0)
 
-      from amplifier_foundation import BundleRegistry
-      from amplifier_foundation.exceptions import (
+      from amplifier_lib import BundleRegistry
+      from amplifier_lib.exceptions import (
           BundleLoadError,
           BundleNotFoundError,
           BundleDependencyError,
@@ -1231,7 +1231,7 @@ steps:
           sys.exit(0)
 
       # Full validation with foundation available
-      from amplifier_foundation import BundleRegistry
+      from amplifier_lib import BundleRegistry
 
       async def check_completeness():
           for bundle_path in standalone_bundles:
@@ -2707,7 +2707,7 @@ steps:
       
       | Capability | Status | Impact |
       |------------|--------|--------|
-      | amplifier_foundation | ✅/❌ | BundleRegistry validation |
+      | amplifier_lib | ✅/❌ | BundleRegistry validation |
       | hatchling | ✅/❌ | Python package builds |
       | pip wheel | ✅/❌ | Build dry-run |
       
