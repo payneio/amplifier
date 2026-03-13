@@ -144,8 +144,8 @@ class TestInstallStateManager:
             with open(state_file, "w") as f:
                 json.dump(state, f)
 
-            # Mock getmtime to raise OSError
-            with patch("os.path.getmtime", side_effect=OSError("Permission denied")):
+            # Mock os.lstat to raise OSError (code uses os.lstat, not os.path.getmtime)
+            with patch("os.lstat", side_effect=OSError("Permission denied")):
                 manager = InstallStateManager(cache_dir)
 
                 # Should have fresh state (mtime couldn't be determined)

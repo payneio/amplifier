@@ -11,7 +11,6 @@ dependencies = [
     "rich>=13.0.0",
     "pygments>=2.13.0",
     "pydantic>=2.0.0",
-    "amplifier-core",
     "amplifier-foundation",
     "pyyaml>=6.0.3",
     "prompt-toolkit>=3.0.52",
@@ -38,7 +37,7 @@ build-backend = "hatchling.build"
 dev = ["pytest>=8.4.2", "pytest-asyncio>=0.24.0"]
 
 [tool.uv.sources]
-amplifier-foundation = { git = "https://github.com/microsoft/amplifier-foundation", branch = "main" }
+amplifier-foundation = { path = "../amplifier-foundation" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
