@@ -24,6 +24,9 @@ from __future__ import annotations
 # Core classes
 from amplifier_lib.bundle import Bundle
 
+# Config utilities
+from amplifier_lib.config import expand_env_vars
+
 # Reference implementations
 from amplifier_lib.cache.disk import DiskCache
 
@@ -109,6 +112,8 @@ from amplifier_lib.validator import validate_bundle
 from amplifier_lib.validator import validate_bundle_or_raise
 
 __all__ = [
+    # Config
+    "expand_env_vars",
     # Core
     "Bundle",
     "BundleRegistry",

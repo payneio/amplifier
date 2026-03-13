@@ -67,6 +67,14 @@ from .slice import (
     slice_to_turn,
 )
 
+# Persistence I/O
+from .persistence import (
+    load_metadata,
+    load_transcript,
+    write_metadata,
+    write_transcript,
+)
+
 # Capability helpers (for modules to access session context)
 from .capabilities import (
     WORKING_DIR_CAPABILITY,
@@ -95,6 +103,11 @@ __all__ = [
     "find_orphaned_tool_calls",
     "add_synthetic_tool_results",
     "get_turn_summary",
+    # Persistence I/O
+    "write_transcript",
+    "load_transcript",
+    "write_metadata",
+    "load_metadata",
     # Capability helpers
     "WORKING_DIR_CAPABILITY",
     "get_working_dir",

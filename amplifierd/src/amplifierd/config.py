@@ -10,19 +10,15 @@ from typing import Any
 from pydantic import Field
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
+from amplifier_lib.known_sources import WELL_KNOWN_BUNDLES as _LIB_BUNDLES
+
 logger = logging.getLogger(__name__)
 
 _DEFAULT_HOME_DIR = Path.home() / ".amplifierd"
 
+# Flatten lib's rich format to simple {name: uri} for daemon settings.
 WELL_KNOWN_BUNDLES: dict[str, str] = {
-    "foundation": "git+https://github.com/microsoft/amplifier-foundation@main",
-    "distro": "git+https://github.com/microsoft/amplifier-bundle-distro@main",
-    "modes": "git+https://github.com/microsoft/amplifier-bundle-modes@main",
-    "notify": "git+https://github.com/microsoft/amplifier-bundle-notify@main",
-    "recipes": "git+https://github.com/microsoft/amplifier-bundle-recipes@main",
-    "design-intelligence": "git+https://github.com/microsoft/amplifier-bundle-design-intelligence@main",
-    "exp-delegation": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=experiments/delegation-only",
-    "amplifier-dev": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=bundles/amplifier-dev.yaml",
+    name: str(info["remote"]) for name, info in _LIB_BUNDLES.items()
 }
 
 

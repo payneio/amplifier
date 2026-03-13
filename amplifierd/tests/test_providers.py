@@ -14,27 +14,27 @@ class TestLoadProviderConfig:
     """Tests for load_provider_config()."""
 
     def test_missing_file(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         result = load_provider_config(home=tmp_path)
         assert result == []
 
     def test_no_providers_key(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         (tmp_path / "settings.yaml").write_text("config:\n  other: true\n")
         result = load_provider_config(home=tmp_path)
         assert result == []
 
     def test_empty_config(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         (tmp_path / "settings.yaml").write_text("")
         result = load_provider_config(home=tmp_path)
         assert result == []
 
     def test_reads_providers(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         (tmp_path / "settings.yaml").write_text(
             "config:\n"
@@ -51,14 +51,14 @@ class TestLoadProviderConfig:
         assert result[0]["config"]["api_key"] == "sk-test"
 
     def test_invalid_yaml(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         (tmp_path / "settings.yaml").write_text("{{invalid yaml!!")
         result = load_provider_config(home=tmp_path)
         assert result == []
 
     def test_providers_not_a_list(self, tmp_path: Path) -> None:
-        from amplifierd.providers import load_provider_config
+        from amplifier_lib.config import load_provider_config
 
         (tmp_path / "settings.yaml").write_text("config:\n  providers: not-a-list\n")
         result = load_provider_config(home=tmp_path)
@@ -70,39 +70,39 @@ class TestExpandEnvVars:
     """Tests for expand_env_vars()."""
 
     def test_string_expansion(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         monkeypatch.setenv("TEST_KEY", "my-secret")
         assert expand_env_vars("${TEST_KEY}") == "my-secret"
 
     def test_default_value(self) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         result = expand_env_vars("${DEFINITELY_NOT_SET:fallback}")
         assert result == "fallback"
 
     def test_missing_no_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         monkeypatch.delenv("DEFINITELY_NOT_SET", raising=False)
         assert expand_env_vars("${DEFINITELY_NOT_SET}") == ""
 
     def test_nested_dict(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         monkeypatch.setenv("MY_KEY", "secret123")
         result = expand_env_vars({"config": {"api_key": "${MY_KEY}", "model": "gpt-4"}})
         assert result == {"config": {"api_key": "secret123", "model": "gpt-4"}}
 
     def test_list(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         monkeypatch.setenv("A", "1")
         monkeypatch.setenv("B", "2")
         assert expand_env_vars(["${A}", "${B}", "literal"]) == ["1", "2", "literal"]
 
     def test_empty_env_var_stripped_from_dict(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         monkeypatch.setenv("GOOD_KEY", "value")
         monkeypatch.setenv("EMPTY_KEY", "")
@@ -116,7 +116,7 @@ class TestExpandEnvVars:
         assert result == {"good": "value", "literal": "keep"}
 
     def test_non_string_passthrough(self) -> None:
-        from amplifierd.providers import expand_env_vars
+        from amplifier_lib.config import expand_env_vars
 
         assert expand_env_vars(42) == 42
         assert expand_env_vars(True) is True
@@ -132,35 +132,35 @@ def _make_bundle(
 
 @pytest.mark.unit
 class TestDeepMerge:
-    """Tests for _deep_merge()."""
+    """Tests for deep_merge (now in amplifier_lib.dicts)."""
 
     def test_flat_overlay(self) -> None:
-        from amplifierd.providers import _deep_merge
+        from amplifier_lib.dicts import deep_merge
 
         base = {"a": 1, "b": 2}
         overlay = {"b": 3, "c": 4}
-        assert _deep_merge(base, overlay) == {"a": 1, "b": 3, "c": 4}
+        assert deep_merge(base, overlay) == {"a": 1, "b": 3, "c": 4}
 
     def test_nested_merge(self) -> None:
-        from amplifierd.providers import _deep_merge
+        from amplifier_lib.dicts import deep_merge
 
         base = {"config": {"model": "gpt-4", "debug": True}}
         overlay = {"config": {"api_key": "sk-123"}}
-        result = _deep_merge(base, overlay)
+        result = deep_merge(base, overlay)
         assert result == {"config": {"model": "gpt-4", "debug": True, "api_key": "sk-123"}}
 
     def test_overlay_wins_on_conflict(self) -> None:
-        from amplifierd.providers import _deep_merge
+        from amplifier_lib.dicts import deep_merge
 
         base = {"config": {"model": "old"}}
         overlay = {"config": {"model": "new"}}
-        assert _deep_merge(base, overlay) == {"config": {"model": "new"}}
+        assert deep_merge(base, overlay) == {"config": {"model": "new"}}
 
     def test_does_not_mutate_base(self) -> None:
-        from amplifierd.providers import _deep_merge
+        from amplifier_lib.dicts import deep_merge
 
         base = {"config": {"model": "gpt-4"}}
-        _deep_merge(base, {"config": {"api_key": "sk-123"}})
+        deep_merge(base, {"config": {"api_key": "sk-123"}})
         assert base == {"config": {"model": "gpt-4"}}
 
 
@@ -169,7 +169,7 @@ class TestMergeProviderItem:
     """Tests for _merge_provider_item()."""
 
     def test_deep_merges_config(self) -> None:
-        from amplifierd.providers import _merge_provider_item
+        from amplifier_lib.config import _merge_provider_item
 
         bundle = {"module": "provider-anthropic", "config": {"default_model": "claude-sonnet-4-6", "debug": True}}
         settings = {"module": "provider-anthropic", "config": {"api_key": "${ANTHROPIC_API_KEY}"}}
@@ -181,7 +181,7 @@ class TestMergeProviderItem:
         }
 
     def test_settings_replaces_top_level_fields(self) -> None:
-        from amplifierd.providers import _merge_provider_item
+        from amplifier_lib.config import _merge_provider_item
 
         bundle = {"module": "provider-anthropic", "source": "old-source"}
         settings = {"module": "provider-anthropic", "source": "new-source"}
@@ -189,7 +189,7 @@ class TestMergeProviderItem:
         assert result["source"] == "new-source"
 
     def test_bundle_keys_preserved_when_settings_has_none(self) -> None:
-        from amplifierd.providers import _merge_provider_item
+        from amplifier_lib.config import _merge_provider_item
 
         bundle = {"module": "provider-anthropic", "config": {"debug": True, "raw_debug": True}}
         settings = {"module": "provider-anthropic"}
@@ -203,7 +203,7 @@ class TestInjectProviders:
 
     def test_empty_bundle_gets_settings_wholesale(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Provider-agnostic bundle gets all settings providers."""
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         monkeypatch.setenv("KEY", "val")
         bundle = _make_bundle()
@@ -214,7 +214,7 @@ class TestInjectProviders:
 
     def test_updates_matching_provider(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Settings update a provider the bundle already declares."""
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         monkeypatch.setenv("KEY", "val")
         bundle = _make_bundle(providers=[{"module": "provider-test", "config": {"api_key": "old"}}])
@@ -224,7 +224,7 @@ class TestInjectProviders:
         assert bundle.providers[0]["config"]["api_key"] == "val"
 
     def test_empty_noop(self) -> None:
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         bundle = _make_bundle()
         inject_providers(bundle, [])
@@ -232,7 +232,7 @@ class TestInjectProviders:
 
     def test_does_not_inject_new_providers(self) -> None:
         """Settings providers not in the bundle are silently dropped."""
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         bundle = _make_bundle(
             providers=[
@@ -250,7 +250,7 @@ class TestInjectProviders:
 
     def test_deep_merges_config_preserving_bundle_keys(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Bundle config keys survive when settings adds runtime keys."""
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
         bundle = _make_bundle(providers=[{
@@ -270,7 +270,7 @@ class TestInjectProviders:
 
     def test_env_expansion_after_merge_preserves_bundle_config(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """When env var is unset, bundle config survives (not clobbered by empty expansion)."""
-        from amplifierd.providers import inject_providers
+        from amplifier_lib.config import inject_providers
 
         monkeypatch.delenv("UNSET_KEY", raising=False)
         bundle = _make_bundle(providers=[{
@@ -294,13 +294,13 @@ class TestMergeSettingsProviders:
     """Tests for merge_settings_providers()."""
 
     def test_empty_settings(self) -> None:
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [{"module": "a", "config": {}}]
         assert merge_settings_providers(existing, []) == existing
 
     def test_settings_override(self) -> None:
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [{"module": "a", "config": {"key": "old"}}]
         settings = [{"module": "a", "config": {"key": "new"}}]
@@ -310,7 +310,7 @@ class TestMergeSettingsProviders:
 
     def test_does_not_add_new_provider(self) -> None:
         """Settings providers not declared in the bundle are silently dropped."""
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [{"module": "a", "config": {}}]
         settings = [{"module": "b", "config": {}}]
@@ -320,7 +320,7 @@ class TestMergeSettingsProviders:
 
     def test_empty_bundle_gets_settings(self) -> None:
         """Provider-agnostic bundle (no providers) gets settings wholesale."""
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         settings = [
             {"module": "provider-anthropic", "config": {"api_key": "sk-123"}},
@@ -331,7 +331,7 @@ class TestMergeSettingsProviders:
 
     def test_deep_merges_matching_config(self) -> None:
         """Config sub-dict is deep-merged, not replaced."""
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [{"module": "a", "config": {"model": "gpt-4", "debug": True}}]
         settings = [{"module": "a", "config": {"api_key": "sk-123"}}]
@@ -340,7 +340,7 @@ class TestMergeSettingsProviders:
 
     def test_no_env_expansion_in_merge(self) -> None:
         """Env var references are preserved through merge (expanded later)."""
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [{"module": "a", "config": {"debug": True}}]
         settings = [{"module": "a", "config": {"api_key": "${MY_KEY}"}}]
@@ -349,7 +349,7 @@ class TestMergeSettingsProviders:
 
     def test_preserves_bundle_order(self) -> None:
         """Result order matches bundle's provider order."""
-        from amplifierd.providers import merge_settings_providers
+        from amplifier_lib.config import merge_settings_providers
 
         existing = [
             {"module": "b", "config": {}},

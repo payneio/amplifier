@@ -15,29 +15,9 @@ from .utils.error_format import escape_markup
 if TYPE_CHECKING:
     from amplifier_cli.lib.settings import AppSettings
 
+from amplifier_lib.known_sources import DEFAULT_PROVIDER_SOURCES, PROVIDER_DEPENDENCIES
+
 logger = logging.getLogger(__name__)
-
-# Single source of truth for known provider git URLs
-DEFAULT_PROVIDER_SOURCES = {
-    "provider-anthropic": "git+https://github.com/microsoft/amplifier-module-provider-anthropic@main",
-    "provider-azure-openai": "git+https://github.com/microsoft/amplifier-module-provider-azure-openai@main",
-    "provider-gemini": "git+https://github.com/microsoft/amplifier-module-provider-gemini@main",
-    "provider-github-copilot": "git+https://github.com/microsoft/amplifier-module-provider-github-copilot@main",
-    "provider-ollama": "git+https://github.com/microsoft/amplifier-module-provider-ollama@main",
-    "provider-openai": "git+https://github.com/microsoft/amplifier-module-provider-openai@main",
-    "provider-vllm": "git+https://github.com/microsoft/amplifier-module-provider-vllm@main",
-}
-
-# Runtime dependencies between providers.
-# Some providers extend others (e.g., Azure OpenAI extends OpenAI's provider class).
-# These are runtime dependencies, NOT build dependencies, to avoid transitive
-# dependency issues with editable installs during development.
-# Format: {"dependent": ["dependency1", "dependency2", ...]}
-PROVIDER_DEPENDENCIES: dict[str, list[str]] = {
-    "provider-azure-openai": [
-        "provider-openai"
-    ],  # AzureOpenAIProvider extends OpenAIProvider
-}
 
 
 def _get_ordered_providers(sources: dict[str, str]) -> list[tuple[str, str]]:

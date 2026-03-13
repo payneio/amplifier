@@ -20,66 +20,10 @@ import logging
 from pathlib import Path
 
 from amplifier_lib import BundleRegistry
+from amplifier_lib.known_sources import WELL_KNOWN_BUNDLES
 
 
 logger = logging.getLogger(__name__)
-
-# ===========================================================================
-# WELL-KNOWN BUNDLES (APP-LAYER POLICY)
-# ===========================================================================
-# Following the foundation-first pattern (see AGENTS.md "Foundation-First
-# Development Strategy"), these are bundles the CLI knows about by default.
-#
-# Each entry maps bundle name → info dict with:
-#   - package: Python package name (for local editable install check)
-#   - remote: Git URL (fallback when package not installed)
-#   - show_in_list: Whether to show in default `bundle list` output (default: True)
-#
-# Local package is checked first for performance (editable installs).
-# Remote URL is used as fallback, ensuring bundles ALWAYS resolve.
-WELL_KNOWN_BUNDLES: dict[str, dict[str, str | bool]] = {
-    "foundation": {
-        "package": "amplifier_lib",
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main",
-        "show_in_list": True,
-    },
-    "recipes": {
-        "package": "",  # No Python package - bundle-only
-        "remote": "git+https://github.com/microsoft/amplifier-bundle-recipes@main",
-        "show_in_list": False,  # Included by foundation, not standalone
-    },
-    "design-intelligence": {
-        "package": "",  # No Python package - bundle-only
-        "remote": "git+https://github.com/microsoft/amplifier-bundle-design-intelligence@main",
-        "show_in_list": False,  # Included by foundation, not standalone
-    },
-    # Experimental delegation-only bundle (subdirectory of foundation)
-    "exp-delegation": {
-        "package": "",  # Experimental bundle in foundation/experiments/
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=experiments/delegation-only",
-        "show_in_list": True,
-    },
-    # Amplifier ecosystem development bundle - multi-repo workflows, shadow environments
-    "amplifier-dev": {
-        "package": "",  # Bundle in foundation/bundles/
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=bundles/amplifier-dev.yaml",
-        "show_in_list": True,
-    },
-    # Notification hooks - loaded dynamically via config.notifications settings
-    # but registered here so `amplifier update` can track it
-    "notify": {
-        "package": "",  # No Python package - bundle with embedded modules
-        "remote": "git+https://github.com/microsoft/amplifier-bundle-notify@main",
-        "show_in_list": False,  # Loaded via settings, not standalone
-    },
-    # Modes system - loaded dynamically via config.modes settings
-    # Provides runtime behavior overlays (/mode plan, /mode review, etc.)
-    "modes": {
-        "package": "",  # No Python package - bundle with embedded modules
-        "remote": "git+https://github.com/microsoft/amplifier-bundle-modes@main",
-        "show_in_list": False,  # Loaded via settings, not standalone
-    },
-}
 
 
 class AppBundleDiscovery:
