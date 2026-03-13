@@ -19,7 +19,7 @@ from amplifier_cli.utils.help_formatter import AmplifierGroup
 
 if TYPE_CHECKING:
     from amplifier_lib.bundle import PreparedBundle
-from amplifier_lib.runtime import Session as AmplifierSession
+from amplifier_lib.runtime import AmplifierSession
 from amplifier_lib.core.loader import ModuleValidationError  # pyright: ignore[reportAttributeAccessIssue]
 from amplifier_lib.core.llm_errors import LLMError
 from amplifier_lib import sanitize_message

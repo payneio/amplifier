@@ -83,7 +83,7 @@ async def test_spawn_returns_status_from_orchestrator_complete():
     mock_session.execute = AsyncMock(side_effect=_execute_with_event)
 
     with patch(
-        "amplifier_lib.runtime.Session",
+        "amplifier_lib.runtime.AmplifierSession",
         return_value=mock_session,
     ):
         result = await prepared.spawn(child_bundle, "Do something", compose=False)
@@ -106,7 +106,7 @@ async def test_spawn_returns_defaults_when_no_orchestrator_complete():
     mock_session.execute = AsyncMock(return_value="Some response")
 
     with patch(
-        "amplifier_lib.runtime.Session",
+        "amplifier_lib.runtime.AmplifierSession",
         return_value=mock_session,
     ):
         result = await prepared.spawn(child_bundle, "Do something", compose=False)
@@ -140,7 +140,7 @@ async def test_spawn_returns_error_status_on_failed_execution():
     mock_session.execute = AsyncMock(side_effect=_execute_with_error_event)
 
     with patch(
-        "amplifier_lib.runtime.Session",
+        "amplifier_lib.runtime.AmplifierSession",
         return_value=mock_session,
     ):
         result = await prepared.spawn(child_bundle, "Do something", compose=False)
@@ -161,7 +161,7 @@ async def test_spawn_backward_compatible_output_and_session_id():
     mock_session.execute = AsyncMock(return_value="backward compat response")
 
     with patch(
-        "amplifier_lib.runtime.Session",
+        "amplifier_lib.runtime.AmplifierSession",
         return_value=mock_session,
     ):
         result = await prepared.spawn(child_bundle, "Do something", compose=False)
@@ -188,7 +188,7 @@ async def test_spawn_cleans_up_hook_on_exception():
     mock_session = _make_mock_session(hooks, execute_side_effect=_execute_raises)
 
     with patch(
-        "amplifier_lib.runtime.Session",
+        "amplifier_lib.runtime.AmplifierSession",
         return_value=mock_session,
     ):
         with pytest.raises(RuntimeError, match="execute failed"):

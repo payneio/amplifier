@@ -184,7 +184,8 @@ async def _spawn_with_event_forwarding(
         - ``amplifier_lib/bundle.py`` — ``PreparedBundle.spawn()``
         - ``amplifier-app-cli/session_spawner.py`` — ``spawn_sub_session()``
     """
-    from amplifier_core import AmplifierSession, HookResult  # type: ignore[import]
+    from amplifier_lib.runtime import AmplifierSession
+    from amplifier_lib.core import HookResult
 
     # 1. Compose child bundle with parent bundle
     effective_bundle = prepared.bundle.compose(child_bundle)

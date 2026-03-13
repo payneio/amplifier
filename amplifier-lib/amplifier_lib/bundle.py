@@ -1080,9 +1080,9 @@ class PreparedBundle:
             async with prepared.create_session() as session:
                 response = await session.execute("Hello!")
         """
-        from amplifier_lib.runtime import Session
+        from amplifier_lib.runtime import AmplifierSession
 
-        session = Session(
+        session = AmplifierSession(
             self.mount_plan,
             session_id=session_id,
             parent_id=parent_id,
@@ -1281,9 +1281,9 @@ class PreparedBundle:
                 parent_session.coordinator if parent_session else None,
             )
 
-        from amplifier_lib.runtime import Session
+        from amplifier_lib.runtime import AmplifierSession
 
-        child_session = Session(
+        child_session = AmplifierSession(
             child_mount_plan,
             session_id=session_id,
             parent_id=parent_session.session_id if parent_session else None,

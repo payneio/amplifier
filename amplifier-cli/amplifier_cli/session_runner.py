@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
-from amplifier_lib.runtime import Session as AmplifierSession
+from amplifier_lib.runtime import AmplifierSession
 from amplifier_lib.core.loader import ModuleValidationError
 
 from .session_store import SessionStore

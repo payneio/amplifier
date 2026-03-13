@@ -140,7 +140,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_lib.runtime.Session",
+            "amplifier_lib.runtime.AmplifierSession",
             return_value=mock_session,
         ):
             await prepared.spawn(
@@ -165,7 +165,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_lib.runtime.Session",
+            "amplifier_lib.runtime.AmplifierSession",
             return_value=mock_session,
         ):
             # Don't pass self_delegation_depth (uses default 0)
@@ -193,7 +193,7 @@ class TestSpawnSelfDelegationDepth:
             return mock_session
 
         with patch(
-            "amplifier_lib.runtime.Session",
+            "amplifier_lib.runtime.AmplifierSession",
             side_effect=capture_session_init,
         ):
             await prepared.spawn(
@@ -220,7 +220,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_lib.runtime.Session",
+            "amplifier_lib.runtime.AmplifierSession",
             return_value=mock_session,
         ):
             # Call without self_delegation_depth - should not raise
@@ -239,7 +239,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_lib.runtime.Session",
+            "amplifier_lib.runtime.AmplifierSession",
             return_value=mock_session,
         ):
             result = await prepared.spawn(child_bundle, "Do something", compose=False)

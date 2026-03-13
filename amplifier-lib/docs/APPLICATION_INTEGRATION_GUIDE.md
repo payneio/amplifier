@@ -74,7 +74,7 @@ Every Amplifier application follows this core pattern, regardless of application
 ### Minimal Example
 
 ```python
-from amplifier_core import load_bundle
+from amplifier_lib import load_bundle
 
 # Steps 1-3: Once at startup
 bundle = await load_bundle("./bundle.md")
@@ -160,7 +160,7 @@ You are a helpful domain expert.
 Build bundles in Python at startup. Good for dynamic configuration based on environment, user, or runtime conditions.
 
 ```python
-from amplifier_core import Bundle
+from amplifier_lib import Bundle
 
 base = Bundle(
     name="my-app",

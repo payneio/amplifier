@@ -344,7 +344,7 @@ async def _load_module(
 # ---------------------------------------------------------------------------
 
 
-class Session:
+class AmplifierSession:
     """Lightweight session that loads modules and calls the orchestrator.
 
     Drop-in replacement for amplifier-core's AmplifierSession.
@@ -611,7 +611,7 @@ class Session:
                     sys.path.remove(p)
             self._added_paths.clear()
 
-    async def __aenter__(self) -> Session:
+    async def __aenter__(self) -> AmplifierSession:
         await self.initialize()
         return self
 

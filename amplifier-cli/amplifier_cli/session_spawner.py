@@ -6,7 +6,7 @@ Implements sub-session creation with configuration inheritance and overlays.
 import logging
 from pathlib import Path
 
-from amplifier_lib.runtime import Session as AmplifierSession
+from amplifier_lib.runtime import AmplifierSession
 from amplifier_lib import generate_sub_session_id
 
 from .agent_config import merge_configs

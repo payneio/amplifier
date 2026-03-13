@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 if TYPE_CHECKING:
-    from amplifier_lib.runtime import Session as AmplifierSession
+    from amplifier_lib.runtime import AmplifierSession
 
 from .session_store import SessionStore
 

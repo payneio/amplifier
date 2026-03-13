@@ -840,13 +840,13 @@ packages = ["src/my_package"]
 
 **Critical**: This bug only appears in built wheels, not editable installs. Always test with `uv build && uv pip install dist/*.whl`.
 
-### ❌ Declaring amplifier-core as Runtime Dependency
+### ❌ Declaring amplifier-foundation as Runtime Dependency
 
 ```toml
 # DON'T DO THIS in modules/tool-*/pyproject.toml
 [project]
 dependencies = [
-    "amplifier-core>=1.0.0",           # ❌ Not on PyPI, will fail
+    "amplifier-foundation>=1.0.0",     # ❌ Provided by the host, not a direct dependency
     "amplifier-bundle-foo>=0.1.0",     # ❌ Not on PyPI, will fail
 ]
 ```
@@ -854,12 +854,12 @@ dependencies = [
 ```toml
 # DO THIS - no runtime dependencies for tool modules
 [project]
-dependencies = []   # ✅ amplifier-core is a peer dependency
+dependencies = []   # ✅ amplifier-foundation is a peer dependency
 ```
 
-**Why it's wrong**: Tool modules run inside the host application's process (amplifier-app-cli), which already has `amplifier-core` loaded. These packages aren't on PyPI, so declaring them as dependencies causes installation failures.
+**Why it's wrong**: Tool modules run inside the host application's process, which already has `amplifier-foundation` (`amplifier_lib`) loaded. Declaring it as a dependency pulls a second copy and can cause version conflicts or installation failures.
 
-**The pattern**: `amplifier-core` and bundle packages are **peer dependencies** - they're provided by the runtime environment, not installed as dependencies.
+**The pattern**: `amplifier-foundation` and bundle packages are **peer dependencies** - they're provided by the runtime environment, not installed as dependencies.
 
 ---
 

@@ -9,10 +9,15 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "amplifier",
     "amplifier-app-cli",
     "amplifier-foundation",
-    "amplifier-sdk",
 ]
+
+[[package]]
+name = "amplifier"
+version = "0.1.0"
+source = { virtual = "." }
 
 [[package]]
 name = "amplifier-app-cli"
@@ -77,11 +82,6 @@ dev = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
 ]
-
-[[package]]
-name = "amplifier-sdk"
-version = "0.1.0"
-source = { virtual = "." }
 
 [[package]]
 name = "annotated-types"
