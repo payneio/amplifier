@@ -28,8 +28,8 @@ from pathlib import Path
 from typing import Literal
 
 from amplifier_core import HookResult
-from amplifier_foundation import Bundle
-from amplifier_foundation import load_bundle
+from amplifier_lib import Bundle
+from amplifier_lib import load_bundle
 
 
 @dataclass

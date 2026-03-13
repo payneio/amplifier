@@ -7,14 +7,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from amplifier_foundation.spawn_utils import ProviderPreference
-from amplifier_foundation.spawn_utils import _apply_single_override
-from amplifier_foundation.spawn_utils import _build_provider_lookup
-from amplifier_foundation.spawn_utils import _find_provider_index
-from amplifier_foundation.spawn_utils import apply_provider_preferences
-from amplifier_foundation.spawn_utils import apply_provider_preferences_with_resolution
-from amplifier_foundation.spawn_utils import is_glob_pattern
-from amplifier_foundation.spawn_utils import resolve_model_pattern
+from amplifier_lib.spawn_utils import ProviderPreference
+from amplifier_lib.spawn_utils import _apply_single_override
+from amplifier_lib.spawn_utils import _build_provider_lookup
+from amplifier_lib.spawn_utils import _find_provider_index
+from amplifier_lib.spawn_utils import apply_provider_preferences
+from amplifier_lib.spawn_utils import apply_provider_preferences_with_resolution
+from amplifier_lib.spawn_utils import is_glob_pattern
+from amplifier_lib.spawn_utils import resolve_model_pattern
 
 
 class TestProviderPreference:

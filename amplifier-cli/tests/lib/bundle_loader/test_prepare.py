@@ -7,7 +7,7 @@ callback used to redirect include sources during bundle loading.
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from amplifier_app_cli.lib.bundle_loader.prepare import _build_include_source_resolver
+from amplifier_cli.lib.bundle_loader.prepare import _build_include_source_resolver
 
 
 class TestBuildIncludeSourceResolver:
@@ -114,7 +114,7 @@ class TestLoadAndPrepareBundleSourceOverrides:
     @pytest.mark.asyncio
     async def test_bundle_overrides_sets_resolver_on_registry(self):
         """When bundle_source_overrides is provided, set_include_source_resolver is called on registry with a callable."""
-        from amplifier_app_cli.lib.bundle_loader.prepare import load_and_prepare_bundle
+        from amplifier_cli.lib.bundle_loader.prepare import load_and_prepare_bundle
 
         overrides = {"amplifier-bundle-superpowers": "/local/path"}
 
@@ -128,7 +128,7 @@ class TestLoadAndPrepareBundleSourceOverrides:
         mock_bundle.prepare = AsyncMock(return_value=mock_prepared)
 
         with patch(
-            "amplifier_app_cli.lib.bundle_loader.prepare.load_bundle",
+            "amplifier_cli.lib.bundle_loader.prepare.load_bundle",
             new_callable=AsyncMock,
         ) as mock_load_bundle:
             mock_load_bundle.return_value = mock_bundle
@@ -147,7 +147,7 @@ class TestLoadAndPrepareBundleSourceOverrides:
     @pytest.mark.asyncio
     async def test_no_bundle_overrides_skips_resolver(self):
         """When bundle_source_overrides is None (default), set_include_source_resolver is NOT called."""
-        from amplifier_app_cli.lib.bundle_loader.prepare import load_and_prepare_bundle
+        from amplifier_cli.lib.bundle_loader.prepare import load_and_prepare_bundle
 
         mock_registry = MagicMock()
         mock_discovery = MagicMock()
@@ -159,7 +159,7 @@ class TestLoadAndPrepareBundleSourceOverrides:
         mock_bundle.prepare = AsyncMock(return_value=mock_prepared)
 
         with patch(
-            "amplifier_app_cli.lib.bundle_loader.prepare.load_bundle",
+            "amplifier_cli.lib.bundle_loader.prepare.load_bundle",
             new_callable=AsyncMock,
         ) as mock_load_bundle:
             mock_load_bundle.return_value = mock_bundle

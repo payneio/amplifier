@@ -13,7 +13,7 @@ from io import StringIO
 
 from rich.console import Console
 
-from amplifier_app_cli.utils.error_format import escape_markup
+from amplifier_cli.utils.error_format import escape_markup
 
 
 # ---------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class TestConsoleSafetyNet:
 
     def test_markup_error_does_not_crash(self):
         """Console.print with bad markup retries with markup=False."""
-        import amplifier_app_cli.console  # noqa: F401 — triggers the monkey-patch
+        import amplifier_cli.console  # noqa: F401 — triggers the monkey-patch
 
         buf = StringIO()
         c = Console(file=buf, force_terminal=False, no_color=True)
@@ -88,7 +88,7 @@ class TestConsoleSafetyNet:
 
     def test_valid_markup_still_works(self):
         """Intentional markup is not broken by the safety net."""
-        import amplifier_app_cli.console  # noqa: F401
+        import amplifier_cli.console  # noqa: F401
 
         buf = StringIO()
         c = Console(file=buf, force_terminal=False, no_color=True)

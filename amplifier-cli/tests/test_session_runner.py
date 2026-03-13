@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from amplifier_app_cli.session_runner import (
+from amplifier_cli.session_runner import (
     InitializedSession,
     SessionConfig,
     _should_attempt_self_healing,
@@ -17,7 +17,7 @@ from amplifier_app_cli.session_runner import (
 # Helpers shared across tests
 # ---------------------------------------------------------------------------
 
-_MODULE = "amplifier_app_cli.session_runner"
+_MODULE = "amplifier_cli.session_runner"
 
 
 def _make_session_config(session_config_initial=None, **kwargs):
@@ -169,14 +169,14 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
             patch(
-                "amplifier_app_cli.project_utils.get_project_slug",
+                "amplifier_cli.project_utils.get_project_slug",
                 return_value="test-slug",
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
         ):
             result = await create_initialized_session(cfg, console)
 
@@ -201,14 +201,14 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
             patch(
-                "amplifier_app_cli.project_utils.get_project_slug",
+                "amplifier_cli.project_utils.get_project_slug",
                 return_value="test-slug",
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
         ):
             result = await create_initialized_session(cfg, console)
 
@@ -229,14 +229,14 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
             patch(
-                "amplifier_app_cli.project_utils.get_project_slug",
+                "amplifier_cli.project_utils.get_project_slug",
                 return_value="test-slug",
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
         ):
             result = await create_initialized_session(cfg, console)
 
@@ -270,14 +270,14 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
             patch(
-                "amplifier_app_cli.project_utils.get_project_slug",
+                "amplifier_cli.project_utils.get_project_slug",
                 return_value="test-slug",
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
         ):
             result = await create_initialized_session(cfg, console)
 
@@ -303,14 +303,14 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
             patch(
-                "amplifier_app_cli.project_utils.get_project_slug",
+                "amplifier_cli.project_utils.get_project_slug",
                 return_value="test-slug",
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
         ):
             result = await create_initialized_session(cfg, console)
 
@@ -336,10 +336,10 @@ class TestPostSessionMetadataStamping:
                 return_value=mock_sess,
             ),
             patch(
-                "amplifier_app_cli.commands.init.check_first_run", return_value=False
+                "amplifier_cli.commands.init.check_first_run", return_value=False
             ),
-            patch("amplifier_app_cli.ui.CLIApprovalSystem"),
-            patch("amplifier_app_cli.ui.CLIDisplaySystem"),
+            patch("amplifier_cli.ui.CLIApprovalSystem"),
+            patch("amplifier_cli.ui.CLIDisplaySystem"),
             # Simulate no working directory available
             patch(f"{_MODULE}.Path") as mock_path_cls,
         ):
@@ -398,7 +398,7 @@ class TestSelfHealingCounterComparison:
         mock_session, mock_bundle = _make_self_healing_mocks(configured, mounted)
 
         with caplog.at_level(
-            logging.WARNING, logger="amplifier_app_cli.session_runner"
+            logging.WARNING, logger="amplifier_cli.session_runner"
         ):
             result = _should_attempt_self_healing(mock_session, mock_bundle)
 
@@ -440,7 +440,7 @@ class TestSelfHealingCounterComparison:
         mock_session, mock_bundle = _make_self_healing_mocks(configured, mounted)
 
         with caplog.at_level(
-            logging.WARNING, logger="amplifier_app_cli.session_runner"
+            logging.WARNING, logger="amplifier_cli.session_runner"
         ):
             result = _should_attempt_self_healing(mock_session, mock_bundle)
 
@@ -462,7 +462,7 @@ class TestSelfHealingCounterComparison:
         mock_session, mock_bundle = _make_self_healing_mocks(configured, mounted)
 
         with caplog.at_level(
-            logging.WARNING, logger="amplifier_app_cli.session_runner"
+            logging.WARNING, logger="amplifier_cli.session_runner"
         ):
             result = _should_attempt_self_healing(mock_session, mock_bundle)
 

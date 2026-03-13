@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from amplifier_foundation.registry import BundleRegistry
+from amplifier_lib.registry import BundleRegistry
 
 
 class TestFindNearestBundleFile:
@@ -626,7 +626,7 @@ class TestStrictMode:
     @pytest.mark.asyncio
     async def test_strict_mode_raises_on_unresolvable_include(self) -> None:
         """Strict mode raises BundleDependencyError when an include cannot be resolved."""
-        from amplifier_foundation.exceptions import BundleDependencyError
+        from amplifier_lib.exceptions import BundleDependencyError
 
         with tempfile.TemporaryDirectory() as tmpdir:
             base = Path(tmpdir)
@@ -699,7 +699,7 @@ class TestStrictMode:
         A child bundle with broken YAML resolves in Phase 1 (URI is valid)
         but fails to parse in Phase 2 (_load_single raises a non-circular error).
         """
-        from amplifier_foundation.exceptions import BundleDependencyError
+        from amplifier_lib.exceptions import BundleDependencyError
 
         with tempfile.TemporaryDirectory() as tmpdir:
             base = Path(tmpdir)
@@ -761,7 +761,7 @@ class TestLoadBundleConvenience:
     @pytest.mark.asyncio
     async def test_load_bundle_strict_with_registry_raises(self) -> None:
         """Passing strict=True with an existing registry raises ValueError."""
-        from amplifier_foundation.registry import load_bundle
+        from amplifier_lib.registry import load_bundle
 
         with tempfile.TemporaryDirectory() as tmpdir:
             base = Path(tmpdir)
@@ -775,8 +775,8 @@ class TestLoadBundleConvenience:
         self,
     ) -> None:
         """Passing strict=True without registry creates a strict registry."""
-        from amplifier_foundation.exceptions import BundleDependencyError
-        from amplifier_foundation.registry import load_bundle
+        from amplifier_lib.exceptions import BundleDependencyError
+        from amplifier_lib.registry import load_bundle
 
         with tempfile.TemporaryDirectory() as tmpdir:
             base = Path(tmpdir)

@@ -26,7 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 # =============================================================================
 # SECTION 1: Simple Persistence Implementation

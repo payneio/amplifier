@@ -7,7 +7,7 @@ The amplifier-foundation API is fully documented via Python docstrings and type 
 ## Quick Import
 
 ```python
-from amplifier_foundation import Bundle, BundleRegistry, load_bundle
+from amplifier_lib import Bundle, BundleRegistry, load_bundle
 ```
 
 ## Core Classes
@@ -123,13 +123,13 @@ Each source file has comprehensive docstrings. To read them:
 
 ```bash
 # In your editor
-code amplifier_foundation/bundle.py
+code amplifier_lib/bundle.py
 
 # Or via Python
-python -c "from amplifier_foundation import Bundle; help(Bundle)"
+python -c "from amplifier_lib import Bundle; help(Bundle)"
 
 # Or via pydoc
-python -m pydoc amplifier_foundation.Bundle
+python -m pydoc amplifier_lib.Bundle
 ```
 
 ## Common Patterns
@@ -137,7 +137,7 @@ python -m pydoc amplifier_foundation.Bundle
 ### Load and Use a Bundle
 
 ```python
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 bundle = await load_bundle("git+https://github.com/org/my-bundle@main")
 mount_plan = bundle.to_mount_plan()
@@ -146,7 +146,7 @@ mount_plan = bundle.to_mount_plan()
 ### Compose Bundles
 
 ```python
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 base = await load_bundle("foundation")
 overlay = await load_bundle("./local-overlay.md")
@@ -156,7 +156,7 @@ composed = base.compose(overlay)
 ### Registry Management
 
 ```python
-from amplifier_foundation import BundleRegistry
+from amplifier_lib import BundleRegistry
 
 registry = BundleRegistry()
 registry.register({"my-bundle": "git+https://github.com/org/bundle@main"})
@@ -166,7 +166,7 @@ bundle = await registry.load("my-bundle")
 ### Load @Mentions
 
 ```python
-from amplifier_foundation import load_mentions, BaseMentionResolver
+from amplifier_lib import load_mentions, BaseMentionResolver
 
 resolver = BaseMentionResolver(bundles={"foundation": foundation_bundle})
 results = await load_mentions("See @foundation:context/guidelines.md", resolver)

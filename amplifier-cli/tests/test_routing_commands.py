@@ -9,7 +9,7 @@ from unittest.mock import patch
 import yaml
 from click.testing import CliRunner
 
-from amplifier_app_cli.lib.settings import AppSettings, SettingsPaths
+from amplifier_cli.lib.settings import AppSettings, SettingsPaths
 
 
 def _make_settings(tmp_path: Path) -> AppSettings:
@@ -165,16 +165,16 @@ class TestRoutingList:
         settings = _make_settings(tmp_path)
         _seed_providers(settings)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -191,16 +191,16 @@ class TestRoutingList:
         _seed_providers(settings)
         settings.set_routing_matrix("economy", scope="global")
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -225,16 +225,16 @@ class TestRoutingUse:
         settings = _make_settings(tmp_path)
         _seed_providers(settings)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -250,16 +250,16 @@ class TestRoutingUse:
         cache_dir = _make_matrix_dir(tmp_path)
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -273,20 +273,20 @@ class TestRoutingUse:
         cache_dir = _make_matrix_dir(tmp_path)
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
             patch(
-                "amplifier_app_cli.ui.scope.is_running_from_home",
+                "amplifier_cli.ui.scope.is_running_from_home",
                 return_value=True,
             ),
         ):
@@ -315,16 +315,16 @@ class TestRoutingShow:
         settings = _make_settings(tmp_path)
         _seed_providers(settings)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -350,16 +350,16 @@ class TestRoutingShow:
         settings._write_scope("global", scope_settings)
         settings.set_routing_matrix("economy", scope="global")
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -375,16 +375,16 @@ class TestRoutingShow:
         settings = _make_settings(tmp_path)
         _seed_providers(settings)
 
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
         ):
@@ -438,7 +438,7 @@ class TestRoutingCreateCommandExists:
 
     def test_routing_create_command_exists(self):
         """create is registered as a subcommand on routing_group."""
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         command_names = [cmd for cmd in routing_group.commands]
         assert "create" in command_names
@@ -449,7 +449,7 @@ class TestDiscoverRolesFromMatrices:
 
     def test_discover_roles_from_single_matrix(self, tmp_path):
         """Discovers roles and descriptions from matrix YAML files."""
-        from amplifier_app_cli.commands.routing import discover_roles_from_matrices
+        from amplifier_cli.commands.routing import discover_roles_from_matrices
 
         cache_dir = _make_matrix_dir(tmp_path)
         matrix_files = sorted(cache_dir.rglob("*.yaml"))
@@ -465,7 +465,7 @@ class TestDiscoverRolesFromMatrices:
 
     def test_discover_roles_deduplicates(self, tmp_path):
         """First description wins when roles appear in multiple matrices."""
-        from amplifier_app_cli.commands.routing import discover_roles_from_matrices
+        from amplifier_cli.commands.routing import discover_roles_from_matrices
 
         cache_dir = _make_matrix_dir(tmp_path)
         matrix_files = sorted(cache_dir.rglob("*.yaml"))
@@ -478,7 +478,7 @@ class TestDiscoverRolesFromMatrices:
 
     def test_discover_roles_empty_dir(self, tmp_path):
         """Returns empty dict when no matrix files exist."""
-        from amplifier_app_cli.commands.routing import discover_roles_from_matrices
+        from amplifier_cli.commands.routing import discover_roles_from_matrices
 
         roles = discover_roles_from_matrices([])
         assert roles == {}
@@ -489,7 +489,7 @@ class TestSaveCustomMatrix:
 
     def test_save_custom_matrix_writes_yaml(self, tmp_path):
         """Custom matrix is saved as valid YAML with correct schema."""
-        from amplifier_app_cli.commands.routing import save_custom_matrix
+        from amplifier_cli.commands.routing import save_custom_matrix
 
         output_dir = tmp_path / "routing"
         assignments = {
@@ -526,7 +526,7 @@ class TestSaveCustomMatrix:
 
     def test_save_custom_matrix_creates_directory(self, tmp_path):
         """save_custom_matrix creates the output directory if it doesn't exist."""
-        from amplifier_app_cli.commands.routing import save_custom_matrix
+        from amplifier_cli.commands.routing import save_custom_matrix
 
         output_dir = tmp_path / "nonexistent" / "routing"
         assignments = {
@@ -551,7 +551,7 @@ class TestCustomMatrixDiscovery:
 
     def test_discover_includes_custom_matrices(self, tmp_path):
         """_discover_matrix_files finds both bundle and custom matrices."""
-        from amplifier_app_cli.commands.routing import _discover_matrix_files
+        from amplifier_cli.commands.routing import _discover_matrix_files
 
         # Set up bundle cache at tmp_path/.amplifier/cache/...
         cache_dir = (
@@ -581,7 +581,7 @@ class TestCustomMatrixDiscovery:
 
         # Patch Path.home so ~/.amplifier resolves to tmp_path/.amplifier
         with patch(
-            "amplifier_app_cli.commands.routing.Path.home",
+            "amplifier_cli.commands.routing.Path.home",
             return_value=tmp_path,
         ):
             files = _discover_matrix_files()
@@ -601,13 +601,13 @@ class TestRoutingManageCreateOption:
 
     def test_routing_create_interactive_exists_and_callable(self):
         """_routing_create_interactive is importable and callable."""
-        from amplifier_app_cli.commands.routing import _routing_create_interactive
+        from amplifier_cli.commands.routing import _routing_create_interactive
 
         assert callable(_routing_create_interactive)
 
     def test_routing_manage_loop_shows_create_edit_text(self, tmp_path):
         """routing_manage_loop prints '[c] Create / edit custom matrix' in its menu."""
-        from amplifier_app_cli.commands.routing import routing_manage_loop
+        from amplifier_cli.commands.routing import routing_manage_loop
 
         cache_dir = _make_matrix_dir(tmp_path)
         settings = _make_settings(tmp_path)
@@ -615,11 +615,11 @@ class TestRoutingManageCreateOption:
 
         with (
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 return_value="d",  # immediately quit
             ),
         ):
@@ -629,7 +629,7 @@ class TestRoutingManageCreateOption:
 
             buf = StringIO()
             test_console = RichConsole(file=buf, width=120)
-            with patch("amplifier_app_cli.commands.routing.console", test_console):
+            with patch("amplifier_cli.commands.routing.console", test_console):
                 routing_manage_loop(settings)
 
             output = buf.getvalue()
@@ -638,7 +638,7 @@ class TestRoutingManageCreateOption:
 
     def test_routing_manage_loop_c_calls_create_interactive(self, tmp_path):
         """Pressing 'c' in manage loop calls _routing_edit_matrix."""
-        from amplifier_app_cli.commands.routing import routing_manage_loop
+        from amplifier_cli.commands.routing import routing_manage_loop
 
         cache_dir = _make_matrix_dir(tmp_path)
         settings = _make_settings(tmp_path)
@@ -646,15 +646,15 @@ class TestRoutingManageCreateOption:
 
         with (
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 side_effect=["c", "d"],  # press c, then d to quit
             ),
             patch(
-                "amplifier_app_cli.commands.routing._routing_edit_matrix",
+                "amplifier_cli.commands.routing._routing_edit_matrix",
             ) as mock_create,
         ):
             routing_manage_loop(settings)
@@ -679,7 +679,7 @@ class TestGetProviderNames:
 
     def test_get_provider_names_deduplicates_same_module(self, tmp_path):
         """Two providers sharing a module but with different ids yield one type name."""
-        from amplifier_app_cli.commands.routing import _get_provider_names
+        from amplifier_cli.commands.routing import _get_provider_names
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -696,7 +696,7 @@ class TestGetProviderNames:
 
     def test_get_provider_names_returns_all_unique_types(self, tmp_path):
         """Three providers with distinct modules all appear in the result."""
-        from amplifier_app_cli.commands.routing import _get_provider_names
+        from amplifier_cli.commands.routing import _get_provider_names
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -759,13 +759,13 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_shows_all_candidates(self, tmp_path):
         """All candidates appear in output, not just the winner."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         settings = _make_settings(tmp_path)
         _seed_providers_for_details(settings, ["provider-anthropic", "provider-openai"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(self._THREE_CANDIDATE_MATRIX, settings)
 
         rendered = buf.getvalue()
@@ -775,13 +775,13 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_marks_winner_with_star(self, tmp_path):
         """First configured candidate is marked with ★."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         settings = _make_settings(tmp_path)
         _seed_providers_for_details(settings, ["provider-anthropic", "provider-openai"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(self._THREE_CANDIDATE_MATRIX, settings)
 
         rendered = buf.getvalue()
@@ -789,13 +789,13 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_marks_unconfigured(self, tmp_path):
         """Unconfigured candidates show 'not configured'."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         settings = _make_settings(tmp_path)
         _seed_providers_for_details(settings, ["provider-anthropic", "provider-openai"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(self._THREE_CANDIDATE_MATRIX, settings)
 
         rendered = buf.getvalue()
@@ -803,13 +803,13 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_shows_role_description(self, tmp_path):
         """Role description appears in the output."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         settings = _make_settings(tmp_path)
         _seed_providers_for_details(settings, ["provider-anthropic"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(self._THREE_CANDIDATE_MATRIX, settings)
 
         rendered = buf.getvalue()
@@ -817,7 +817,7 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_shows_config_block(self, tmp_path):
         """Candidate config dict is rendered inline (e.g. [reasoning_effort: high])."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         matrix = {
             "name": "config-test",
@@ -841,7 +841,7 @@ class TestShowMatrixDetails:
         _seed_providers_for_details(settings, ["provider-openai"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(matrix, settings)
 
         rendered = buf.getvalue()
@@ -850,7 +850,7 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_shows_no_coverage_warning(self, tmp_path):
         """⚠ warning shown when no candidate for a role is configured."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         matrix = {
             "name": "no-coverage",
@@ -871,7 +871,7 @@ class TestShowMatrixDetails:
         _seed_providers_for_details(settings, ["provider-anthropic"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(matrix, settings)
 
         rendered = buf.getvalue()
@@ -879,13 +879,13 @@ class TestShowMatrixDetails:
 
     def test_show_matrix_details_shows_matrix_header(self, tmp_path):
         """Matrix name, description, and updated date appear in output."""
-        from amplifier_app_cli.commands.routing import _show_matrix_details
+        from amplifier_cli.commands.routing import _show_matrix_details
 
         settings = _make_settings(tmp_path)
         _seed_providers_for_details(settings, ["provider-anthropic"])
 
         con, buf = _make_test_console()
-        with patch("amplifier_app_cli.commands.routing.console", con):
+        with patch("amplifier_cli.commands.routing.console", con):
             _show_matrix_details(self._THREE_CANDIDATE_MATRIX, settings)
 
         rendered = buf.getvalue()
@@ -895,7 +895,7 @@ class TestShowMatrixDetails:
 
     def test_routing_show_detailed_flag(self, tmp_path):
         """routing show --detailed calls _show_matrix_details instead of _show_matrix_resolution."""
-        from amplifier_app_cli.commands.routing import routing_group
+        from amplifier_cli.commands.routing import routing_group
 
         cache_dir = _make_matrix_dir(tmp_path)
         settings = _make_settings(tmp_path)
@@ -904,18 +904,18 @@ class TestShowMatrixDetails:
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.routing._get_settings",
+                "amplifier_cli.commands.routing._get_settings",
                 return_value=settings,
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=list(cache_dir.rglob("*.yaml")),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._show_matrix_details",
+                "amplifier_cli.commands.routing._show_matrix_details",
             ) as mock_details,
             patch(
-                "amplifier_app_cli.commands.routing._show_matrix_resolution",
+                "amplifier_cli.commands.routing._show_matrix_resolution",
             ) as mock_resolution,
         ):
             result = runner.invoke(routing_group, ["show", "--detailed"])
@@ -935,7 +935,7 @@ class TestListModelsForProvider:
 
     def test_list_models_passes_config_to_get_provider_models(self, tmp_path):
         """When settings has a provider config, collected_config is passed to get_provider_models."""
-        from amplifier_app_cli.commands.routing import _list_models_for_provider
+        from amplifier_cli.commands.routing import _list_models_for_provider
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -949,7 +949,7 @@ class TestListModelsForProvider:
         )
 
         with patch(
-            "amplifier_app_cli.provider_loader.get_provider_models", return_value=[]
+            "amplifier_cli.provider_loader.get_provider_models", return_value=[]
         ) as mock_gpm:
             _list_models_for_provider("anthropic", settings=settings)
 
@@ -962,10 +962,10 @@ class TestListModelsForProvider:
 
     def test_list_models_works_without_settings(self, tmp_path):
         """Calling without settings still calls get_provider_models (backward compat)."""
-        from amplifier_app_cli.commands.routing import _list_models_for_provider
+        from amplifier_cli.commands.routing import _list_models_for_provider
 
         with patch(
-            "amplifier_app_cli.provider_loader.get_provider_models", return_value=[]
+            "amplifier_cli.provider_loader.get_provider_models", return_value=[]
         ) as mock_gpm:
             result = _list_models_for_provider("anthropic")
 
@@ -1004,7 +1004,7 @@ class TestRoutingCreateModelCache:
         from rich.console import Console as RichConsole
         from unittest.mock import MagicMock
 
-        from amplifier_app_cli.commands.routing import _routing_create_interactive
+        from amplifier_cli.commands.routing import _routing_create_interactive
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1027,17 +1027,17 @@ class TestRoutingCreateModelCache:
         test_console = RichConsole(file=buf, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.console", test_console),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[mock_model],
             ) as mock_gpm,
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.provider_config_utils.Prompt") as MockPromptPCU,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.provider_config_utils.Prompt") as MockPromptPCU,
         ):
             MockPrompt.ask.side_effect = self._make_prompts_for_full_flow()
             # Model selection (via _prompt_model_selection) picks model #1 for each role
@@ -1056,7 +1056,7 @@ class TestRoutingCreateModelCache:
         from rich.console import Console as RichConsole
         from unittest.mock import MagicMock
 
-        from amplifier_app_cli.commands.routing import _routing_create_interactive
+        from amplifier_cli.commands.routing import _routing_create_interactive
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1079,17 +1079,17 @@ class TestRoutingCreateModelCache:
         test_console = RichConsole(file=buf, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.console", test_console),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[mock_model],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.provider_config_utils.Prompt") as MockPromptPCU,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.provider_config_utils.Prompt") as MockPromptPCU,
         ):
             MockPrompt.ask.side_effect = self._make_prompts_for_full_flow()
             MockPromptPCU.ask.side_effect = ["1", "1"]
@@ -1107,7 +1107,7 @@ class TestRoutingCreateModelCache:
 
         from rich.console import Console as RichConsole
 
-        from amplifier_app_cli.commands.routing import _build_model_cache
+        from amplifier_cli.commands.routing import _build_model_cache
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1123,9 +1123,9 @@ class TestRoutingCreateModelCache:
         test_console = RichConsole(file=buf, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.console", test_console),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[mock_model],
             ),
         ):
@@ -1154,7 +1154,7 @@ class TestPromptProviderAndModelDRY:
 
         from rich.console import Console as RichConsole
 
-        from amplifier_app_cli.commands.routing import _prompt_provider_and_model
+        from amplifier_cli.commands.routing import _prompt_provider_and_model
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1178,10 +1178,10 @@ class TestPromptProviderAndModelDRY:
         test_console = RichConsole(file=output, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value="claude-sonnet-4-6",
             ) as mock_pms,
         ):
@@ -1210,7 +1210,7 @@ class TestPromptProviderAndModelDRY:
 
         from rich.console import Console as RichConsole
 
-        from amplifier_app_cli.commands.routing import _prompt_provider_and_model
+        from amplifier_cli.commands.routing import _prompt_provider_and_model
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1229,10 +1229,10 @@ class TestPromptProviderAndModelDRY:
         test_console = RichConsole(file=output, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value=None,  # Ctrl-C / cancel
             ),
         ):
@@ -1256,7 +1256,7 @@ class TestPromptProviderAndModelDRY:
 
         from rich.console import Console as RichConsole
 
-        from amplifier_app_cli.commands.routing import _prompt_provider_and_model
+        from amplifier_cli.commands.routing import _prompt_provider_and_model
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1280,10 +1280,10 @@ class TestPromptProviderAndModelDRY:
         test_console = RichConsole(file=output, force_terminal=False)
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", test_console),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.provider_config_utils.console", test_console),
-            patch("amplifier_app_cli.provider_config_utils.Prompt") as MockPromptPCU,
+            patch("amplifier_cli.commands.routing.console", test_console),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.provider_config_utils.console", test_console),
+            patch("amplifier_cli.provider_config_utils.Prompt") as MockPromptPCU,
         ):
             MockPrompt.ask.return_value = "1"  # Pick provider #1 (anthropic)
             MockPromptPCU.ask.return_value = "1"  # Pick model #1
@@ -1323,7 +1323,7 @@ class TestPickBaseMatrix:
 
     def test_pick_base_matrix_returns_deep_copy(self, tmp_path):
         """Returns a deep copy of the selected matrix, not the original object."""
-        from amplifier_app_cli.commands.routing import _pick_base_matrix
+        from amplifier_cli.commands.routing import _pick_base_matrix
 
         settings = _make_settings(tmp_path)
         self._set_active_matrix(settings, "alpha")
@@ -1335,9 +1335,9 @@ class TestPickBaseMatrix:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 return_value="1",  # pick #1 (alpha — sorted first)
             ),
         ):
@@ -1356,7 +1356,7 @@ class TestPickBaseMatrix:
 
     def test_pick_base_matrix_marks_active(self, tmp_path):
         """Active matrix is marked with → arrow and (active) suffix in display."""
-        from amplifier_app_cli.commands.routing import _pick_base_matrix
+        from amplifier_cli.commands.routing import _pick_base_matrix
 
         settings = _make_settings(tmp_path)
         self._set_active_matrix(settings, "beta")
@@ -1368,9 +1368,9 @@ class TestPickBaseMatrix:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 return_value="1",  # pick any; we only care about printed output
             ),
         ):
@@ -1384,7 +1384,7 @@ class TestPickBaseMatrix:
 
     def test_pick_base_matrix_marks_custom(self, tmp_path):
         """Custom matrices should be marked with (custom)."""
-        from amplifier_app_cli.commands.routing import _pick_base_matrix
+        from amplifier_cli.commands.routing import _pick_base_matrix
 
         settings = _make_settings(tmp_path)
         self._set_active_matrix(settings, "alpha")
@@ -1401,9 +1401,9 @@ class TestPickBaseMatrix:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 return_value="1",
             ),
             patch("pathlib.Path.home", return_value=tmp_path),
@@ -1417,7 +1417,7 @@ class TestPickBaseMatrix:
 
     def test_pick_base_matrix_returns_none_on_cancel(self, tmp_path):
         """Returns None when user presses Ctrl-C."""
-        from amplifier_app_cli.commands.routing import _pick_base_matrix
+        from amplifier_cli.commands.routing import _pick_base_matrix
 
         settings = _make_settings(tmp_path)
         self._set_active_matrix(settings, "alpha")
@@ -1428,9 +1428,9 @@ class TestPickBaseMatrix:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing.Prompt.ask",
+                "amplifier_cli.commands.routing.Prompt.ask",
                 side_effect=KeyboardInterrupt,
             ),
         ):
@@ -1449,7 +1449,7 @@ class TestGetRoutingConfigFields:
 
     def test_get_routing_config_fields_filters_secrets(self):
         """Filters out fields with field_type == 'secret'."""
-        from amplifier_app_cli.commands.routing import _get_routing_config_fields
+        from amplifier_cli.commands.routing import _get_routing_config_fields
 
         provider_info = {
             "display_name": "Test Provider",
@@ -1464,7 +1464,7 @@ class TestGetRoutingConfigFields:
         }
 
         with patch(
-            "amplifier_app_cli.commands.routing.get_provider_info",
+            "amplifier_cli.commands.routing.get_provider_info",
             return_value=provider_info,
         ):
             result = _get_routing_config_fields("provider-test")
@@ -1476,7 +1476,7 @@ class TestGetRoutingConfigFields:
 
     def test_get_routing_config_fields_filters_infrastructure(self):
         """Filters out infrastructure fields (base_url, etc.) but keeps model-behavior fields."""
-        from amplifier_app_cli.commands.routing import _get_routing_config_fields
+        from amplifier_cli.commands.routing import _get_routing_config_fields
 
         provider_info = {
             "display_name": "Test Provider",
@@ -1491,7 +1491,7 @@ class TestGetRoutingConfigFields:
         }
 
         with patch(
-            "amplifier_app_cli.commands.routing.get_provider_info",
+            "amplifier_cli.commands.routing.get_provider_info",
             return_value=provider_info,
         ):
             result = _get_routing_config_fields("provider-test")
@@ -1503,10 +1503,10 @@ class TestGetRoutingConfigFields:
 
     def test_get_routing_config_fields_returns_empty_when_no_info(self):
         """Returns empty list when get_provider_info returns None."""
-        from amplifier_app_cli.commands.routing import _get_routing_config_fields
+        from amplifier_cli.commands.routing import _get_routing_config_fields
 
         with patch(
-            "amplifier_app_cli.commands.routing.get_provider_info",
+            "amplifier_cli.commands.routing.get_provider_info",
             return_value=None,
         ):
             result = _get_routing_config_fields("provider-nonexistent")
@@ -1515,10 +1515,10 @@ class TestGetRoutingConfigFields:
 
     def test_get_routing_config_fields_returns_empty_when_no_config_fields(self):
         """Returns empty list when provider info has no config_fields key."""
-        from amplifier_app_cli.commands.routing import _get_routing_config_fields
+        from amplifier_cli.commands.routing import _get_routing_config_fields
 
         with patch(
-            "amplifier_app_cli.commands.routing.get_provider_info",
+            "amplifier_cli.commands.routing.get_provider_info",
             return_value={"display_name": "Test"},
         ):
             result = _get_routing_config_fields("provider-test")
@@ -1536,7 +1536,7 @@ class TestEditRole:
 
     def test_edit_role_returns_provider_model_config(self, tmp_path):
         """Returns {provider, model, config} dict on successful provider+model selection."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1551,14 +1551,14 @@ class TestEditRole:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value="claude-sonnet-4-6",
             ),
             patch(
-                "amplifier_app_cli.commands.routing._get_routing_config_fields",
+                "amplifier_cli.commands.routing._get_routing_config_fields",
                 return_value=[],
             ),
         ):
@@ -1578,14 +1578,14 @@ class TestEditRole:
 
     def test_edit_role_returns_none_on_skip_no_current(self, tmp_path):
         """Returns None when user skips and no current_candidate exists."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
         ):
             MockPrompt.ask.return_value = "s"  # skip
             result = _edit_role(
@@ -1599,7 +1599,7 @@ class TestEditRole:
 
     def test_edit_role_skip_returns_current_candidate(self, tmp_path):
         """Returns current_candidate when user skips and a current_candidate exists."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
         current = {
@@ -1610,8 +1610,8 @@ class TestEditRole:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
         ):
             MockPrompt.ask.return_value = "s"  # skip
             result = _edit_role(
@@ -1628,14 +1628,14 @@ class TestEditRole:
 
     def test_edit_role_returns_none_on_ctrl_c(self, tmp_path):
         """Returns None when user presses Ctrl-C during provider selection."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
         ):
             MockPrompt.ask.side_effect = KeyboardInterrupt
             result = _edit_role(
@@ -1649,7 +1649,7 @@ class TestEditRole:
 
     def test_edit_role_with_config_fields(self, tmp_path):
         """Boolean config fields are prompted and included in the returned dict."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1672,15 +1672,15 @@ class TestEditRole:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.commands.routing.Confirm") as MockConfirm,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Confirm") as MockConfirm,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value="gpt-5.2",
             ),
             patch(
-                "amplifier_app_cli.commands.routing._get_routing_config_fields",
+                "amplifier_cli.commands.routing._get_routing_config_fields",
                 return_value=[boolean_field],
             ),
         ):
@@ -1703,7 +1703,7 @@ class TestEditRole:
 
     def test_edit_role_ctrl_c_during_config_returns_none(self, tmp_path):
         """Ctrl-C during config field prompting should return None."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1724,17 +1724,17 @@ class TestEditRole:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value="claude-sonnet-4",
             ),
             patch(
-                "amplifier_app_cli.commands.routing._get_routing_config_fields",
+                "amplifier_cli.commands.routing._get_routing_config_fields",
                 return_value=[config_field],
             ),
-            patch("amplifier_app_cli.commands.routing.Confirm") as MockConfirm,
+            patch("amplifier_cli.commands.routing.Confirm") as MockConfirm,
         ):
             MockPrompt.ask.return_value = "1"  # select provider #1 (anthropic)
             MockConfirm.ask.side_effect = (
@@ -1752,7 +1752,7 @@ class TestEditRole:
 
     def test_edit_role_show_when_hides_field(self, tmp_path):
         """Fields with show_when conditions that aren't met should be hidden."""
-        from amplifier_app_cli.commands.routing import _edit_role
+        from amplifier_cli.commands.routing import _edit_role
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1775,14 +1775,14 @@ class TestEditRole:
 
         con, buf = _make_test_console()
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch(
-                "amplifier_app_cli.provider_config_utils._prompt_model_selection",
+                "amplifier_cli.provider_config_utils._prompt_model_selection",
                 return_value="claude-sonnet-4",
             ),
             patch(
-                "amplifier_app_cli.commands.routing._get_routing_config_fields",
+                "amplifier_cli.commands.routing._get_routing_config_fields",
                 return_value=[hidden_field],
             ),
         ):
@@ -1815,7 +1815,7 @@ class TestGetProviderConfig:
 
     def test_get_provider_config_finds_provider(self, tmp_path):
         """Finds provider config by type name (strips 'provider-' prefix)."""
-        from amplifier_app_cli.commands.routing import _get_provider_config
+        from amplifier_cli.commands.routing import _get_provider_config
 
         settings = _make_settings(tmp_path)
         _seed_provider(
@@ -1837,7 +1837,7 @@ class TestGetProviderConfig:
 
     def test_get_provider_config_returns_none_for_unknown(self, tmp_path):
         """Returns None when no matching provider is found."""
-        from amplifier_app_cli.commands.routing import _get_provider_config
+        from amplifier_cli.commands.routing import _get_provider_config
 
         settings = _make_settings(tmp_path)
         # No providers seeded
@@ -1899,7 +1899,7 @@ class TestRoutingEditMatrix:
 
         import yaml
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -1908,24 +1908,24 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "s" = save action, "my-matrix" = matrix name
@@ -1946,7 +1946,7 @@ class TestRoutingEditMatrix:
         """Quitting without saving writes no file."""
         import copy
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -1957,24 +1957,24 @@ class TestRoutingEditMatrix:
         output_dir = tmp_path / ".amplifier" / "routing"
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             MockPrompt.ask.return_value = "q"
@@ -1990,7 +1990,7 @@ class TestRoutingEditMatrix:
 
         import yaml
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2004,28 +2004,28 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._edit_role",
+                "amplifier_cli.commands.routing._edit_role",
                 return_value=new_candidate,
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "e1" = edit role #1 (general), "s" = save, "edited-matrix" = name
@@ -2048,7 +2048,7 @@ class TestRoutingEditMatrix:
 
         import yaml
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2062,28 +2062,28 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._edit_role",
+                "amplifier_cli.commands.routing._edit_role",
                 return_value=new_candidate,
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "a" = add role, "coding" = name, "Code writing" = desc,
@@ -2114,7 +2114,7 @@ class TestRoutingEditMatrix:
 
         import yaml
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2123,25 +2123,25 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.commands.routing.Confirm") as MockConfirm,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Confirm") as MockConfirm,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "r3" = remove role #3 (coding), confirm yes,
@@ -2165,7 +2165,7 @@ class TestRoutingEditMatrix:
         """Matrix name with path traversal characters should be rejected."""
         import copy
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2174,24 +2174,24 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "s" = save action, "../../evil" = path traversal name
@@ -2212,7 +2212,7 @@ class TestRoutingEditMatrix:
         """Quitting after making changes should prompt for confirmation."""
         import copy
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2226,29 +2226,29 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._edit_role",
+                "amplifier_cli.commands.routing._edit_role",
                 return_value=new_candidate,
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.commands.routing.Confirm") as MockConfirm,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Confirm") as MockConfirm,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "e1" = edit role #1 (marks changed=True), "q" = quit
@@ -2262,7 +2262,7 @@ class TestRoutingEditMatrix:
         """Attempting to remove a required role (general = #1) shows an error message."""
         import copy
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2271,24 +2271,24 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "r1" = try to remove role #1 (general), then "q" to exit
@@ -2309,7 +2309,7 @@ class TestRoutingEditMatrix:
         """
         import copy
 
-        from amplifier_app_cli.commands.routing import _routing_edit_matrix
+        from amplifier_cli.commands.routing import _routing_edit_matrix
 
         settings = _make_settings(tmp_path)
         _seed_provider(settings, [{"module": "provider-anthropic"}])
@@ -2318,24 +2318,24 @@ class TestRoutingEditMatrix:
         con, buf = _make_test_console()
 
         with (
-            patch("amplifier_app_cli.commands.routing.console", con),
+            patch("amplifier_cli.commands.routing.console", con),
             patch(
-                "amplifier_app_cli.commands.routing._pick_base_matrix",
+                "amplifier_cli.commands.routing._pick_base_matrix",
                 return_value=copy.deepcopy(base),
             ),
             patch(
-                "amplifier_app_cli.commands.routing._discover_matrix_files",
+                "amplifier_cli.commands.routing._discover_matrix_files",
                 return_value=[],
             ),
             patch(
-                "amplifier_app_cli.commands.routing._load_all_matrices",
+                "amplifier_cli.commands.routing._load_all_matrices",
                 return_value={"balanced": copy.deepcopy(base)},
             ),
             patch(
-                "amplifier_app_cli.commands.routing.get_provider_models",
+                "amplifier_cli.commands.routing.get_provider_models",
                 return_value=[],
             ),
-            patch("amplifier_app_cli.commands.routing.Prompt") as MockPrompt,
+            patch("amplifier_cli.commands.routing.Prompt") as MockPrompt,
             patch("pathlib.Path.home", return_value=tmp_path),
         ):
             # "s" = save immediately, "my-matrix" = matrix name

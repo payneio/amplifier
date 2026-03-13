@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from amplifier_foundation.mentions import ContextFile
+from amplifier_lib.mentions import ContextFile
 
 
 def test_context_file_creation():

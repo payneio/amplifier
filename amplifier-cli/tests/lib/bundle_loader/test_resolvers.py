@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from amplifier_app_cli.lib.bundle_loader.resolvers import (
+from amplifier_cli.lib.bundle_loader.resolvers import (
     AppModuleResolver,
     FoundationFileSource,
     FoundationGitSource,

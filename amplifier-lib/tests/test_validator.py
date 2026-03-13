@@ -3,9 +3,9 @@
 from pathlib import Path
 
 import pytest
-from amplifier_foundation.bundle import Bundle
-from amplifier_foundation.exceptions import BundleValidationError
-from amplifier_foundation.validator import (
+from amplifier_lib.bundle import Bundle
+from amplifier_lib.exceptions import BundleValidationError
+from amplifier_lib.validator import (
     BundleValidator,
     ValidationResult,
     validate_bundle,

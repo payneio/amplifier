@@ -10,8 +10,8 @@ still appears in the picker via _get_provider_display_name() fallback.
 from unittest.mock import MagicMock, patch
 
 
-from amplifier_app_cli.provider_manager import ProviderManager
-from amplifier_app_cli.provider_sources import DEFAULT_PROVIDER_SOURCES
+from amplifier_cli.provider_manager import ProviderManager
+from amplifier_cli.provider_sources import DEFAULT_PROVIDER_SOURCES
 
 
 # ---------------------------------------------------------------------------
@@ -50,13 +50,13 @@ class TestGitProviderInstalledOnDemand:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={
                     "provider-anthropic": "git+https://github.com/microsoft/amplifier-module-provider-anthropic@main"
                 },
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[
                     (
                         "provider-anthropic",
@@ -65,15 +65,15 @@ class TestGitProviderInstalledOnDemand:
                 ],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=True,
             ) as mock_ensure,
             patch(
-                "amplifier_app_cli.provider_manager.get_provider_info",
+                "amplifier_cli.provider_manager.get_provider_info",
                 return_value=provider_info,
             ),
         ):
@@ -94,13 +94,13 @@ class TestGitProviderInstalledOnDemand:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={
                     "provider-openai": "git+https://github.com/microsoft/amplifier-module-provider-openai@main"
                 },
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[
                     (
                         "provider-openai",
@@ -109,15 +109,15 @@ class TestGitProviderInstalledOnDemand:
                 ],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=True,
             ) as mock_ensure,
             patch(
-                "amplifier_app_cli.provider_manager.get_provider_info",
+                "amplifier_cli.provider_manager.get_provider_info",
                 return_value={
                     "display_name": "OpenAI",
                     "description": "OpenAI provider",
@@ -145,13 +145,13 @@ class TestGitProviderFallbackOnInstallFailure:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={
                     "provider-openai": "git+https://github.com/microsoft/amplifier-module-provider-openai@main"
                 },
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[
                     (
                         "provider-openai",
@@ -160,11 +160,11 @@ class TestGitProviderFallbackOnInstallFailure:
                 ],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=False,
             ) as mock_ensure,
         ):
@@ -193,19 +193,19 @@ class TestGitProviderFallbackOnInstallFailure:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={mid: "git+https://..." for mid in expected_names},
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=ordered,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=False,
             ),
         ):
@@ -234,19 +234,19 @@ class TestAllSevenProvidersOnCleanInstall:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value=DEFAULT_PROVIDER_SOURCES,
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=ordered,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=False,
             ),
         ):
@@ -271,23 +271,23 @@ class TestAllSevenProvidersOnCleanInstall:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value=DEFAULT_PROVIDER_SOURCES,
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=ordered,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=True,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.get_provider_info",
+                "amplifier_cli.provider_manager.get_provider_info",
                 side_effect=fake_get_info,
             ),
         ):
@@ -312,13 +312,13 @@ class TestPostInstallInfoRetry:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={
                     "provider-gemini": "git+https://github.com/microsoft/amplifier-module-provider-gemini@main"
                 },
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[
                     (
                         "provider-gemini",
@@ -327,15 +327,15 @@ class TestPostInstallInfoRetry:
                 ],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=True,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.get_provider_info",
+                "amplifier_cli.provider_manager.get_provider_info",
                 return_value=None,  # Still None even after successful install
             ),
         ):
@@ -351,13 +351,13 @@ class TestPostInstallInfoRetry:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={
                     "provider-ollama": "git+https://github.com/microsoft/amplifier-module-provider-ollama@main"
                 },
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[
                     (
                         "provider-ollama",
@@ -366,15 +366,15 @@ class TestPostInstallInfoRetry:
                 ],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
                 return_value=True,
             ),
             patch(
-                "amplifier_app_cli.provider_manager.get_provider_info",
+                "amplifier_cli.provider_manager.get_provider_info",
                 return_value={
                     "display_name": "Ollama",
                     "description": "Ollama provider",
@@ -403,22 +403,22 @@ class TestLocalSourcePathUnchanged:
 
         with (
             patch(
-                "amplifier_app_cli.provider_manager.get_effective_provider_sources",
+                "amplifier_cli.provider_manager.get_effective_provider_sources",
                 return_value={"provider-local": "./local/provider"},
             ),
             patch(
-                "amplifier_app_cli.provider_manager._get_ordered_providers",
+                "amplifier_cli.provider_manager._get_ordered_providers",
                 return_value=[("provider-local", "./local/provider")],
             ),
             patch(
-                "amplifier_app_cli.provider_manager.source_from_uri",
+                "amplifier_cli.provider_manager.source_from_uri",
                 return_value=_failing_source(),
             ),
             patch(
-                "amplifier_app_cli.provider_manager.ensure_provider_installed",
+                "amplifier_cli.provider_manager.ensure_provider_installed",
             ) as mock_ensure,
             patch(
-                "amplifier_app_cli.provider_manager.subprocess.run",
+                "amplifier_cli.provider_manager.subprocess.run",
                 return_value=MagicMock(returncode=1, stderr="local install failed"),
             ),
         ):

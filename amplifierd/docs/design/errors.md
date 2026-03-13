@@ -274,7 +274,7 @@ from amplifier_core import (
     NotFoundError, StreamError, AbortError,
     InvalidToolCallError, ConfigurationError,
 )
-from amplifier_foundation import (
+from amplifier_lib import (
     BundleNotFoundError, BundleLoadError,
     BundleValidationError, BundleDependencyError,
 )

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from amplifier_foundation.mentions import ContentDeduplicator
+from amplifier_lib.mentions import ContentDeduplicator
 
 
 def test_deduplicator_unique_content():

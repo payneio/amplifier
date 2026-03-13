@@ -12,9 +12,9 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from amplifier_foundation.core.hooks import HookRegistry
+from amplifier_lib.core.hooks import HookRegistry
 
-from amplifier_foundation.bundle import Bundle, PreparedBundle
+from amplifier_lib.bundle import Bundle, PreparedBundle
 
 # Resolve the example file relative to this test file
 _EXAMPLE_07 = (
@@ -81,7 +81,7 @@ def test_example_spawn_capability_accepts_all_delegate_kwargs():
     )
     mod = importlib.util.module_from_spec(spec)
 
-    # The example imports amplifier_foundation, which should be available
+    # The example imports amplifier_lib, which should be available
     spec.loader.exec_module(mod)
 
     # Get the spawn_capability from register_spawn_capability's closure
@@ -140,7 +140,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_foundation.runtime.Session",
+            "amplifier_lib.runtime.Session",
             return_value=mock_session,
         ):
             await prepared.spawn(
@@ -165,7 +165,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_foundation.runtime.Session",
+            "amplifier_lib.runtime.Session",
             return_value=mock_session,
         ):
             # Don't pass self_delegation_depth (uses default 0)
@@ -193,7 +193,7 @@ class TestSpawnSelfDelegationDepth:
             return mock_session
 
         with patch(
-            "amplifier_foundation.runtime.Session",
+            "amplifier_lib.runtime.Session",
             side_effect=capture_session_init,
         ):
             await prepared.spawn(
@@ -220,7 +220,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_foundation.runtime.Session",
+            "amplifier_lib.runtime.Session",
             return_value=mock_session,
         ):
             # Call without self_delegation_depth - should not raise
@@ -239,7 +239,7 @@ class TestSpawnSelfDelegationDepth:
         mock_session = _make_mock_session(hooks)
 
         with patch(
-            "amplifier_foundation.runtime.Session",
+            "amplifier_lib.runtime.Session",
             return_value=mock_session,
         ):
             result = await prepared.spawn(child_bundle, "Do something", compose=False)

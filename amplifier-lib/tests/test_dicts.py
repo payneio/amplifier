@@ -2,10 +2,10 @@
 
 import pytest
 
-from amplifier_foundation.dicts.merge import deep_merge
-from amplifier_foundation.dicts.merge import merge_module_lists
-from amplifier_foundation.dicts.navigation import get_nested
-from amplifier_foundation.dicts.navigation import set_nested
+from amplifier_lib.dicts.merge import deep_merge
+from amplifier_lib.dicts.merge import merge_module_lists
+from amplifier_lib.dicts.navigation import get_nested
+from amplifier_lib.dicts.navigation import set_nested
 
 
 class TestDeepMerge:

@@ -4,7 +4,7 @@ from io import StringIO
 
 from rich.console import Console
 
-from amplifier_app_cli.ui.display import CLIDisplaySystem, format_throttle_warning
+from amplifier_cli.ui.display import CLIDisplaySystem, format_throttle_warning
 
 
 class TestFormatThrottleWarningFullPayload:

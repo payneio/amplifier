@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-from amplifier_foundation.paths.construction import construct_agent_path
-from amplifier_foundation.paths.construction import construct_context_path
-from amplifier_foundation.paths.resolution import normalize_path
-from amplifier_foundation.paths.resolution import parse_uri
+from amplifier_lib.paths.construction import construct_agent_path
+from amplifier_lib.paths.construction import construct_context_path
+from amplifier_lib.paths.resolution import normalize_path
+from amplifier_lib.paths.resolution import parse_uri
 
 
 class TestParseUri:

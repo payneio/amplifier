@@ -15,7 +15,7 @@ Quick reference for source URIs. For complete details, see `parse_uri()` docstri
 ## Common Examples
 
 ```python
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 # Local
 bundle = await load_bundle("./bundles/dev.md")
@@ -30,7 +30,7 @@ bundle = await load_bundle("git+https://github.com/org/repo@main#subdirectory=bu
 ## Parsing URIs
 
 ```python
-from amplifier_foundation import parse_uri, ParsedURI
+from amplifier_lib import parse_uri, ParsedURI
 
 parsed = parse_uri("git+https://github.com/org/repo@main#subdirectory=bundles/dev")
 # parsed.scheme = "git+https"
@@ -92,7 +92,7 @@ context:
 For complete URI parsing logic:
 
 ```bash
-python -c "from amplifier_foundation import parse_uri; help(parse_uri)"
+python -c "from amplifier_lib import parse_uri; help(parse_uri)"
 ```
 
-Or read `amplifier_foundation/paths/resolution.py` directly.
+Or read `amplifier_lib/paths/resolution.py` directly.

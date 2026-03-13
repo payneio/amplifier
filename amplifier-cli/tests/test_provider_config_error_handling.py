@@ -21,21 +21,21 @@ class TestPromptModelSelectionErrorHandling:
         """When get_provider_models() raises a generic Exception,
         _prompt_model_selection() should print a warning and fall back to manual entry
         (not raise click.ClickException)."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 side_effect=Exception("Token expired. Run `gh auth login` to fix."),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.console",
+                "amplifier_cli.provider_config_utils.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="my-model",
             ),
         ):
@@ -54,18 +54,18 @@ class TestPromptModelSelectionErrorHandling:
     def test_connection_error_falls_through_to_manual_entry(self):
         """When get_provider_models() raises ConnectionError,
         existing behavior is preserved: falls through to manual model entry."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 side_effect=ConnectionError("Connection refused"),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="my-model",
             ) as mock_prompt,
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = _prompt_model_selection("test-provider")
 
@@ -76,18 +76,18 @@ class TestPromptModelSelectionErrorHandling:
     def test_os_error_falls_through_to_manual_entry(self):
         """When get_provider_models() raises OSError,
         existing behavior is preserved: falls through to manual model entry."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 side_effect=OSError("Network unreachable"),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="fallback-model",
             ) as mock_prompt,
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = _prompt_model_selection("test-provider")
 
@@ -102,7 +102,7 @@ class TestPromptModelSelectionErrorHandling:
 
 def _make_settings(tmp_path):
     """Create AppSettings with isolated paths for testing."""
-    from amplifier_app_cli.lib.settings import AppSettings, SettingsPaths
+    from amplifier_cli.lib.settings import AppSettings, SettingsPaths
 
     paths = SettingsPaths(
         global_settings=tmp_path / "global" / "settings.yaml",
@@ -119,31 +119,31 @@ class TestManageAddProviderSafetyNet:
         """When configure_provider() raises an arbitrary Exception,
         _manage_add_provider() should print a friendly error and return
         (not crash with a traceback)."""
-        from amplifier_app_cli.commands.provider import _manage_add_provider
+        from amplifier_cli.commands.provider import _manage_add_provider
 
         settings = _make_settings(tmp_path)
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._ensure_providers_ready",
+                "amplifier_cli.commands.provider._ensure_providers_ready",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ProviderManager",
+                "amplifier_cli.commands.provider.ProviderManager",
             ) as MockPM,
             patch(
-                "amplifier_app_cli.commands.provider.Prompt.ask",
+                "amplifier_cli.commands.provider.Prompt.ask",
                 return_value="1",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.KeyManager",
+                "amplifier_cli.commands.provider.KeyManager",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=Exception("Unexpected kaboom during config"),
             ),
             patch(
-                "amplifier_app_cli.commands.provider.console",
+                "amplifier_cli.commands.provider.console",
                 mock_console,
             ),
         ):
@@ -167,30 +167,30 @@ class TestManageAddProviderSafetyNet:
         """When configure_provider() raises click.Abort,
         _manage_add_provider() should catch it and return gracefully
         (printing 'Cancelled.' instead of propagating)."""
-        from amplifier_app_cli.commands.provider import _manage_add_provider
+        from amplifier_cli.commands.provider import _manage_add_provider
 
         settings = _make_settings(tmp_path)
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._ensure_providers_ready",
+                "amplifier_cli.commands.provider._ensure_providers_ready",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ProviderManager",
+                "amplifier_cli.commands.provider.ProviderManager",
             ) as MockPM,
             patch(
-                "amplifier_app_cli.commands.provider.Prompt.ask",
+                "amplifier_cli.commands.provider.Prompt.ask",
                 return_value="1",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.KeyManager",
+                "amplifier_cli.commands.provider.KeyManager",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=click.Abort(),
             ),
-            patch("amplifier_app_cli.commands.provider.console", mock_console),
+            patch("amplifier_cli.commands.provider.console", mock_console),
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -212,30 +212,30 @@ class TestManageAddProviderSafetyNet:
         """When configure_provider() raises KeyboardInterrupt (defense-in-depth),
         _manage_add_provider() should catch it and return gracefully,
         printing 'Cancelled.' instead of crashing."""
-        from amplifier_app_cli.commands.provider import _manage_add_provider
+        from amplifier_cli.commands.provider import _manage_add_provider
 
         settings = _make_settings(tmp_path)
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._ensure_providers_ready",
+                "amplifier_cli.commands.provider._ensure_providers_ready",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ProviderManager",
+                "amplifier_cli.commands.provider.ProviderManager",
             ) as MockPM,
             patch(
-                "amplifier_app_cli.commands.provider.Prompt.ask",
+                "amplifier_cli.commands.provider.Prompt.ask",
                 return_value="1",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.KeyManager",
+                "amplifier_cli.commands.provider.KeyManager",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=KeyboardInterrupt(),
             ),
-            patch("amplifier_app_cli.commands.provider.console", mock_console),
+            patch("amplifier_cli.commands.provider.console", mock_console),
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -257,30 +257,30 @@ class TestManageAddProviderSafetyNet:
         """When configure_provider() raises click.ClickException,
         it should be caught by the generic Exception handler, print an error
         message, and return gracefully (not propagate)."""
-        from amplifier_app_cli.commands.provider import _manage_add_provider
+        from amplifier_cli.commands.provider import _manage_add_provider
 
         settings = _make_settings(tmp_path)
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._ensure_providers_ready",
+                "amplifier_cli.commands.provider._ensure_providers_ready",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ProviderManager",
+                "amplifier_cli.commands.provider.ProviderManager",
             ) as MockPM,
             patch(
-                "amplifier_app_cli.commands.provider.Prompt.ask",
+                "amplifier_cli.commands.provider.Prompt.ask",
                 return_value="1",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.KeyManager",
+                "amplifier_cli.commands.provider.KeyManager",
             ),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=click.ClickException("Auth failed"),
             ),
-            patch("amplifier_app_cli.commands.provider.console", mock_console),
+            patch("amplifier_cli.commands.provider.console", mock_console),
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -307,23 +307,23 @@ class TestProviderAddSafetyNet:
         provider_add should show a friendly error and exit with code 1."""
         from click.testing import CliRunner
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         settings = _make_settings(tmp_path)
         runner = CliRunner()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=Exception("Auth token invalid"),
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -345,23 +345,23 @@ class TestProviderAddSafetyNet:
         provider_add should let Click handle it (exit code 1, no traceback)."""
         from click.testing import CliRunner
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         settings = _make_settings(tmp_path)
         runner = CliRunner()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=click.Abort(),
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -385,23 +385,23 @@ class TestProviderAddSafetyNet:
         provider_add should let Click render it (exit code 1, error message shown, no traceback)."""
         from click.testing import CliRunner
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         settings = _make_settings(tmp_path)
         runner = CliRunner()
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 side_effect=click.ClickException("Auth failed: run gh auth login"),
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -447,20 +447,20 @@ class TestConfigureProviderCtrlC:
 
     def test_configure_provider_returns_none_on_keyboard_interrupt(self):
         """When a prompt raises KeyboardInterrupt, configure_provider() should return None."""
-        from amplifier_app_cli.provider_config_utils import configure_provider
+        from amplifier_cli.provider_config_utils import configure_provider
 
         mock_key_manager = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_info",
+                "amplifier_cli.provider_config_utils.get_provider_info",
                 return_value=self._make_mock_provider_info(),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 side_effect=KeyboardInterrupt(),
             ),
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = configure_provider("test-provider", mock_key_manager)
 
@@ -468,20 +468,20 @@ class TestConfigureProviderCtrlC:
 
     def test_configure_provider_returns_none_on_eof_error(self):
         """When a prompt raises EOFError, configure_provider() should return None."""
-        from amplifier_app_cli.provider_config_utils import configure_provider
+        from amplifier_cli.provider_config_utils import configure_provider
 
         mock_key_manager = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_info",
+                "amplifier_cli.provider_config_utils.get_provider_info",
                 return_value=self._make_mock_provider_info(),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 side_effect=EOFError(),
             ),
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = configure_provider("test-provider", mock_key_manager)
 
@@ -489,22 +489,22 @@ class TestConfigureProviderCtrlC:
 
     def test_configure_provider_prints_cancelled_on_ctrl_c(self):
         """When interrupted, configure_provider() should print 'Cancelled'."""
-        from amplifier_app_cli.provider_config_utils import configure_provider
+        from amplifier_cli.provider_config_utils import configure_provider
 
         mock_key_manager = MagicMock()
         mock_console = MagicMock()
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_info",
+                "amplifier_cli.provider_config_utils.get_provider_info",
                 return_value=self._make_mock_provider_info(),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 side_effect=KeyboardInterrupt(),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.console",
+                "amplifier_cli.provider_config_utils.console",
                 mock_console,
             ),
         ):
@@ -527,7 +527,7 @@ class TestModelFetchingSpinner:
 
     def test_spinner_context_manager_entered_during_fetch(self):
         """console.status() should be entered as a context manager during model fetching."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_console = MagicMock()
         mock_status_ctx = MagicMock()
@@ -540,15 +540,15 @@ class TestModelFetchingSpinner:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 return_value=[mock_model],
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.console",
+                "amplifier_cli.provider_config_utils.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="1",
             ),
         ):
@@ -561,7 +561,7 @@ class TestModelFetchingSpinner:
 
     def test_spinner_exits_on_connection_error(self):
         """Spinner should exit cleanly when get_provider_models() raises ConnectionError."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_console = MagicMock()
         mock_status_ctx = MagicMock()
@@ -569,15 +569,15 @@ class TestModelFetchingSpinner:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 side_effect=ConnectionError("refused"),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.console",
+                "amplifier_cli.provider_config_utils.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="fallback-model",
             ),
         ):
@@ -590,7 +590,7 @@ class TestModelFetchingSpinner:
     def test_spinner_exits_on_generic_exception(self):
         """Spinner should exit cleanly when get_provider_models() raises a generic Exception,
         then fall back to manual entry (not raise click.ClickException)."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_console = MagicMock()
         mock_status_ctx = MagicMock()
@@ -598,15 +598,15 @@ class TestModelFetchingSpinner:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 side_effect=Exception("Token expired"),
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.console",
+                "amplifier_cli.provider_config_utils.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="my-model",
             ),
         ):
@@ -628,7 +628,7 @@ class TestProviderTestSpinner:
 
     def test_spinner_shown_during_provider_testing(self):
         """Spinner should be shown while providers are being tested."""
-        from amplifier_app_cli.commands.provider import _manage_test_providers
+        from amplifier_cli.commands.provider import _manage_test_providers
 
         mock_console = MagicMock()
         mock_status_ctx = MagicMock()
@@ -638,11 +638,11 @@ class TestProviderTestSpinner:
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider.console",
+                "amplifier_cli.commands.provider.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.get_provider_models",
+                "amplifier_cli.commands.provider.get_provider_models",
                 return_value=["model-a"],
             ),
         ):
@@ -654,12 +654,12 @@ class TestProviderTestSpinner:
 
     def test_spinner_not_shown_when_no_providers(self):
         """Spinner should NOT be shown when provider list is empty."""
-        from amplifier_app_cli.commands.provider import _manage_test_providers
+        from amplifier_cli.commands.provider import _manage_test_providers
 
         mock_console = MagicMock()
 
         with patch(
-            "amplifier_app_cli.commands.provider.console",
+            "amplifier_cli.commands.provider.console",
             mock_console,
         ):
             _manage_test_providers(MagicMock(), [])
@@ -677,7 +677,7 @@ class TestPromptModelSelectionModelsParam:
 
     def test_prompt_model_selection_uses_provided_models(self):
         """When models are provided, get_provider_models should NOT be called."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_model_1 = MagicMock()
         mock_model_1.id = "claude-sonnet-4-6"
@@ -691,10 +691,10 @@ class TestPromptModelSelectionModelsParam:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models"
+                "amplifier_cli.provider_config_utils.get_provider_models"
             ) as mock_gpm,
-            patch("amplifier_app_cli.provider_config_utils.Prompt") as MockPrompt,
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.Prompt") as MockPrompt,
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             MockPrompt.ask.return_value = "1"
             result = _prompt_model_selection(
@@ -708,7 +708,7 @@ class TestPromptModelSelectionModelsParam:
 
     def test_prompt_model_selection_fetches_when_models_none(self):
         """When models=None (default), get_provider_models SHOULD be called."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_model = MagicMock()
         mock_model.id = "gpt-4o"
@@ -717,14 +717,14 @@ class TestPromptModelSelectionModelsParam:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 return_value=[mock_model],
             ) as mock_gpm,
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 return_value="1",
             ),
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = _prompt_model_selection("openai")
 
@@ -733,7 +733,7 @@ class TestPromptModelSelectionModelsParam:
 
     def test_prompt_model_selection_returns_none_on_ctrl_c(self):
         """When Prompt.ask raises KeyboardInterrupt, should return None."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_model = MagicMock()
         mock_model.id = "gpt-4o"
@@ -742,14 +742,14 @@ class TestPromptModelSelectionModelsParam:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 return_value=[mock_model],
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 side_effect=KeyboardInterrupt(),
             ),
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = _prompt_model_selection("openai")
 
@@ -757,7 +757,7 @@ class TestPromptModelSelectionModelsParam:
 
     def test_prompt_model_selection_returns_none_on_eof(self):
         """When Prompt.ask raises EOFError, should return None."""
-        from amplifier_app_cli.provider_config_utils import _prompt_model_selection
+        from amplifier_cli.provider_config_utils import _prompt_model_selection
 
         mock_model = MagicMock()
         mock_model.id = "gpt-4o"
@@ -766,14 +766,14 @@ class TestPromptModelSelectionModelsParam:
 
         with (
             patch(
-                "amplifier_app_cli.provider_config_utils.get_provider_models",
+                "amplifier_cli.provider_config_utils.get_provider_models",
                 return_value=[mock_model],
             ),
             patch(
-                "amplifier_app_cli.provider_config_utils.Prompt.ask",
+                "amplifier_cli.provider_config_utils.Prompt.ask",
                 side_effect=EOFError(),
             ),
-            patch("amplifier_app_cli.provider_config_utils.console"),
+            patch("amplifier_cli.provider_config_utils.console"),
         ):
             result = _prompt_model_selection("openai")
 
@@ -781,7 +781,7 @@ class TestPromptModelSelectionModelsParam:
 
     def test_spinner_exits_on_provider_test_failure(self):
         """Spinner should exit cleanly even when a provider test fails."""
-        from amplifier_app_cli.commands.provider import _manage_test_providers
+        from amplifier_cli.commands.provider import _manage_test_providers
 
         mock_console = MagicMock()
         mock_status_ctx = MagicMock()
@@ -791,11 +791,11 @@ class TestPromptModelSelectionModelsParam:
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider.console",
+                "amplifier_cli.commands.provider.console",
                 mock_console,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.get_provider_models",
+                "amplifier_cli.commands.provider.get_provider_models",
                 side_effect=ConnectionError("Connection refused"),
             ),
         ):

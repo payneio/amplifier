@@ -157,7 +157,7 @@ This respects users' time and builds trust in the validator.
 ### The Problem
 
 Validators often depend on infrastructure that may not be available:
-- Framework libraries (e.g., `amplifier_foundation` not installed)
+- Framework libraries (e.g., `amplifier_lib` not installed)
 - External services (APIs, registries)
 - Optional tools (LSP servers, linters)
 
@@ -176,7 +176,7 @@ When dependencies are missing, validators shouldn't crash—they should degrade 
     
     # Check for optional infrastructure
     try:
-        from amplifier_foundation import BundleRegistry
+        from amplifier_lib import BundleRegistry
         result["foundation_available"] = True
     except ImportError:
         result["foundation_available"] = False
@@ -216,7 +216,7 @@ When full infrastructure IS available, validators provide richer feedback:
 
 | Scenario | Old Pattern | Graceful Degradation |
 |----------|-------------|---------------------|
-| Missing dependency | `ImportError: No module named 'amplifier_foundation'` | "Running in fallback mode - structural analysis only" |
+| Missing dependency | `ImportError: No module named 'amplifier_lib'` | "Running in fallback mode - structural analysis only" |
 | API unavailable | Stack trace, recipe failure | "API check skipped - using cached rules" |
 | Optional tool missing | Recipe hangs or fails | "LSP unavailable - using regex-based analysis" |
 
@@ -714,7 +714,7 @@ Validates a single bundle file for:
 
 The **second gold standard** for domain validators, demonstrating all the patterns from validate-agents plus infrastructure handling:
 
-- ✅ Graceful degradation when `amplifier_foundation` unavailable
+- ✅ Graceful degradation when `amplifier_lib` unavailable
 - ✅ Domain-specific structural thresholds (loads + entry point + no orphans)
 - ✅ Environment check phase (Phase 0)
 - ✅ Deterministic quality classification (Phase 2.5)
@@ -731,7 +731,7 @@ The **second gold standard** for domain validators, demonstrating all the patter
   command: |
     python3 << 'EOF'
     try:
-        from amplifier_foundation import BundleRegistry
+        from amplifier_lib import BundleRegistry
         result["foundation_available"] = True
     except ImportError:
         result["foundation_available"] = False

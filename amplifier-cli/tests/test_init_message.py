@@ -9,7 +9,7 @@ See: upstream-fix-6-cli-init-message.md
 
 import inspect
 
-import amplifier_app_cli.commands.init as init_module
+import amplifier_cli.commands.init as init_module
 
 
 def test_init_tip_message_does_not_say_skip():

@@ -18,7 +18,7 @@ pip install git+https://github.com/microsoft/amplifier-foundation
 
 ```python
 import asyncio
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 async def main():
     # Load foundation bundle and a provider
@@ -44,7 +44,7 @@ For the complete workflow with provider selection and advanced features, see [`e
 ### Use Utilities Directly
 
 ```python
-from amplifier_foundation import (
+from amplifier_lib import (
     # I/O
     read_yaml, write_yaml, parse_frontmatter, read_with_retry, write_with_retry,
     # Dict operations

@@ -57,7 +57,7 @@ class TestSessionRunnerRedundantSetLevel:
     def test_except_block_no_redundant_setlevel(self):
         """The except block should start with the `if not display_validation_error(...)` call,
         not with a redundant core_logger.setLevel(original_level)."""
-        from amplifier_app_cli import session_runner
+        from amplifier_cli import session_runner
 
         source = _get_function_source(session_runner, "_create_bundle_session")
         handlers = _get_except_handlers(source, "ModuleValidationError")
@@ -97,7 +97,7 @@ class TestInteractiveChatValidationErrorGuard:
 
     def test_except_block_uses_if_not_guard(self):
         """The except ModuleValidationError block should use `if not display_validation_error(...)`."""
-        main_module = importlib.import_module("amplifier_app_cli.main")
+        main_module = importlib.import_module("amplifier_cli.main")
 
         source = _get_function_source(main_module, "interactive_chat")
         handlers = _get_except_handlers(source, "ModuleValidationError")
@@ -130,7 +130,7 @@ class TestExecuteSingleValidationErrorGuard:
 
     def test_else_branch_uses_if_not_guard(self):
         """The else branch should use `if not display_validation_error(...)` guard."""
-        main_module = importlib.import_module("amplifier_app_cli.main")
+        main_module = importlib.import_module("amplifier_cli.main")
 
         source = _get_function_source(main_module, "execute_single")
         handlers = _get_except_handlers(source, "ModuleValidationError")

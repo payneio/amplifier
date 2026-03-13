@@ -14,7 +14,7 @@ This is the SINGLE SOURCE for understanding composition.
 
 import asyncio
 
-from amplifier_foundation import Bundle
+from amplifier_lib import Bundle
 
 
 async def main() -> None:

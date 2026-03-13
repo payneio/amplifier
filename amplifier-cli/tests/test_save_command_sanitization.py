@@ -31,7 +31,7 @@ class MockSession:
 @pytest.mark.asyncio
 async def test_save_transcript_with_thinking_blocks():
     """Test that /save command properly sanitizes ThinkingBlock objects."""
-    from amplifier_app_cli.main import CommandProcessor
+    from amplifier_cli.main import CommandProcessor
 
     # Create mock session with context containing thinking blocks
     mock_session = MockSession()
@@ -57,7 +57,7 @@ async def test_save_transcript_with_thinking_blocks():
         temp_path = Path(temp_dir)
 
         # Patch SessionStore to use temp directory
-        with patch("amplifier_app_cli.main.SessionStore") as mock_store_class:
+        with patch("amplifier_cli.main.SessionStore") as mock_store_class:
             mock_store = MagicMock()
             mock_store.base_dir = temp_path
             mock_store_class.return_value = mock_store
@@ -96,7 +96,7 @@ async def test_save_transcript_with_thinking_blocks():
 @pytest.mark.asyncio
 async def test_save_transcript_without_thinking():
     """Test that /save works normally without thinking blocks."""
-    from amplifier_app_cli.main import CommandProcessor
+    from amplifier_cli.main import CommandProcessor
 
     mock_session = MockSession()
     mock_context = MagicMock()
@@ -112,7 +112,7 @@ async def test_save_transcript_without_thinking():
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
-        with patch("amplifier_app_cli.main.SessionStore") as mock_store_class:
+        with patch("amplifier_cli.main.SessionStore") as mock_store_class:
             mock_store = MagicMock()
             mock_store.base_dir = temp_path
             mock_store_class.return_value = mock_store

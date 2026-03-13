@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from amplifier_foundation.mentions.parser import parse_mentions
-from amplifier_foundation.mentions.resolver import BaseMentionResolver
+from amplifier_lib.mentions.parser import parse_mentions
+from amplifier_lib.mentions.resolver import BaseMentionResolver
 
 
 class TestParseMentions:

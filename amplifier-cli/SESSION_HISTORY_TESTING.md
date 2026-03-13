@@ -11,10 +11,10 @@
 6. **Streamlined UX** with no redundant separators
 
 ### Changes Made
-- **NEW**: `amplifier_app_cli/ui/message_renderer.py` - Single source of truth for message display
-- **MODIFIED**: `amplifier_app_cli/main.py` - Uses shared renderer, echoes user input with label
-- **MODIFIED**: `amplifier_app_cli/commands/session.py` - History/replay functions with integrated banner
-- **MODIFIED**: `amplifier_app_cli/ui/__init__.py` - Exports render_message
+- **NEW**: `amplifier_cli/ui/message_renderer.py` - Single source of truth for message display
+- **MODIFIED**: `amplifier_cli/main.py` - Uses shared renderer, echoes user input with label
+- **MODIFIED**: `amplifier_cli/commands/session.py` - History/replay functions with integrated banner
+- **MODIFIED**: `amplifier_cli/ui/__init__.py` - Exports render_message
 
 ---
 

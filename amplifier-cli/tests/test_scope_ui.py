@@ -12,7 +12,7 @@ import click
 import pytest
 from rich.console import Console
 
-from amplifier_app_cli.ui.scope import (
+from amplifier_cli.ui.scope import (
     is_scope_change_available,
     print_scope_indicator,
     prompt_scope_change,
@@ -86,14 +86,14 @@ class TestIsScopeChangeAvailable:
     def test_returns_false_when_at_home(self):
         """Should return False when cwd is home directory."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=True
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=True
         ):
             assert is_scope_change_available() is False
 
     def test_returns_true_when_not_at_home(self):
         """Should return True when cwd is not the home directory."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=False
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=False
         ):
             assert is_scope_change_available() is True
 
@@ -111,7 +111,7 @@ class TestPromptScopeChange:
         buf = StringIO()
         console = Console(file=buf, force_terminal=True, width=120)
         settings = _make_settings()
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", return_value="1"):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", return_value="1"):
             prompt_scope_change(console, settings, "global")
         output = _strip_ansi(buf.getvalue())
         # Should show numbered items in "[N]" format
@@ -124,7 +124,7 @@ class TestPromptScopeChange:
         buf = StringIO()
         console = Console(file=buf, force_terminal=True, width=120)
         settings = _make_settings()
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", return_value="1"):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", return_value="1"):
             prompt_scope_change(console, settings, "global")
         output = _strip_ansi(buf.getvalue())
         # The ▸ marker should appear for the current scope
@@ -136,7 +136,7 @@ class TestPromptScopeChange:
         console = Console(file=buf, force_terminal=True, width=120)
         settings = _make_settings()
         # Choose "2" which should be project
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", return_value="2"):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", return_value="2"):
             result = prompt_scope_change(console, settings, "global")
         assert result == "project"
 
@@ -146,7 +146,7 @@ class TestPromptScopeChange:
         console = Console(file=buf, force_terminal=True, width=120)
         settings = _make_settings()
         # Choose "1" which is global (the current)
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", return_value="1"):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", return_value="1"):
             result = prompt_scope_change(console, settings, "global")
         assert result == "global"
         # Confirmation message should NOT appear when scope didn't change
@@ -159,7 +159,7 @@ class TestPromptScopeChange:
         console = Console(file=buf, force_terminal=True, width=120)
         settings = _make_settings()
         # Switch from global to project (choice "2")
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", return_value="2"):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", return_value="2"):
             prompt_scope_change(console, settings, "global")
         output = _strip_ansi(buf.getvalue())
         assert "Switched to" in output
@@ -176,7 +176,7 @@ class TestPromptScopeChange:
             captured_kwargs.update(kwargs)
             return "2"
 
-        with patch("amplifier_app_cli.ui.scope.Prompt.ask", side_effect=fake_ask):
+        with patch("amplifier_cli.ui.scope.Prompt.ask", side_effect=fake_ask):
             prompt_scope_change(console, settings, "project")
         assert captured_kwargs.get("default") == "2"
 
@@ -192,7 +192,7 @@ class TestValidateScopeCli:
     def test_global_scope_always_passes(self):
         """Global scope should pass regardless of directory."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=True
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=True
         ):
             # Should not raise
             validate_scope_cli("global")
@@ -200,7 +200,7 @@ class TestValidateScopeCli:
     def test_project_scope_passes_outside_home(self):
         """Project scope should pass when not at home directory."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=False
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=False
         ):
             # Should not raise
             validate_scope_cli("project")
@@ -208,7 +208,7 @@ class TestValidateScopeCli:
     def test_project_scope_raises_at_home(self):
         """Project scope from home directory should raise with 'home directory' message."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=True
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=True
         ):
             with pytest.raises(click.UsageError) as exc_info:
                 validate_scope_cli("project")
@@ -217,7 +217,7 @@ class TestValidateScopeCli:
     def test_local_scope_raises_at_home(self):
         """Local scope from home directory should raise with 'home directory' message."""
         with patch(
-            "amplifier_app_cli.ui.scope.is_running_from_home", return_value=True
+            "amplifier_cli.ui.scope.is_running_from_home", return_value=True
         ):
             with pytest.raises(click.UsageError) as exc_info:
                 validate_scope_cli("local")

@@ -16,7 +16,7 @@ from unittest.mock import MagicMock
 
 def _make_command_processor(active_mode=None, mode_shortcuts=None):
     """Create a CommandProcessor with mocked session for unit testing."""
-    from amplifier_app_cli.main import CommandProcessor
+    from amplifier_cli.main import CommandProcessor
 
     mock_session = MagicMock()
     mock_session.coordinator = MagicMock()

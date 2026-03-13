@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
-from amplifier_app_cli.lib.settings import AppSettings, SettingsPaths
+from amplifier_cli.lib.settings import AppSettings, SettingsPaths
 
 
 def _make_settings(tmp_path: Path) -> AppSettings:
@@ -48,33 +48,33 @@ class TestProviderAdd:
 
     def test_provider_add_command_exists(self):
         """provider_add should be registered on the provider group."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "add" in command_names
 
     def test_provider_add_saves_entry_to_settings(self, tmp_path):
         """provider add should write a provider entry to config.providers in settings."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         settings = _make_settings(tmp_path)
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 return_value={
                     "default_model": "claude-sonnet-4-6",
                     "api_key": "${ANTHROPIC_API_KEY}",
                 },
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -107,24 +107,24 @@ class TestProviderAdd:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 return_value={
                     "default_model": "gpt-4o",
                     "api_key": "${OPENAI_API_KEY}",
                 },
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -154,23 +154,23 @@ class TestProviderAdd:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 return_value={
                     "default_model": "claude-opus-4-6",
                 },
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
-            patch("amplifier_app_cli.commands.provider.ProviderManager") as MockPM,
+            patch("amplifier_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.ProviderManager") as MockPM,
         ):
             mock_pm = MagicMock()
             mock_pm.list_providers.return_value = [
@@ -211,15 +211,15 @@ class TestProviderList:
             settings, "provider-openai", {"default_model": "gpt-4o"}, priority=2
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -240,15 +240,15 @@ class TestProviderList:
             settings, "provider-openai", {"default_model": "gpt-4o"}, priority=2
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -260,15 +260,15 @@ class TestProviderList:
         """When no providers configured, show helpful message."""
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -289,15 +289,15 @@ class TestProviderList:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -327,15 +327,15 @@ class TestProviderList:
         ]
         settings._write_scope("project", project_settings)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list", "--scope", "project"])
 
@@ -359,15 +359,15 @@ class TestProviderList:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -387,15 +387,15 @@ class TestProviderList:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list"])
 
@@ -407,15 +407,15 @@ class TestProviderList:
         """Single-scope empty state must include the scope path."""
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["list", "--scope", "global"])
 
@@ -430,17 +430,17 @@ class TestProviderList:
         """provider list --scope project from home directory should show an error."""
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.ui.scope.is_running_from_home",
+                "amplifier_cli.ui.scope.is_running_from_home",
                 return_value=True,
             ),
         ):
@@ -463,7 +463,7 @@ class TestProviderRemove:
 
     def test_provider_remove_command_exists(self):
         """provider_remove should be registered on the provider group."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "remove" in command_names
@@ -478,15 +478,15 @@ class TestProviderRemove:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             # Confirm removal with 'y'
             result = runner.invoke(provider, ["remove", "anthropic"], input="y\n")
@@ -502,15 +502,15 @@ class TestProviderRemove:
         """provider remove should show error for unknown provider."""
         settings = _make_settings(tmp_path)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["remove", "nonexistent"])
 
@@ -539,15 +539,15 @@ class TestProviderRemove:
         }
         settings._write_scope("global", scope_data)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["remove", "openai"], input="y\n")
 
@@ -592,15 +592,15 @@ class TestProviderRemove:
         }
         settings._write_scope("global", scope_data)
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
         ):
             result = runner.invoke(provider, ["remove", "openai-2"], input="y\n")
 
@@ -629,7 +629,7 @@ class TestProviderEdit:
 
     def test_provider_edit_command_exists(self):
         """provider_edit should be registered on the provider group."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "edit" in command_names
@@ -644,22 +644,22 @@ class TestProviderEdit:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 return_value={
                     "default_model": "claude-opus-4-6",
                 },
             ) as mock_configure,
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.KeyManager"),
         ):
             result = runner.invoke(provider, ["edit", "anthropic"])
 
@@ -681,20 +681,20 @@ class TestProviderEdit:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.configure_provider",
+                "amplifier_cli.commands.provider.configure_provider",
                 return_value={"default_model": "claude-opus-4-6"},
             ),
-            patch("amplifier_app_cli.commands.provider.KeyManager"),
+            patch("amplifier_cli.commands.provider.KeyManager"),
         ):
             result = runner.invoke(
                 provider, ["edit", "anthropic", "--scope", "project"]
@@ -717,17 +717,17 @@ class TestProviderEdit:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.ui.scope.is_running_from_home",
+                "amplifier_cli.ui.scope.is_running_from_home",
                 return_value=True,
             ),
         ):
@@ -752,7 +752,7 @@ class TestProviderTest:
 
     def test_provider_test_command_exists(self):
         """provider_test should be registered on the provider group."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "test" in command_names
@@ -767,7 +767,7 @@ class TestProviderTest:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         mock_model = MagicMock()
         mock_model.id = "claude-sonnet-4-6"
@@ -775,12 +775,12 @@ class TestProviderTest:
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.get_provider_models",
+                "amplifier_cli.commands.provider.get_provider_models",
                 return_value=[mock_model],
             ),
         ):
@@ -803,17 +803,17 @@ class TestProviderTest:
             priority=1,
         )
 
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         runner = CliRunner()
         with (
             patch(
-                "amplifier_app_cli.commands.provider._get_settings",
+                "amplifier_cli.commands.provider._get_settings",
                 return_value=settings,
             ),
-            patch("amplifier_app_cli.commands.provider._ensure_providers_ready"),
+            patch("amplifier_cli.commands.provider._ensure_providers_ready"),
             patch(
-                "amplifier_app_cli.commands.provider.get_provider_models",
+                "amplifier_cli.commands.provider.get_provider_models",
                 side_effect=Exception("Connection refused"),
             ),
         ):
@@ -840,41 +840,41 @@ class TestOldCommandsRemoved:
 
         # init is a top-level command, not on provider group
         # Check that init_cmd IS in commands/__init__.py exports
-        from amplifier_app_cli.commands import __all__ as cmd_exports
+        from amplifier_cli.commands import __all__ as cmd_exports
 
         assert "init_cmd" in cmd_exports
 
     def test_provider_use_removed(self):
         """provider use command should no longer exist."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "use" not in command_names
 
     def test_provider_current_removed(self):
         """provider current command should no longer exist."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "current" not in command_names
 
     def test_provider_reset_removed(self):
         """provider reset command should no longer exist."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "reset" not in command_names
 
     def test_provider_install_still_exists(self):
         """provider install should still exist."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "install" in command_names
 
     def test_provider_models_still_exists(self):
         """provider models should still exist."""
-        from amplifier_app_cli.commands.provider import provider
+        from amplifier_cli.commands.provider import provider
 
         command_names = [c.name for c in provider.commands.values()]
         assert "models" in command_names
@@ -885,14 +885,14 @@ class TestFirstRunDetection:
 
     def test_check_first_run_still_exists(self):
         """check_first_run function should still exist."""
-        from amplifier_app_cli.commands.init import check_first_run
+        from amplifier_cli.commands.init import check_first_run
 
         assert callable(check_first_run)
 
     def test_first_run_references_provider_add(self):
         """When no providers configured, first-run should reference provider add flow."""
         import inspect
-        from amplifier_app_cli.commands.init import prompt_first_run_init
+        from amplifier_cli.commands.init import prompt_first_run_init
 
         source = inspect.getsource(prompt_first_run_init)
         # Should reference provider add, not old init command

@@ -19,7 +19,7 @@ import asyncio
 import os
 from pathlib import Path
 
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 
 async def main():

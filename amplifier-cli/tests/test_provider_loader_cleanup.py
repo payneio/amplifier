@@ -43,18 +43,18 @@ class TestGetProviderModelsCleanup:
 
     def test_close_called_after_successful_list_models(self):
         """When provider has close(), it should be called after list_models() succeeds."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         mock_models = [MagicMock(id="model-1"), MagicMock(id="model-2")]
         provider = _make_async_provider(mock_models)
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):
@@ -65,18 +65,18 @@ class TestGetProviderModelsCleanup:
 
     def test_close_called_when_list_models_raises(self):
         """When provider has close(), it should be called even if list_models() raises."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         provider = _make_async_provider(models=[])
         provider.list_models = AsyncMock(side_effect=RuntimeError("API down"))
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):
@@ -89,18 +89,18 @@ class TestGetProviderModelsCleanup:
 
     def test_no_error_when_provider_has_no_close(self):
         """When provider has no close() method, no error should occur."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         mock_models = [MagicMock(id="model-1")]
         provider = _make_async_provider(mock_models, has_close=False)
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):
@@ -111,7 +111,7 @@ class TestGetProviderModelsCleanup:
 
     def test_close_failure_does_not_mask_list_models_result(self):
         """When close() raises, the list_models() result should still be returned."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         mock_models = [MagicMock(id="model-1")]
         provider = _make_async_provider(
@@ -120,11 +120,11 @@ class TestGetProviderModelsCleanup:
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):
@@ -136,7 +136,7 @@ class TestGetProviderModelsCleanup:
 
     def test_list_models_exception_propagates_over_close_exception(self):
         """When both list_models() and close() raise, list_models() exception wins."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         provider = _make_async_provider(models=[])
         provider.list_models = AsyncMock(side_effect=ValueError("Auth token expired"))
@@ -144,11 +144,11 @@ class TestGetProviderModelsCleanup:
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):
@@ -157,7 +157,7 @@ class TestGetProviderModelsCleanup:
 
     def test_sync_list_models_skips_cleanup(self):
         """When list_models is synchronous, the cleanup wrapper is not used."""
-        from amplifier_app_cli.provider_loader import get_provider_models
+        from amplifier_cli.provider_loader import get_provider_models
 
         mock_models = [MagicMock(id="sync-model")]
         provider = MagicMock()
@@ -166,11 +166,11 @@ class TestGetProviderModelsCleanup:
 
         with (
             patch(
-                "amplifier_app_cli.provider_loader.load_provider_class",
+                "amplifier_cli.provider_loader.load_provider_class",
                 return_value=MagicMock,
             ),
             patch(
-                "amplifier_app_cli.provider_loader._try_instantiate_provider",
+                "amplifier_cli.provider_loader._try_instantiate_provider",
                 return_value=provider,
             ),
         ):

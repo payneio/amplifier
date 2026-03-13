@@ -19,8 +19,8 @@ import asyncio
 import os
 from pathlib import Path
 
-from amplifier_foundation import Bundle
-from amplifier_foundation import load_bundle
+from amplifier_lib import Bundle
+from amplifier_lib import load_bundle
 
 
 async def basic_agent():

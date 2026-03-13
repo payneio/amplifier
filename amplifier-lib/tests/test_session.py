@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from amplifier_foundation.session import (
+from amplifier_lib.session import (
     add_synthetic_tool_results,
     count_events,
     count_turns,

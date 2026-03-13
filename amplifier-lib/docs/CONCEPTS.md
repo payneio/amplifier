@@ -181,7 +181,7 @@ The session's working directory. Critical for server/web deployments where `Path
 
 **Module usage**:
 ```python
-from amplifier_foundation import get_working_dir
+from amplifier_lib import get_working_dir
 
 # In mount() or tool execute()
 working_dir = get_working_dir(coordinator)  # Returns Path

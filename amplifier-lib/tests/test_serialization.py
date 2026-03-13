@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from amplifier_foundation.serialization import sanitize_for_json
-from amplifier_foundation.serialization import sanitize_message
+from amplifier_lib.serialization import sanitize_for_json
+from amplifier_lib.serialization import sanitize_message
 
 
 class TestSanitizeForJson:

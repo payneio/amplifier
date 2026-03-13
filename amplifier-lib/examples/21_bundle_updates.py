@@ -25,12 +25,12 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from amplifier_foundation import Bundle
-from amplifier_foundation import BundleStatus
-from amplifier_foundation import check_bundle_status
-from amplifier_foundation import load_bundle
-from amplifier_foundation import update_bundle
-from amplifier_foundation.sources.protocol import SourceStatus
+from amplifier_lib import Bundle
+from amplifier_lib import BundleStatus
+from amplifier_lib import check_bundle_status
+from amplifier_lib import load_bundle
+from amplifier_lib import update_bundle
+from amplifier_lib.sources.protocol import SourceStatus
 
 # ============================================================================
 # Example 1: Basic Status Checking
@@ -441,7 +441,7 @@ async def main():
 **Production Implementation**:
 
 ```python
-from amplifier_foundation import load_bundle, check_bundle_status, update_bundle
+from amplifier_lib import load_bundle, check_bundle_status, update_bundle
 
 # In your CLI update command:
 bundle = await load_bundle("your-bundle-uri")

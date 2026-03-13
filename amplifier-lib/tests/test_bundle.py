@@ -5,8 +5,8 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from amplifier_foundation.bundle import Bundle
-from amplifier_foundation.exceptions import BundleValidationError
+from amplifier_lib.bundle import Bundle
+from amplifier_lib.exceptions import BundleValidationError
 
 
 class TestBundle:

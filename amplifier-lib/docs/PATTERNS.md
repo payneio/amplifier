@@ -259,7 +259,7 @@ print(result["output"])
 Use `provider_preferences` for ordered fallback chains when spawning agents:
 
 ```python
-from amplifier_foundation import ProviderPreference
+from amplifier_lib import ProviderPreference
 
 # Spawn with provider preference chain (tries in order)
 result = await prepared.spawn(
@@ -346,7 +346,7 @@ result = await prepared.spawn(agent_bundle, instruction)
 ### Validate Before Use
 
 ```python
-from amplifier_foundation import load_bundle, validate_bundle_or_raise
+from amplifier_lib import load_bundle, validate_bundle_or_raise
 
 bundle = await load_bundle(path)
 validate_bundle_or_raise(bundle)  # Raises if invalid
@@ -358,7 +358,7 @@ prepared = await bundle.prepare()
 For bundles that should be directly mountable:
 
 ```python
-from amplifier_foundation import BundleValidator
+from amplifier_lib import BundleValidator
 
 validator = BundleValidator()
 result = validator.validate_completeness(bundle)
@@ -425,7 +425,7 @@ register_bundles(registry, Path("./bundles"))
 ### Graceful Loading
 
 ```python
-from amplifier_foundation import (
+from amplifier_lib import (
     load_bundle,
     BundleNotFoundError,
     BundleLoadError,
@@ -457,7 +457,7 @@ async def load_with_fallback(primary: str, fallback: str) -> Bundle:
 ### Cache Resolved Bundles
 
 ```python
-from amplifier_foundation import DiskCache, BundleRegistry
+from amplifier_lib import DiskCache, BundleRegistry
 from pathlib import Path
 
 # DiskCache: Apps decide the cache location

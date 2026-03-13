@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from amplifier_foundation.io.files import write_with_backup
+from amplifier_lib.io.files import write_with_backup
 
 
 class TestWriteWithBackup:

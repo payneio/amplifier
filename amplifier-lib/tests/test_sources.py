@@ -5,10 +5,10 @@ import zipfile
 from pathlib import Path
 
 import pytest
-from amplifier_foundation.paths.resolution import ParsedURI
-from amplifier_foundation.sources.file import FileSourceHandler
-from amplifier_foundation.sources.http import HttpSourceHandler
-from amplifier_foundation.sources.zip import ZipSourceHandler
+from amplifier_lib.paths.resolution import ParsedURI
+from amplifier_lib.sources.file import FileSourceHandler
+from amplifier_lib.sources.http import HttpSourceHandler
+from amplifier_lib.sources.zip import ZipSourceHandler
 
 
 class TestFileSourceHandler:

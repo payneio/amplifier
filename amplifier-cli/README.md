@@ -312,7 +312,7 @@ uv run pytest
 ### Project Structure
 
 ```
-amplifier_app_cli/
+amplifier_cli/
 ├── commands/          # CLI command implementations (provider, bundle, init, logs, setup)
 ├── data/
 │   └── context/       # Bundled context files

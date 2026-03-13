@@ -3,7 +3,7 @@
 import tempfile
 from pathlib import Path
 
-from amplifier_app_cli.session_store import SessionStore
+from amplifier_cli.session_store import SessionStore
 
 
 def message_matches_ignoring_timestamp(loaded: dict, original: dict) -> bool:

@@ -18,9 +18,9 @@ from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import MagicMock
 
-from amplifier_app_cli.agent_config import merge_configs
-from amplifier_app_cli.lib.merge_utils import merge_module_lists
-from amplifier_app_cli.runtime.config import _sync_overrides_to_bundle
+from amplifier_cli.agent_config import merge_configs
+from amplifier_cli.lib.merge_utils import merge_module_lists
+from amplifier_cli.runtime.config import _sync_overrides_to_bundle
 
 
 # ---------------------------------------------------------------------------

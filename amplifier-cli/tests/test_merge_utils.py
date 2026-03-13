@@ -2,9 +2,9 @@
 
 from pathlib import Path
 
-from amplifier_app_cli.lib.merge_utils import _provider_key, merge_module_lists
-from amplifier_app_cli.lib.settings import AppSettings, SettingsPaths
-from amplifier_app_cli.runtime.config import _ensure_cwd_in_write_paths
+from amplifier_cli.lib.merge_utils import _provider_key, merge_module_lists
+from amplifier_cli.lib.settings import AppSettings, SettingsPaths
+from amplifier_cli.runtime.config import _ensure_cwd_in_write_paths
 
 
 def _make_settings(tmp_path: Path) -> AppSettings:
@@ -352,7 +352,7 @@ class TestRuntimeConfigMerge:
 
     def test_runtime_merge_module_lists_preserves_multi_instance(self) -> None:
         """Base list with two entries sharing same module but different ids must both survive."""
-        from amplifier_app_cli.runtime.config import _merge_module_lists
+        from amplifier_cli.runtime.config import _merge_module_lists
 
         base = [
             {"module": "provider-openai", "config": {"model": "gpt-5.2"}},
@@ -368,7 +368,7 @@ class TestRuntimeConfigMerge:
 
     def test_runtime_merge_module_lists_updates_by_id(self) -> None:
         """Overlay entry keyed by id must update matching base entry, not overwrite unrelated one."""
-        from amplifier_app_cli.runtime.config import _merge_module_lists
+        from amplifier_cli.runtime.config import _merge_module_lists
 
         base = [
             {"module": "provider-openai", "config": {"model": "gpt-5.2"}},
@@ -393,7 +393,7 @@ class TestRuntimeConfigMerge:
 
     def test_apply_provider_overrides_preserves_multi_instance(self) -> None:
         """Both override entries (same module, different ids) must be in override_map independently."""
-        from amplifier_app_cli.runtime.config import _apply_provider_overrides
+        from amplifier_cli.runtime.config import _apply_provider_overrides
 
         providers = [
             {"module": "provider-openai", "config": {"model": "base"}},
@@ -421,7 +421,7 @@ class TestSettingsIdToInstanceId:
 
     def test_settings_id_becomes_mount_plan_instance_id(self) -> None:
         """Settings entry with 'id' should have instance_id set in the mount plan."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -435,7 +435,7 @@ class TestSettingsIdToInstanceId:
 
     def test_settings_no_id_no_instance_id(self) -> None:
         """Settings entry without 'id' should NOT get instance_id (backward compat)."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -448,7 +448,7 @@ class TestSettingsIdToInstanceId:
 
     def test_multi_instance_settings_both_get_instance_id(self) -> None:
         """Two settings entries for same module with different ids both get instance_id."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -468,7 +468,7 @@ class TestSettingsIdToInstanceId:
 
     def test_existing_instance_id_not_overwritten(self) -> None:
         """If instance_id already present, it should NOT be overwritten by id."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -483,7 +483,7 @@ class TestSettingsIdToInstanceId:
 
     def test_does_not_mutate_input(self) -> None:
         """Should return new dicts, not mutate the originals."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         original = {
             "module": "provider-anthropic",
@@ -500,7 +500,7 @@ class TestSettingsIdToInstanceId:
         Backward compat: single-instance providers don't need instance_id.
         Auto-assign only triggers when multiple entries share the same module.
         """
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -513,7 +513,7 @@ class TestSettingsIdToInstanceId:
 
     def test_both_have_id_no_auto_assign(self) -> None:
         """Two providers both with 'id' get instance_id from their id — no auto-assign."""
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {
@@ -542,7 +542,7 @@ class TestSettingsIdToInstanceId:
         the snapshot overwrite bug: when instance_id == default_name, the kernel
         skips remapping and the second mount silently overwrites the first instance.
         """
-        from amplifier_app_cli.runtime.config import _map_id_to_instance_id
+        from amplifier_cli.runtime.config import _map_id_to_instance_id
 
         providers = [
             {

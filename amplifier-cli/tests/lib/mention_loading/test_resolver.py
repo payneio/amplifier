@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from amplifier_app_cli.lib.mention_loading.app_resolver import AppMentionResolver
+from amplifier_cli.lib.mention_loading.app_resolver import AppMentionResolver
 
 
 @pytest.fixture

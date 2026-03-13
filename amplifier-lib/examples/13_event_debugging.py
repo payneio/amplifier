@@ -29,7 +29,7 @@ from typing import Any
 
 from amplifier_core import AmplifierSession
 from amplifier_core import HookResult
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 # ============================================================================
 # Event Debugging Utilities

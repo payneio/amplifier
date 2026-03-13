@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 # =============================================================================
 # SECTION 1: Sample Meeting Notes

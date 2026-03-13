@@ -5,7 +5,7 @@ and strips stale ``debug``/``raw_debug`` keys from the old 3-tier verbosity
 system (CP-V collapse).
 """
 
-from amplifier_app_cli.runtime.config import _ensure_raw_defaults
+from amplifier_cli.runtime.config import _ensure_raw_defaults
 
 
 class TestEnsureRawDefaults:

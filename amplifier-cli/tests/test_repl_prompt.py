@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from amplifier_app_cli.main import _create_prompt_session
+from amplifier_cli.main import _create_prompt_session
 from prompt_toolkit import PromptSession
 from prompt_toolkit.output import DummyOutput
 
@@ -70,8 +70,8 @@ class TestPromptSession:
 
         # Should not raise, should fall back to InMemoryHistory
         with (
-            patch("amplifier_app_cli.main.logger") as mock_logger,
-            patch("amplifier_app_cli.main.FileHistory", side_effect=mock_file_history),
+            patch("amplifier_cli.main.logger") as mock_logger,
+            patch("amplifier_cli.main.FileHistory", side_effect=mock_file_history),
         ):
             session = _create_prompt_session()
             assert session is not None

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from amplifier_foundation.tracing import generate_sub_session_id
+from amplifier_lib.tracing import generate_sub_session_id
 
 
 class TestGenerateSubSessionId:

@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from amplifier_app_cli.commands.provider import provider
+from amplifier_cli.commands.provider import provider
 
 
 class TestProviderInstall:
@@ -30,18 +30,18 @@ class TestProviderInstall:
         """Running without arguments should install all known providers."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.install_known_providers",
+                "amplifier_cli.commands.provider.install_known_providers",
                 return_value=[
                     "provider-anthropic",
                     "provider-openai",
                     "provider-ollama",
                 ],
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
         ):
             result = runner.invoke(provider, ["install"])
 
@@ -54,14 +54,14 @@ class TestProviderInstall:
         """Should install only the specified provider."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 return_value=True,
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[]),
         ):
             result = runner.invoke(provider, ["install", "anthropic"])
@@ -77,14 +77,14 @@ class TestProviderInstall:
         """Should install multiple specified providers."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 return_value=True,
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[]),
         ):
             result = runner.invoke(provider, ["install", "anthropic", "openai"])
@@ -96,10 +96,10 @@ class TestProviderInstall:
         """Should fail when an unknown provider is specified."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
         ):
             result = runner.invoke(provider, ["install", "unknown-provider"])
 
@@ -111,14 +111,14 @@ class TestProviderInstall:
         """Quiet mode should suppress output on success."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.install_known_providers",
+                "amplifier_cli.commands.provider.install_known_providers",
                 return_value=["provider-anthropic"],
             ),
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
         ):
             result = runner.invoke(provider, ["install", "-q"])
 
@@ -131,14 +131,14 @@ class TestProviderInstall:
         """Quiet mode should exit with error code on failure."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 return_value=False,
             ),
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[]),
         ):
             result = runner.invoke(provider, ["install", "-q", "anthropic"])
@@ -153,13 +153,13 @@ class TestProviderInstall:
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed"
+                "amplifier_cli.commands.provider.ensure_provider_installed"
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[mock_ep]),
         ):
             result = runner.invoke(provider, ["install", "anthropic"])
@@ -176,14 +176,14 @@ class TestProviderInstall:
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 return_value=True,
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[mock_ep]),
         ):
             result = runner.invoke(provider, ["install", "--force", "anthropic"])
@@ -196,14 +196,14 @@ class TestProviderInstall:
         """Should handle both 'anthropic' and 'provider-anthropic' inputs."""
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 return_value=True,
             ) as mock_install,
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[]),
         ):
             # Test with full prefix
@@ -223,14 +223,14 @@ class TestProviderInstall:
 
         with (
             patch(
-                "amplifier_app_cli.commands.provider.get_effective_provider_sources",
+                "amplifier_cli.commands.provider.get_effective_provider_sources",
                 return_value=mock_sources,
             ),
             patch(
-                "amplifier_app_cli.commands.provider.ensure_provider_installed",
+                "amplifier_cli.commands.provider.ensure_provider_installed",
                 side_effect=mock_install_side_effect,
             ),
-            patch("amplifier_app_cli.commands.provider.create_config_manager"),
+            patch("amplifier_cli.commands.provider.create_config_manager"),
             patch("importlib.metadata.entry_points", return_value=[]),
         ):
             result = runner.invoke(provider, ["install", "anthropic", "openai"])

@@ -5,7 +5,7 @@ from io import StringIO
 
 from rich.console import Console
 
-from amplifier_foundation.core.llm_errors import (
+from amplifier_lib.core.llm_errors import (
     AuthenticationError,
     ContentFilterError,
     ContextLengthError,
@@ -13,7 +13,7 @@ from amplifier_foundation.core.llm_errors import (
     RateLimitError,
 )
 
-from amplifier_app_cli.ui.error_display import display_llm_error
+from amplifier_cli.ui.error_display import display_llm_error
 
 
 def _capture_output(error: Exception, verbose: bool = False) -> tuple[bool, str]:

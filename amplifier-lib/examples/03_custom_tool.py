@@ -27,8 +27,8 @@ from pathlib import Path
 from typing import Any
 
 from amplifier_core import ToolResult
-from amplifier_foundation import Bundle
-from amplifier_foundation import load_bundle
+from amplifier_lib import Bundle
+from amplifier_lib import load_bundle
 
 # =============================================================================
 # STEP 1: Define Your Custom Tool

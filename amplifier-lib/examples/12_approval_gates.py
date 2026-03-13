@@ -26,7 +26,7 @@ from typing import Any
 from typing import Literal
 
 from amplifier_core import AmplifierSession
-from amplifier_foundation import load_bundle
+from amplifier_lib import load_bundle
 
 # ============================================================================
 # Custom Approval System Implementation

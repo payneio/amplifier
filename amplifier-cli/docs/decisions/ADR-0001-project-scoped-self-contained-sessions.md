@@ -178,7 +178,7 @@ App layer resolves project slug and initializes SessionStore automatically:
 
 ```python
 # In app initialization
-from amplifier_app_cli.session_store import SessionStore
+from amplifier_cli.session_store import SessionStore
 
 session_store = SessionStore()  # Auto-detects project from CWD
 ```

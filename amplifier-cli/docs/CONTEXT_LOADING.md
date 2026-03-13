@@ -299,7 +299,7 @@ This clearly indicates to the model:
 
 ### Bundled Context
 
-Amplifier ships with bundled context files in `amplifier_app_cli/data/context/`:
+Amplifier ships with bundled context files in `amplifier_cli/data/context/`:
 - `AGENTS.md` - Project guidelines
 - `DISCOVERIES.md` - Lessons learned
 

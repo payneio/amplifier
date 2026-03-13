@@ -38,7 +38,7 @@ def _get_registry_or_503(request: Request) -> Any:
             title="Bundle Registry Unavailable",
             status=503,
             detail=(
-                "Bundle registry is not available (amplifier_foundation failed to load at startup)"
+                "Bundle registry is not available (amplifier_lib failed to load at startup)"
             ),
             instance=str(request.url.path),
         )

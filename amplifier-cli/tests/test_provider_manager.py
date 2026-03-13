@@ -1,14 +1,14 @@
 import yaml
 
-from amplifier_app_cli.paths import create_config_manager
-from amplifier_app_cli.provider_manager import ProviderManager
+from amplifier_cli.paths import create_config_manager
+from amplifier_cli.provider_manager import ProviderManager
 
 
 def test_provider_override_persists_under_config_section(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     fake_home = tmp_path / "home"
     fake_home.mkdir()
-    monkeypatch.setattr("amplifier_app_cli.paths.Path.home", classmethod(lambda cls: fake_home))
+    monkeypatch.setattr("amplifier_cli.paths.Path.home", classmethod(lambda cls: fake_home))
 
     config_manager = create_config_manager()
     manager = ProviderManager(config_manager)

@@ -16,7 +16,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
     @pytest.mark.asyncio
     async def test_uses_auth_headers_on_first_request_when_available(self):
         """Auth headers should be sent on the first request, not only after a 404."""
-        from amplifier_app_cli.utils.source_status import _get_github_commit_sha
+        from amplifier_cli.utils.source_status import _get_github_commit_sha
 
         atom_content = """<?xml version="1.0"?>
 <feed>
@@ -39,7 +39,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
         mock_client.get = AsyncMock(side_effect=mock_get)
 
         with patch(
-            "amplifier_app_cli.utils.source_status._get_github_auth_headers",
+            "amplifier_cli.utils.source_status._get_github_auth_headers",
             return_value={"Authorization": "Bearer test-token"},
         ):
             result = await _get_github_commit_sha(
@@ -61,7 +61,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
     @pytest.mark.asyncio
     async def test_proceeds_without_auth_when_unavailable(self):
         """Requests without auth should still work when no token is configured."""
-        from amplifier_app_cli.utils.source_status import _get_github_commit_sha
+        from amplifier_cli.utils.source_status import _get_github_commit_sha
 
         atom_content = """<?xml version="1.0"?>
 <feed>
@@ -81,7 +81,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
         mock_client.get = AsyncMock(side_effect=mock_get)
 
         with patch(
-            "amplifier_app_cli.utils.source_status._get_github_auth_headers",
+            "amplifier_cli.utils.source_status._get_github_auth_headers",
             return_value={},
         ):
             result = await _get_github_commit_sha(
@@ -97,7 +97,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
     @pytest.mark.asyncio
     async def test_no_second_unauthenticated_retry_after_404(self):
         """Old code retried without auth after 404; new code should not do a second retry."""
-        from amplifier_app_cli.utils.source_status import _get_github_commit_sha
+        from amplifier_cli.utils.source_status import _get_github_commit_sha
 
         call_count = 0
 
@@ -121,7 +121,7 @@ class TestGetGithubCommitShaUsesAuthProactively:
         mock_client.get = AsyncMock(side_effect=mock_get)
 
         with patch(
-            "amplifier_app_cli.utils.source_status._get_github_auth_headers",
+            "amplifier_cli.utils.source_status._get_github_auth_headers",
             return_value={"Authorization": "Bearer test-token"},
         ):
             # With auth provided, a 404 is a real 404 — no retry logic needed
@@ -146,7 +146,7 @@ class TestErrorMessageDistinguishesRateLimitFromPrivateRepo:
         """When auth IS set but 404 still occurs, message should say 'rate limited'."""
         import pathlib
 
-        source = pathlib.Path("amplifier_app_cli/utils/source_status.py").read_text()
+        source = pathlib.Path("amplifier_cli/utils/source_status.py").read_text()
         assert "rate limit" in source.lower() or "rate limiting" in source.lower(), (
             "Source code should mention rate limiting in error handling, "
             "not just 'private repo or not found'"
@@ -156,7 +156,7 @@ class TestErrorMessageDistinguishesRateLimitFromPrivateRepo:
         """Error handler should explicitly handle 403 (explicit rate limit response)."""
         import pathlib
 
-        source = pathlib.Path("amplifier_app_cli/utils/source_status.py").read_text()
+        source = pathlib.Path("amplifier_cli/utils/source_status.py").read_text()
         assert "403" in source, (
             "HTTPStatusError handler should check for 403 "
             "(GitHub's explicit rate limit response)"
@@ -164,7 +164,7 @@ class TestErrorMessageDistinguishesRateLimitFromPrivateRepo:
 
     def test_docstring_does_not_claim_no_rate_limits(self):
         """The function docstring should not claim there are no rate limits (it's wrong)."""
-        from amplifier_app_cli.utils.source_status import _get_github_commit_sha
+        from amplifier_cli.utils.source_status import _get_github_commit_sha
         import inspect
 
         doc = inspect.getdoc(_get_github_commit_sha) or ""

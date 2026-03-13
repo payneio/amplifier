@@ -32,8 +32,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from amplifier_foundation import Bundle
-from amplifier_foundation import load_bundle
+from amplifier_lib import Bundle
+from amplifier_lib import load_bundle
 
 # =============================================================================
 # SECTION 1: Configuration Management

@@ -45,7 +45,7 @@ except ImportError:
     _HAS_AMPLIFIER_CORE = False
 
 try:
-    from amplifier_foundation.exceptions import (
+    from amplifier_lib.exceptions import (
         BundleDependencyError,
         BundleError,
         BundleLoadError,
@@ -70,7 +70,7 @@ if TYPE_CHECKING:
     from fastapi import FastAPI, Request
 
 # Ordered list: subclasses before parents so isinstance matches the most specific type first.
-# Only populated when amplifier_core/amplifier_foundation are available.
+# Only populated when amplifier_core/amplifier_lib are available.
 LLM_ERROR_MAP: list[tuple[type, int, str]] = (
     [
         (QuotaExceededError, 429, "quota-exceeded"),

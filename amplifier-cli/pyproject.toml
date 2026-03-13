@@ -18,13 +18,13 @@ dependencies = [
 ]
 
 [project.scripts]
-ampx = "amplifier_app_cli.main:main"
+ampx = "amplifier_cli.main:main"
 
 [tool.uv]
 package = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["amplifier_app_cli"]
+packages = ["amplifier_cli"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

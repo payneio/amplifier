@@ -3,9 +3,9 @@
 import tempfile
 from pathlib import Path
 
-from amplifier_foundation.bundle import Bundle
-from amplifier_foundation.cache.disk import DiskCache
-from amplifier_foundation.cache.simple import SimpleCache
+from amplifier_lib.bundle import Bundle
+from amplifier_lib.cache.disk import DiskCache
+from amplifier_lib.cache.simple import SimpleCache
 
 
 class TestSimpleCache:

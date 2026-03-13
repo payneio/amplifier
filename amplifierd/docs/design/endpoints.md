@@ -851,7 +851,7 @@ Update a bundle to latest.
 
 ## 10. Session Fork & History
 
-Wraps `amplifier_foundation.session` — fork, slice, and lineage operations.
+Wraps `amplifier_lib.session` — fork, slice, and lineage operations.
 
 ### `POST /sessions/{session_id}/fork`
 
@@ -1025,7 +1025,7 @@ Server info and capabilities.
 {
   "version": "0.1.0",
   "amplifier_core_version": "1.0.7",
-  "amplifier_foundation_version": "2.0.0",
+  "amplifier_lib_version": "2.0.0",
   "rust_available": true,
   "capabilities": [
     "streaming", "websocket", "approval", "cancellation",

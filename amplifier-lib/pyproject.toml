@@ -40,7 +40,7 @@ package = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
-    "amplifier_foundation",
+    "amplifier_lib",
 ]
 
 [tool.hatch.metadata]

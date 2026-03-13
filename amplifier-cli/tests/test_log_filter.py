@@ -3,7 +3,7 @@
 import logging
 import sys
 
-from amplifier_app_cli.ui.log_filter import LLMErrorLogFilter
+from amplifier_cli.ui.log_filter import LLMErrorLogFilter
 
 
 def _make_record(message: str, level: int = logging.ERROR) -> logging.LogRecord:
@@ -103,7 +103,7 @@ class TestAttachLlmErrorFilter:
 
     def setup_method(self) -> None:
         """Save root logger state and import attachment utilities."""
-        from amplifier_app_cli.main import _attach_llm_error_filter, _llm_error_filter
+        from amplifier_cli.main import _attach_llm_error_filter, _llm_error_filter
 
         self.attach = _attach_llm_error_filter
         self.llm_filter = _llm_error_filter
@@ -188,7 +188,7 @@ class TestFilterIntegrationChildLogger:
         self.root.setLevel(self._orig_level)
 
     def test_child_logger_provider_error_suppressed(self) -> None:
-        from amplifier_app_cli.main import _attach_llm_error_filter
+        from amplifier_cli.main import _attach_llm_error_filter
 
         _attach_llm_error_filter()
 
@@ -205,7 +205,7 @@ class TestFilterIntegrationChildLogger:
         assert self.stderr_handler.filter(record) is False
 
     def test_child_logger_execution_failed_suppressed(self) -> None:
-        from amplifier_app_cli.main import _attach_llm_error_filter
+        from amplifier_cli.main import _attach_llm_error_filter
 
         _attach_llm_error_filter()
 
@@ -222,7 +222,7 @@ class TestFilterIntegrationChildLogger:
         assert self.stderr_handler.filter(record) is False
 
     def test_child_logger_unrelated_error_passes_through(self) -> None:
-        from amplifier_app_cli.main import _attach_llm_error_filter
+        from amplifier_cli.main import _attach_llm_error_filter
 
         _attach_llm_error_filter()
 

@@ -12,7 +12,7 @@ Fix: both agents.yaml and the fallback default in DelegateTool.__init__
      now use "tool-delegate" (the module name).
 """
 
-from amplifier_app_cli.session_spawner import _filter_tools
+from amplifier_cli.session_spawner import _filter_tools
 
 
 # ---------------------------------------------------------------------------

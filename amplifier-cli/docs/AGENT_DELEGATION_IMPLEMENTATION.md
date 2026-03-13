@@ -65,7 +65,7 @@ amplifier run "design system"  # Uses test version
 ### Agent Resolution
 
 ```python
-from amplifier_foundation import AgentResolver
+from amplifier_lib import AgentResolver
 from pathlib import Path
 import os
 
@@ -91,7 +91,7 @@ if not agent_path:
     agent_path = resolver.resolve(agent_name)
 
 # Load agent
-from amplifier_foundation import AgentLoader
+from amplifier_lib import AgentLoader
 loader = AgentLoader(resolver=resolver)
 agent = loader.load_agent(agent_name)
 ```
@@ -178,7 +178,7 @@ The system automatically persists sub-session state after each execution:
 
 ```python
 # After sub-session execution, before cleanup
-from amplifier_app_cli.session_store import SessionStore
+from amplifier_cli.session_store import SessionStore
 
 # Capture current state
 context = child_session.coordinator.get("context")
@@ -208,7 +208,7 @@ store.save(sub_session_id, transcript, metadata)
 Resume a previous sub-session by providing its `session_id`:
 
 ```python
-from amplifier_app_cli.session_spawner import resume_sub_session
+from amplifier_cli.session_spawner import resume_sub_session
 
 # Resume by session ID
 result = await resume_sub_session(

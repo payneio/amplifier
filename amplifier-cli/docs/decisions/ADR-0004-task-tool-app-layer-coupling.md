@@ -12,7 +12,7 @@ The `amplifier-module-tool-task` module imports directly from `amplifier-app-cli
 
 ```python
 # amplifier-module-tool-task/__init__.py:160
-from amplifier_app_cli.session_spawner import spawn_sub_session
+from amplifier_cli.session_spawner import spawn_sub_session
 ```
 
 This violates the repository awareness hierarchy defined in REPOSITORY_RULES.md:
@@ -33,7 +33,7 @@ The task tool's `execute()` method imports spawner functions from app layer:
 
 ```python
 # Import from app layer
-from amplifier_app_cli.session_spawner import spawn_sub_session, resume_sub_session
+from amplifier_cli.session_spawner import spawn_sub_session, resume_sub_session
 
 # Call app layer function directly
 result = await spawn_sub_session(

@@ -48,7 +48,7 @@ The callback fires for every include at every nesting level — transitive by co
 
 ### Layer 1: Foundation — The Mechanism
 
-**File:** `amplifier-foundation/amplifier_foundation/registry.py`
+**File:** `amplifier-foundation/amplifier_lib/registry.py`
 
 **Callback signature:** `Callable[[str], str | None]`
 
@@ -86,7 +86,7 @@ if "://" in source or source.startswith("git+"):
 
 ### Layer 2: App-CLI — The Policy
 
-**File:** `amplifier-app-cli/amplifier_app_cli/lib/bundle_loader/prepare.py`
+**File:** `amplifier-app-cli/amplifier_cli/lib/bundle_loader/prepare.py`
 
 In `load_and_prepare_bundle()`, before calling `load_bundle()`:
 
@@ -117,7 +117,7 @@ def _build_include_source_resolver(
     return resolver
 ```
 
-**File:** `amplifier-app-cli/amplifier_app_cli/lib/settings.py`
+**File:** `amplifier-app-cli/amplifier_cli/lib/settings.py`
 
 - Verify `get_bundle_sources()` exists (line 424) and returns `dict[str, str]` from `sources.bundles`
 - If it doesn't exist, add it following the pattern of `get_module_sources()` (line 392)

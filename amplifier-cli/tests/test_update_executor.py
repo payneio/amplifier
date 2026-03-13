@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amplifier_app_cli.utils.update_executor import execute_self_update
+from amplifier_cli.utils.update_executor import execute_self_update
 
 
 class FakeUmbrellaInfo:
@@ -32,9 +32,9 @@ async def test_execute_self_update_uses_upgrade_reinstall_not_force():
         mock_proc.wait.return_value = 0
         return mock_proc
 
-    with patch("amplifier_app_cli.utils.update_executor.subprocess.Popen", side_effect=fake_popen):
+    with patch("amplifier_cli.utils.update_executor.subprocess.Popen", side_effect=fake_popen):
         with patch(
-            "amplifier_app_cli.utils.update_executor._invalidate_modules_with_missing_deps",
+            "amplifier_cli.utils.update_executor._invalidate_modules_with_missing_deps",
             return_value=(0, 0),
         ):
             await execute_self_update(FakeUmbrellaInfo())

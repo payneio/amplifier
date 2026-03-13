@@ -26,9 +26,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from amplifier_foundation import Bundle
-from amplifier_foundation import load_bundle
-from amplifier_foundation.bundle import PreparedBundle
+from amplifier_lib import Bundle
+from amplifier_lib import load_bundle
+from amplifier_lib.bundle import PreparedBundle
 
 # Foundation bundle source (production pattern - loads from GitHub)
 FOUNDATION_SOURCE = "git+https://github.com/microsoft/amplifier-foundation@main"
@@ -163,11 +163,11 @@ async def process_mentions(session: Any, prompt: str, foundation: Bundle) -> Non
     Directory @mentions provide awareness of available files without
     flooding context with all file contents.
     """
-    from amplifier_foundation.mentions import BaseMentionResolver
-    from amplifier_foundation.mentions import ContentDeduplicator
-    from amplifier_foundation.mentions import format_context_block
-    from amplifier_foundation.mentions import load_mentions
-    from amplifier_foundation.mentions import parse_mentions
+    from amplifier_lib.mentions import BaseMentionResolver
+    from amplifier_lib.mentions import ContentDeduplicator
+    from amplifier_lib.mentions import format_context_block
+    from amplifier_lib.mentions import load_mentions
+    from amplifier_lib.mentions import parse_mentions
 
     mentions = parse_mentions(prompt)
     if not mentions:

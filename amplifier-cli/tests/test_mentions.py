@@ -1,8 +1,8 @@
 """Tests for @mention parsing utilities."""
 
-from amplifier_app_cli.utils.mentions import extract_mention_path
-from amplifier_app_cli.utils.mentions import has_mentions
-from amplifier_app_cli.utils.mentions import parse_mentions
+from amplifier_cli.utils.mentions import extract_mention_path
+from amplifier_cli.utils.mentions import has_mentions
+from amplifier_cli.utils.mentions import parse_mentions
 
 
 class TestParseMentions:

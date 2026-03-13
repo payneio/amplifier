@@ -7,11 +7,11 @@ Full end-to-end integration testing done manually (see test report).
 import re
 
 import pytest
-from amplifier_app_cli.session_spawner import resume_sub_session
-from amplifier_app_cli.session_store import SessionStore
-from amplifier_foundation import generate_sub_session_id
+from amplifier_cli.session_spawner import resume_sub_session
+from amplifier_cli.session_store import SessionStore
+from amplifier_lib import generate_sub_session_id
 
-# W3C Trace Context constants (these are private in amplifier_foundation.tracing)
+# W3C Trace Context constants (these are private in amplifier_lib.tracing)
 SPAN_HEX_LEN = 16
 DEFAULT_PARENT_SPAN = "0" * SPAN_HEX_LEN
 
@@ -437,12 +437,12 @@ class TestCapabilityRegistrationIntegration:
 
         # Patch at correct locations - imports are inside the function from their source modules
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=mock_session,
         ):
-            with patch("amplifier_app_cli.ui.CLIApprovalSystem"):
-                with patch("amplifier_app_cli.ui.CLIDisplaySystem"):
-                    with patch("amplifier_app_cli.paths.create_foundation_resolver"):
+            with patch("amplifier_cli.ui.CLIApprovalSystem"):
+                with patch("amplifier_cli.ui.CLIDisplaySystem"):
+                    with patch("amplifier_cli.paths.create_foundation_resolver"):
                         try:
                             await resume_sub_session(
                                 session_id, "follow-up instruction"
@@ -506,12 +506,12 @@ class TestCapabilityRegistrationIntegration:
         mock_session.cleanup = AsyncMock()
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=mock_session,
         ):
-            with patch("amplifier_app_cli.ui.CLIApprovalSystem"):
-                with patch("amplifier_app_cli.ui.CLIDisplaySystem"):
-                    with patch("amplifier_app_cli.paths.create_foundation_resolver"):
+            with patch("amplifier_cli.ui.CLIApprovalSystem"):
+                with patch("amplifier_cli.ui.CLIDisplaySystem"):
+                    with patch("amplifier_cli.paths.create_foundation_resolver"):
                         try:
                             await resume_sub_session(session_id, "test")
                         except Exception:
@@ -565,12 +565,12 @@ class TestCapabilityRegistrationIntegration:
         mock_session.cleanup = AsyncMock()
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=mock_session,
         ):
-            with patch("amplifier_app_cli.ui.CLIApprovalSystem"):
-                with patch("amplifier_app_cli.ui.CLIDisplaySystem"):
-                    with patch("amplifier_app_cli.paths.create_foundation_resolver"):
+            with patch("amplifier_cli.ui.CLIApprovalSystem"):
+                with patch("amplifier_cli.ui.CLIDisplaySystem"):
+                    with patch("amplifier_cli.paths.create_foundation_resolver"):
                         try:
                             await resume_sub_session(session_id, "test")
                         except Exception:
@@ -599,7 +599,7 @@ class TestSpawnEnrichment:
         """Test that spawn_sub_session returns status and turn_count from orchestrator:complete."""
         from unittest.mock import AsyncMock, MagicMock, patch
 
-        from amplifier_app_cli.session_spawner import spawn_sub_session
+        from amplifier_cli.session_spawner import spawn_sub_session
 
         monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -687,15 +687,15 @@ class TestSpawnEnrichment:
         }
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=child_session,
         ):
             with patch(
-                "amplifier_app_cli.session_spawner.generate_sub_session_id",
+                "amplifier_cli.session_spawner.generate_sub_session_id",
                 return_value="child-001",
             ):
-                with patch("amplifier_app_cli.paths.create_foundation_resolver"):
-                    with patch("amplifier_app_cli.session_store.SessionStore.save"):
+                with patch("amplifier_cli.paths.create_foundation_resolver"):
+                    with patch("amplifier_cli.session_store.SessionStore.save"):
                         result = await spawn_sub_session(
                             agent_name="test-agent",
                             instruction="Do something",
@@ -716,7 +716,7 @@ class TestSpawnEnrichment:
         """Test that spawn returns sensible defaults when orchestrator:complete never fires."""
         from unittest.mock import AsyncMock, MagicMock, patch
 
-        from amplifier_app_cli.session_spawner import spawn_sub_session
+        from amplifier_cli.session_spawner import spawn_sub_session
 
         monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -782,15 +782,15 @@ class TestSpawnEnrichment:
         }
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=child_session,
         ):
             with patch(
-                "amplifier_app_cli.session_spawner.generate_sub_session_id",
+                "amplifier_cli.session_spawner.generate_sub_session_id",
                 return_value="child-002",
             ):
-                with patch("amplifier_app_cli.paths.create_foundation_resolver"):
-                    with patch("amplifier_app_cli.session_store.SessionStore.save"):
+                with patch("amplifier_cli.paths.create_foundation_resolver"):
+                    with patch("amplifier_cli.session_store.SessionStore.save"):
                         result = await spawn_sub_session(
                             agent_name="test-agent",
                             instruction="Do something",
@@ -891,12 +891,12 @@ class TestSpawnEnrichment:
         child_session.cleanup = AsyncMock()
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             return_value=child_session,
         ):
-            with patch("amplifier_app_cli.ui.CLIApprovalSystem"):
-                with patch("amplifier_app_cli.ui.CLIDisplaySystem"):
-                    with patch("amplifier_app_cli.paths.create_foundation_resolver"):
+            with patch("amplifier_cli.ui.CLIApprovalSystem"):
+                with patch("amplifier_cli.ui.CLIDisplaySystem"):
+                    with patch("amplifier_cli.paths.create_foundation_resolver"):
                         result = await resume_sub_session(
                             session_id, "follow-up instruction"
                         )
@@ -934,7 +934,7 @@ class TestSessionMetadataFlow:
         """
         from unittest.mock import MagicMock, patch
 
-        from amplifier_app_cli.session_runner import register_session_spawning
+        from amplifier_cli.session_runner import register_session_spawning
 
         # Build a minimal mock session with a real coordinator-like object
         # that records what gets registered
@@ -963,7 +963,7 @@ class TestSessionMetadataFlow:
             }
 
         with patch(
-            "amplifier_app_cli.session_spawner.spawn_sub_session",
+            "amplifier_cli.session_spawner.spawn_sub_session",
             fake_spawn_sub_session,
         ):
             register_session_spawning(mock_session)
@@ -1001,7 +1001,7 @@ class TestSessionMetadataFlow:
         """
         from unittest.mock import AsyncMock, MagicMock, patch
 
-        from amplifier_app_cli.session_spawner import spawn_sub_session
+        from amplifier_cli.session_spawner import spawn_sub_session
 
         monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -1065,15 +1065,15 @@ class TestSessionMetadataFlow:
             return child_session
 
         with patch(
-            "amplifier_app_cli.session_spawner.AmplifierSession",
+            "amplifier_cli.session_spawner.AmplifierSession",
             side_effect=capture_session_constructor,
         ):
             with patch(
-                "amplifier_app_cli.session_spawner.generate_sub_session_id",
+                "amplifier_cli.session_spawner.generate_sub_session_id",
                 return_value="child-meta-01",
             ):
-                with patch("amplifier_app_cli.paths.create_foundation_resolver"):
-                    with patch("amplifier_app_cli.session_store.SessionStore.save"):
+                with patch("amplifier_cli.paths.create_foundation_resolver"):
+                    with patch("amplifier_cli.session_store.SessionStore.save"):
                         await spawn_sub_session(
                             agent_name="self",
                             instruction="say hi",
@@ -1100,7 +1100,7 @@ class TestSessionMetadataFlow:
         """Callers that don't pass session_metadata are unaffected (default=None)."""
         from unittest.mock import MagicMock, patch
 
-        from amplifier_app_cli.session_runner import register_session_spawning
+        from amplifier_cli.session_runner import register_session_spawning
 
         registered_capabilities: dict = {}
 
@@ -1124,7 +1124,7 @@ class TestSessionMetadataFlow:
             }
 
         with patch(
-            "amplifier_app_cli.session_spawner.spawn_sub_session",
+            "amplifier_cli.session_spawner.spawn_sub_session",
             fake_spawn_sub_session,
         ):
             register_session_spawning(mock_session)

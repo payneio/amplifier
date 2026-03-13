@@ -16,10 +16,10 @@ BundleRegistry provides named bundle management:
 import asyncio
 from pathlib import Path
 
-from amplifier_foundation import Bundle
-from amplifier_foundation import BundleRegistry
-from amplifier_foundation import BundleState
-from amplifier_foundation import load_bundle
+from amplifier_lib import Bundle
+from amplifier_lib import BundleRegistry
+from amplifier_lib import BundleState
+from amplifier_lib import load_bundle
 
 
 async def main() -> None:
