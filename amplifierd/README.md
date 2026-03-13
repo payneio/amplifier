@@ -1,11 +1,11 @@
 # amplifierd: The Amplifier daemon
 
-amplifierd is a localhost HTTP daemon that exposes amplifier-core and amplifier-foundation capabilities over REST and SSE. It lets you drive Amplifier sessions from any language or framework that can make HTTP calls.
+amplifierd is a localhost HTTP daemon that exposes amplifier-core and amplifier-lib capabilities over REST and SSE. It lets you drive Amplifier sessions from any language or framework that can make HTTP calls.
 
 Under the hood, amplifierd is a thin HTTP layer on top of two libraries:
 
 - **[amplifier-core](../amplifier-core/)** — the agent runtime: sessions, LLM providers, tool execution, hooks, and the event system. amplifierd wires core events (content deltas, tool calls, approval requests) into its SSE transport and uses `HookResult` for tool-approval gates.
-- **[amplifier-foundation](../amplifier-foundation/)** — higher-level orchestration: bundle loading/preparation, child-session spawning, session forking, and working-directory management. amplifierd delegates bundle lifecycle to `BundleRegistry` and agent delegation to `create_child_session`.
+- **[amplifier-lib](../amplifier-lib/)** — higher-level orchestration: bundle loading/preparation, child-session spawning, session forking, and working-directory management. amplifierd delegates bundle lifecycle to `BundleRegistry` and agent delegation to `create_child_session`.
 
 amplifierd itself adds HTTP routing, the `SessionManager`/`EventBus` state layer, plugin discovery, and streaming transport — but all agent logic lives in the libraries.
 

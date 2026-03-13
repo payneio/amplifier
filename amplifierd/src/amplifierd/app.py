@@ -280,7 +280,7 @@ def create_app(settings: DaemonSettings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="amplifierd",
-        description="HTTP/SSE daemon for amplifier-core and amplifier-foundation",
+        description="HTTP/SSE daemon for amplifier-core and amplifier-lib",
         version="0.1.0",
         docs_url="/docs",
         redoc_url="/redoc",

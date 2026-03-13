@@ -24,9 +24,9 @@ _METADATA_FILENAME = "metadata.json"
 
 # Resolve sanitize_message once at import time.
 try:
-    from amplifier_lib import sanitize_message as _foundation_sanitize
+    from amplifier_lib import sanitize_message as _lib_sanitize
 except ImportError:
-    _foundation_sanitize = None  # type: ignore[assignment]
+    _lib_sanitize = None  # type: ignore[assignment]
 
 # Resolve write_with_backup once at import time.
 try:
@@ -41,14 +41,14 @@ def _sanitize(msg: dict[str, Any]) -> dict[str, Any]:
     Preserves content:null on tool-call messages (providers need it).
     """
     had_content_null = "content" in msg and msg["content"] is None
-    sanitized = _foundation_sanitize(msg) if _foundation_sanitize is not None else msg
+    sanitized = _lib_sanitize(msg) if _lib_sanitize is not None else msg
     if had_content_null and "content" not in sanitized:
         sanitized["content"] = None
     return sanitized
 
 
 def _atomic_write(path: Path, content: str) -> None:
-    """Write content atomically using foundation's write_with_backup or fallback."""
+    """Write content atomically using amplifier-lib's write_with_backup or fallback."""
     if _write_with_backup is not None:
         _write_with_backup(path, content)
     else:
