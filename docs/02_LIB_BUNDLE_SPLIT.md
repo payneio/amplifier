@@ -20,7 +20,7 @@ bugfix risks touching bundle content that 15 downstream bundles compose.
 
 ## What's in each half
 
-### Library: `amplifier-foundation/` (53 Python files, ~10,000 lines)
+### Library: `amplifier-lib/` (53 Python files, ~10,000 lines)
 
 The importable package. Everything here is `from amplifier_foundation import X`.
 
@@ -72,7 +72,7 @@ amplifier-bundle-foundation
     │
     │  modules import from
     ▼
-amplifier-foundation (library)
+amplifier-lib (library)
     │
     │  uses
     ▼
@@ -133,7 +133,7 @@ amplifier-foundation = { git = "https://github.com/microsoft/amplifier-foundatio
 
 # After
 dependencies = ["amplifier-foundation", ...]
-amplifier-foundation = { path = "../amplifier-foundation" }
+amplifier-foundation = { path = "../amplifier-lib" }
 ```
 
 Dropped `amplifier-core` (absorbed). Changed source from GitHub remote to local
@@ -143,7 +143,7 @@ monorepo path so local development changes are immediately visible.
 
 ```
 amplifier-sdk/
-├── amplifier-foundation/            Python library (importable)
+├── amplifier-lib/                   Python library (importable)
 │   ├── amplifier_foundation/          53 .py files, ~10,000 lines
 │   ├── tests/                         505 passing, 3 skipped
 │   └── pyproject.toml                 depends on: pyyaml
