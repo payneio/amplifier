@@ -1,5 +1,5 @@
 [project]
-name = "amplifier-app-cli"
+name = "amplifier-cli"
 version = "0.1.0"
 description = "Reference CLI implementation for Amplifier AI development platform"
 license = "MIT"

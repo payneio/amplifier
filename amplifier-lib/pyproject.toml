@@ -1,5 +1,5 @@
 [project]
-name = "amplifier-foundation"
+name = "amplifier-lib"
 version = "1.0.0"
 description = "Ultra-thin mechanism layer for bundle composition in Amplifier"
 license = "MIT"
