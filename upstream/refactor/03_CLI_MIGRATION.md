@@ -30,7 +30,7 @@ in core-lite. Everything else was missing from the library.
 
 ## What we built
 
-Six new modules in `amplifier_foundation/core/`, totaling ~550 new lines:
+Six new modules in `amplifier_lib/core/`, totaling ~550 new lines:
 
 | Module | Lines | What it provides |
 |--------|-------|------------------|
@@ -42,7 +42,7 @@ Six new modules in `amplifier_foundation/core/`, totaling ~550 new lines:
 | `models.py` (edit) | +11 | `ModelInfo` Pydantic model appended to existing file. |
 
 The core-lite `__init__.py` was updated to re-export all 30+ symbols so
-consumers can use `from amplifier_foundation.core import X` for anything.
+consumers can use `from amplifier_lib.core import X` for anything.
 
 ### Design decisions
 
@@ -78,21 +78,21 @@ from amplifier_core.llm_errors import LLMError
 from amplifier_core.events import PROMPT_COMPLETE
 
 # After
-from amplifier_foundation.runtime import Session as AmplifierSession
-from amplifier_foundation.core.llm_errors import LLMError
-from amplifier_foundation.core.events import PROMPT_COMPLETE
+from amplifier_lib.runtime import Session as AmplifierSession
+from amplifier_lib.core.llm_errors import LLMError
+from amplifier_lib.core.events import PROMPT_COMPLETE
 ```
 
-`AmplifierSession` maps to `amplifier_foundation.runtime.Session`, aliased to
+`AmplifierSession` maps to `amplifier_lib.runtime.Session`, aliased to
 preserve the name at all 6 call sites. Everything else maps to
-`amplifier_foundation.core.<submodule>`.
+`amplifier_lib.core.<submodule>`.
 
 Two logger name strings (`logging.getLogger("amplifier_core")`) were left as-is.
 Logger names are conventions, not import dependencies.
 
 One bare `import amplifier_core` in `commands/module.py` (used for
 `amplifier_core.__file__` path introspection) was rewritten to
-`import amplifier_foundation.core as amplifier_core`.
+`import amplifier_lib.core as amplifier_core`.
 
 ## The workspace
 

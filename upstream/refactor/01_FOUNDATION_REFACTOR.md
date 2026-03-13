@@ -56,7 +56,7 @@ Rather than adding session glue to core-lite, we moved the session lifecycle
 INTO foundation. This is the honest architecture: acknowledge that the "kernel"
 is just glue code and let the application own it.
 
-### New file: `amplifier_foundation/runtime.py` (599 lines)
+### New file: `amplifier_lib/runtime.py` (599 lines)
 
 A single file that replaces three amplifier-core components:
 
@@ -68,18 +68,18 @@ A single file that replaces three amplifier-core components:
 | `_rust_wrappers.process_hook_result` (187 lines) | `Coordinator.process_hook_result` — routes inject/approve/display | ~50 |
 
 Depends only on core-lite:
-- `amplifier_core.hooks.HookRegistry` (emit with action precedence)
-- `amplifier_core.models.HookResult` (action protocol)
+- `amplifier_lib.core.hooks.HookRegistry` (emit with action precedence)
+- `amplifier_lib.core.models.HookResult` (action protocol)
 
 ### Changes to existing files
 
-**`amplifier_foundation/bundle.py`** — 2 lines changed:
+**`amplifier_lib/bundle.py`** — 2 lines changed:
 
 ```python
 # Before (2 call sites):
 from amplifier_core import AmplifierSession
 # After:
-from amplifier_foundation.runtime import Session
+from amplifier_lib.runtime import Session
 ```
 
 **`modules/tool-delegate/__init__.py`** — 3 lines changed:
@@ -88,7 +88,7 @@ from amplifier_foundation.runtime import Session
 # Before:
 from amplifier_core import ModuleCoordinator, ToolResult
 # After:
-from amplifier_core import ToolResult  # ToolResult is in core-lite
+from amplifier_lib.core import ToolResult
 # ModuleCoordinator replaced with Any (was only a type annotation)
 ```
 
@@ -97,7 +97,7 @@ from amplifier_core import ToolResult  # ToolResult is in core-lite
 ```python
 # Now gracefully degrades if ChatRequest/Message aren't available
 try:
-    from amplifier_core import ChatRequest, Message
+    from amplifier_lib.core import ChatRequest, Message
     request = ChatRequest(messages=[Message(role="user", content=prompt)])
 except ImportError:
     # Inline Pydantic fallback for core-lite environments

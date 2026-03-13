@@ -4,7 +4,7 @@
 
 `amplifier-foundation` was a monolith pretending to be two things at once:
 
-1. A **Python library** — importable package (`amplifier_foundation/`) with
+1. A **Python library** — importable package (`amplifier_lib/`) with
    bundle loading, session management, module discovery, caching, path
    resolution, and the absorbed core-lite.
 
@@ -22,7 +22,7 @@ bugfix risks touching bundle content that 15 downstream bundles compose.
 
 ### Library: `amplifier-lib/` (53 Python files, ~10,000 lines)
 
-The importable package. Everything here is `from amplifier_foundation import X`.
+The importable package. Everything here is `from amplifier_lib import X`.
 
 | Subpackage | Purpose | Lines |
 |------------|---------|-------|
@@ -63,7 +63,7 @@ The 5 bundle modules (`hooks-deprecation`, `hooks-progress-monitor`,
 `hooks-session-naming`, `hooks-todo-display`, `tool-delegate`) are Python, but
 they're standalone packages with their own `pyproject.toml` — installed into the
 runtime independently, not imported from the library. Their only library
-dependency is `amplifier_foundation.core` (for `HookResult` and `ToolResult`).
+dependency is `amplifier_lib.core` (for `HookResult` and `ToolResult`).
 
 ## The dependency direction
 
@@ -109,7 +109,7 @@ dependencies = ["pyyaml>=6.0.3"]
 ```
 
 `amplifier-core` was dropped because core-lite (~485 lines) is absorbed into
-`amplifier_foundation/core/`. There is no external kernel dependency.
+`amplifier_lib/core/`. There is no external kernel dependency.
 
 ### Removed from tests
 
@@ -144,7 +144,7 @@ monorepo path so local development changes are immediately visible.
 ```
 amplifier-sdk/
 ├── amplifier-lib/                   Python library (importable)
-│   ├── amplifier_foundation/          53 .py files, ~10,000 lines
+│   ├── amplifier_lib/              53 .py files, ~10,000 lines
 │   ├── tests/                         505 passing, 3 skipped
 │   └── pyproject.toml                 depends on: pyyaml
 │

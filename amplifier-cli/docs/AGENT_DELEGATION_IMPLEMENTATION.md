@@ -7,7 +7,7 @@ layer: App-Layer Implementation
 
 # Agent Delegation - amplifier-app-cli Implementation
 
-How the CLI implements agent delegation using amplifier-foundation library and amplifier-core session forking.
+How the CLI implements agent delegation using amplifier-lib session forking.
 
 **Agent concepts & authoring**: **→ [Bundle Guide](https://github.com/microsoft/amplifier-foundation/blob/main/docs/BUNDLE_GUIDE.md)**
 **Kernel mechanism**: **→ [SESSION_FORK_SPECIFICATION.md](https://github.com/microsoft/amplifier-core/blob/main/docs/SESSION_FORK_SPECIFICATION.md)**
