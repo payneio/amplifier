@@ -19,9 +19,9 @@ from amplifier_app_cli.utils.help_formatter import AmplifierGroup
 
 if TYPE_CHECKING:
     from amplifier_foundation.bundle import PreparedBundle
-from amplifier_core import AmplifierSession
-from amplifier_core import ModuleValidationError  # pyright: ignore[reportAttributeAccessIssue]
-from amplifier_core.llm_errors import LLMError
+from amplifier_foundation.runtime import Session as AmplifierSession
+from amplifier_foundation.core.loader import ModuleValidationError  # pyright: ignore[reportAttributeAccessIssue]
+from amplifier_foundation.core.llm_errors import LLMError
 from amplifier_foundation import sanitize_message
 from prompt_toolkit import PromptSession
 from prompt_toolkit.formatted_text import HTML
@@ -1570,7 +1570,7 @@ async def interactive_chat(
                 # Emit prompt:complete event
                 hooks = session.coordinator.get("hooks")
                 if hooks:
-                    from amplifier_core.events import PROMPT_COMPLETE
+                    from amplifier_foundation.core.events import PROMPT_COMPLETE
 
                     await hooks.emit(
                         PROMPT_COMPLETE,
@@ -1690,7 +1690,7 @@ async def interactive_chat(
         if turn_count > 0:
             hooks = session.coordinator.get("hooks")
             if hooks:
-                from amplifier_core.events import SESSION_END
+                from amplifier_foundation.core.events import SESSION_END
 
                 await hooks.emit(SESSION_END, {"session_id": actual_session_id})
 
@@ -1815,7 +1815,7 @@ async def execute_single(
         # This ensures hook output goes to stderr in JSON mode
         hooks = session.coordinator.get("hooks")
         if hooks:
-            from amplifier_core.events import PROMPT_COMPLETE
+            from amplifier_foundation.core.events import PROMPT_COMPLETE
 
             await hooks.emit(
                 PROMPT_COMPLETE,
@@ -1936,7 +1936,7 @@ async def execute_single(
         # Emit session:end event before cleanup to allow hooks to finish
         hooks = session.coordinator.get("hooks")
         if hooks:
-            from amplifier_core.events import SESSION_END
+            from amplifier_foundation.core.events import SESSION_END
 
             await hooks.emit(SESSION_END, {"session_id": actual_session_id})
         await initialized.cleanup()

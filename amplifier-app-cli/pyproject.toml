@@ -37,7 +37,7 @@ build-backend = "hatchling.build"
 dev = ["pytest>=8.4.2", "pytest-asyncio>=0.24.0"]
 
 [tool.uv.sources]
-amplifier-foundation = { path = "../amplifier-lib" }
+amplifier-foundation = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

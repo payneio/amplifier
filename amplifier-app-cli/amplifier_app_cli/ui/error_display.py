@@ -9,7 +9,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from amplifier_core.llm_errors import (
+from amplifier_foundation.core.llm_errors import (
     AuthenticationError,
     ContentFilterError,
     ContextLengthError,

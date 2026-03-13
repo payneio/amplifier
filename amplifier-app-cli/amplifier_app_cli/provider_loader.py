@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 if TYPE_CHECKING:
-    from amplifier_core import ModelInfo  # pyright: ignore[reportAttributeAccessIssue]
+    from amplifier_foundation.core.models import ModelInfo  # pyright: ignore[reportAttributeAccessIssue]
 
 logger = logging.getLogger(__name__)
 

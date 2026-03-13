@@ -6,7 +6,7 @@ Implements sub-session creation with configuration inheritance and overlays.
 import logging
 from pathlib import Path
 
-from amplifier_core import AmplifierSession
+from amplifier_foundation.runtime import Session as AmplifierSession
 from amplifier_foundation import generate_sub_session_id
 
 from .agent_config import merge_configs
@@ -517,7 +517,7 @@ async def spawn_sub_session(
     hooks = child_session.coordinator.get("hooks")
     unregister_hook = None
     if hooks:
-        from amplifier_core.hooks import HookResult
+        from amplifier_foundation.core import HookResult
 
         async def _capture_completion(event: str, data: dict) -> HookResult:
             completion_data.update(data)
@@ -853,7 +853,7 @@ async def resume_sub_session(sub_session_id: str, instruction: str) -> dict:
     hooks = child_session.coordinator.get("hooks")
     unregister_hook = None
     if hooks:
-        from amplifier_core.hooks import HookResult
+        from amplifier_foundation.core import HookResult
 
         async def _capture_completion(event: str, data: dict) -> HookResult:
             completion_data.update(data)

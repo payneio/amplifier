@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 if TYPE_CHECKING:
-    from amplifier_core import AmplifierSession
+    from amplifier_foundation.runtime import Session as AmplifierSession
 
 from .session_store import SessionStore
 
@@ -74,7 +74,7 @@ class IncrementalSaveHook:
         Returns:
             HookResult with action="continue" (never blocks)
         """
-        from amplifier_core.models import HookResult
+        from amplifier_foundation.core.models import HookResult
 
         try:
             # Get context and message count

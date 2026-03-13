@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from amplifier_core.message_models import Message
+from amplifier_foundation.core.message_models import Message
 from amplifier_foundation.mentions import ContentDeduplicator
 from amplifier_foundation.mentions import ContextFile
 from amplifier_foundation.mentions import format_directory_listing  # pyright: ignore[reportAttributeAccessIssue]

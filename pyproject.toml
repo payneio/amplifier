@@ -1,0 +1,8 @@
+[project]
+name = "amplifier-sdk"
+version = "0.1.0"
+description = "Amplifier SDK monorepo"
+requires-python = ">=3.11"
+
+[tool.uv.workspace]
+members = ["amplifier-lib", "amplifier-app-cli"]

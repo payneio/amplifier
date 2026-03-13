@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 # Import exception from kernel for reuse
 if TYPE_CHECKING:
-    from amplifier_core.approval import ApprovalTimeoutError
+    from amplifier_foundation.core.approval import ApprovalTimeoutError
 else:
     try:
-        from amplifier_core.approval import ApprovalTimeoutError
+        from amplifier_foundation.core.approval import ApprovalTimeoutError
     except ImportError:
         # Fallback for standalone usage
         class ApprovalTimeoutError(Exception):

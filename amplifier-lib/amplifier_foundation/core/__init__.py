@@ -6,11 +6,74 @@ Re-exports everything so consumers can use either:
     from amplifier_foundation.core.hooks import HookRegistry
 """
 
+from .approval import ApprovalRequest, ApprovalResponse, ApprovalTimeoutError
 from .hooks import HookRegistry
-from .models import HookResult, ToolResult
+from .llm_errors import (
+    AuthenticationError,
+    ConfigurationError,
+    ContentFilterError,
+    ContextLengthError,
+    InvalidToolCallError,
+    LLMError,
+    LLMTimeoutError,
+    NetworkError,
+    NotFoundError,
+    ProviderUnavailableError,
+    QuotaExceededError,
+    RateLimitError,
+    StreamError,
+)
+from .loader import ModuleInfo, ModuleLoader, ModuleValidationError
+from .message_models import ChatRequest, Message
+from .models import HookResult, ModelInfo, ToolResult
+from .validation import (
+    ContextValidator,
+    HookValidator,
+    OrchestratorValidator,
+    ProviderValidator,
+    ToolValidator,
+    ValidationCheck,
+    ValidationResult,
+)
 
 __all__ = [
-    "HookRegistry",
+    # models
     "HookResult",
     "ToolResult",
+    "ModelInfo",
+    # hooks
+    "HookRegistry",
+    # llm_errors
+    "LLMError",
+    "RateLimitError",
+    "AuthenticationError",
+    "ContextLengthError",
+    "ContentFilterError",
+    "ProviderUnavailableError",
+    "LLMTimeoutError",
+    "NotFoundError",
+    "StreamError",
+    "InvalidToolCallError",
+    "ConfigurationError",
+    "NetworkError",
+    "QuotaExceededError",
+    # approval
+    "ApprovalRequest",
+    "ApprovalResponse",
+    "ApprovalTimeoutError",
+    # message_models
+    "Message",
+    "ChatRequest",
+    # loader
+    "ModuleLoader",
+    "ModuleValidationError",
+    "ModuleInfo",
+    # validation
+    "ToolValidator",
+    "HookValidator",
+    "ContextValidator",
+    "OrchestratorValidator",
+    "ProviderValidator",
+    "ValidationResult",
+    "ValidationCheck",
 ]

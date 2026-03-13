@@ -146,3 +146,14 @@ class HookResult(BaseModel):
     user_message: str | None = Field(default=None)
     user_message_level: Literal["info", "warning", "error"] = Field(default="info")
     user_message_source: str | None = Field(default=None)
+
+
+class ModelInfo(BaseModel):
+    """Model metadata for provider models."""
+
+    id: str
+    display_name: str = ""
+    context_window: int = 0
+    max_output_tokens: int = 0
+    capabilities: list[str] = Field(default_factory=list)
+    defaults: dict[str, Any] = Field(default_factory=dict)

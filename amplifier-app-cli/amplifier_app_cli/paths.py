@@ -19,7 +19,7 @@ from .lib.settings import AppSettings
 StandardModuleSourceResolver = None  # type: ignore[assignment,misc]
 
 if TYPE_CHECKING:
-    from amplifier_core import AmplifierSession
+    from amplifier_foundation.runtime import Session as AmplifierSession
 
     from amplifier_app_cli.lib.bundle_loader.resolvers import FoundationSettingsResolver
 
@@ -305,7 +305,7 @@ async def create_session_from_bundle(
         async with session:
             response = await session.execute("Hello!")
     """
-    from amplifier_core import AmplifierSession
+    from amplifier_foundation.runtime import Session as AmplifierSession
 
     from .lib.bundle_loader import AppBundleDiscovery
     from .lib.bundle_loader.prepare import load_and_prepare_bundle

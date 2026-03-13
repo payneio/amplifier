@@ -214,7 +214,7 @@ class ProviderManager:
         """
         import asyncio
 
-        from amplifier_core.loader import ModuleLoader
+        from amplifier_foundation.core.loader import ModuleLoader
 
         providers: dict[str, tuple[str, str, str]] = {}
 

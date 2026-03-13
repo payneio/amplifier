@@ -5,7 +5,7 @@ from io import StringIO
 
 from rich.console import Console
 
-from amplifier_core.llm_errors import (
+from amplifier_foundation.core.llm_errors import (
     AuthenticationError,
     ContentFilterError,
     ContextLengthError,

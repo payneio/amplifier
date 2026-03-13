@@ -30,7 +30,7 @@ class TraceCollector:
 
     async def on_tool_pre(self, event: str, data: dict[str, Any]):
         """Capture tool call start."""
-        from amplifier_core.models import HookResult
+        from amplifier_foundation.core.models import HookResult
 
         tool_name = data.get("tool_name", "unknown")
         tool_input = data.get("tool_input", {})
@@ -60,7 +60,7 @@ class TraceCollector:
 
     async def on_tool_post(self, event: str, data: dict[str, Any]):
         """Capture tool call completion."""
-        from amplifier_core.models import HookResult
+        from amplifier_foundation.core.models import HookResult
 
         tool_name = data.get("tool_name", "unknown")
         tool_result = data.get("result")

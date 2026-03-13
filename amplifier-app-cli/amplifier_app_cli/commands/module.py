@@ -44,7 +44,7 @@ def module(ctx: click.Context):
 )
 def list_modules(type: str):
     """List installed modules."""
-    from amplifier_core.loader import ModuleLoader
+    from amplifier_foundation.core.loader import ModuleLoader
 
     loader = ModuleLoader()
     modules_info = asyncio.run(loader.discover())
@@ -127,7 +127,7 @@ def list_modules(type: str):
 @click.argument("module_name")
 def module_show(module_name: str):
     """Show detailed information about a module."""
-    from amplifier_core.loader import ModuleLoader
+    from amplifier_foundation.core.loader import ModuleLoader
 
     loader = ModuleLoader()
     modules_info = asyncio.run(loader.discover())
@@ -511,11 +511,11 @@ async def _module_validate_async(
     behavioral: bool,
 ):
     """Async implementation of module validate."""
-    from amplifier_core.validation import ContextValidator
-    from amplifier_core.validation import HookValidator
-    from amplifier_core.validation import OrchestratorValidator
-    from amplifier_core.validation import ProviderValidator
-    from amplifier_core.validation import ToolValidator
+    from amplifier_foundation.core.validation import ContextValidator
+    from amplifier_foundation.core.validation import HookValidator
+    from amplifier_foundation.core.validation import OrchestratorValidator
+    from amplifier_foundation.core.validation import ProviderValidator
+    from amplifier_foundation.core.validation import ToolValidator
 
     path = Path(module_path).resolve()
 
@@ -596,7 +596,7 @@ def _run_behavioral_tests(module_path: str, module_type: str) -> bool:
 
     # Find the behavioral test file - look in amplifier-core package
     try:
-        import amplifier_core
+        import amplifier_foundation.core as amplifier_core
 
         core_path = Path(amplifier_core.__file__).parent
         test_file = core_path / "validation" / "behavioral" / f"test_{module_type}.py"
