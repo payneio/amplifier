@@ -8,7 +8,7 @@
 | `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~420 lines survived) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation) |
 | `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/amplifier-bundle-foundation/` (bundle config) | Split into two halves |
 | `microsoft/amplifier-app-cli` | `amplifier-cli/` | All `amplifier_core` imports rewritten to `amplifier_lib` |
-| `microsoft/amplifierd` | `amplifierd/` | Still partially depends on PyPI `amplifier-core` (4 files not yet migrated) |
+| `microsoft/amplifierd` | `amplifierd/` | Fully migrated to `amplifier_lib` (no `amplifier-core` dependency) |
 
 ## Processing Order (dependency-first)
 
@@ -39,7 +39,7 @@
 - `events.py` (~90 lines) -> `amplifier-lib/amplifier_lib/core/events.py` -- 35 event constants
 
 ### ADDED (built during migration, not in upstream core)
-- `amplifier_lib/core/llm_errors.py` -- LLMError hierarchy (76 lines)
+- `amplifier_lib/core/llm_errors.py` -- LLMError hierarchy (100 lines)
 - `amplifier_lib/core/approval.py` -- ApprovalRequest/Response (31 lines)
 - `amplifier_lib/core/message_models.py` -- Message/ChatRequest (89 lines)
 - `amplifier_lib/core/loader.py` -- simplified ModuleLoader (157 lines)
@@ -84,12 +84,10 @@
 | `from amplifier_core.approval import *` | `from amplifier_lib.core.approval import *` |
 | `from amplifier_core.message_models import Message` | `from amplifier_lib.core.message_models import Message` |
 
-## amplifierd: Partial Migration
+## amplifierd: Migration Complete
 
-Still imports from PyPI `amplifier_core` in 4 files:
-- `persistence.py`
-- `errors.py`
-- `routes/health.py`
-- `state/session_handle.py`
+Fully migrated to `amplifier_lib`. No `amplifier-core` dependency remains.
+All source files under `amplifierd/src/amplifierd/` import from `amplifier_lib`.
 
-Also uses `amplifier_lib` for other functionality. Dual-dependency situation.
+Note: The installed `.venv/` still contains a cached `amplifier_core` package but
+the source code and `pyproject.toml` have no references to it.
