@@ -60,7 +60,7 @@ amplifier bundle add git+https://github.com/microsoft/amplifier-bundle-design-in
 amplifier bundle use recipes
 ```
 
-Bundles ship focused agents you can invoke by name. Use `/agents` in chat to see available agents like `recipes:recipe-author` or `design-intelligence:component-designer`.
+Bundles ship agent functionality in a modular, composable way.
 
 **First time? Quick setup wizard:**
 
@@ -149,8 +149,6 @@ Ready! Starting chat...
 **That's it!** From nothing to productive AI assistant in 90 seconds.
 
 ## What Can Amplifier Do?
-
-First of all, this is still VERY early and we have not brought _most_ of our features over yet, so keep your expectations low and we'll get it ramped up very quickly over the next week or two. Consider this just an early sneak peek.
 
 - **Generate code** - From simple functions to full applications
 - **Debug problems** - Systematic error resolution with the bug-hunter agent
