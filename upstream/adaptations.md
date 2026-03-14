@@ -9,3 +9,4 @@ Changes incorporated from upstream repos into the monorepo.
 | 2025-07-16 | amplifier-core | PR #47 | SKIP | CI-only change for Rust wheel builds (macOS x86_64, Windows arm64); all Rust/maturin infrastructure eliminated in monorepo |
 | 2025-07-17 | amplifier-foundation | PR #126 | ADAPT | v3.3.0 recipe validation integration into validate-bundle-repo.yaml; pure bundle content (recipe + tests) → bundles/amplifier-bundle-foundation/; no import translations needed; note: references validate-recipes.yaml sub-recipe not yet in monorepo |
 | 2025-07-16 | amplifier-core | 5902f3e chore: bump version to 1.2.2 | SKIP | Pure version bump on eliminated Rust/PyO3/pyproject.toml infrastructure |
+| 2025-07-15 | amplifier-foundation | PR #127 | ADAPT | Add explicit on_error handlers to all validation recipe steps in bundles/amplifier-bundle-foundation/recipes/ (4 files, 36 additions + 1 change: validate-recipes on_error "continue"→"fail") |
