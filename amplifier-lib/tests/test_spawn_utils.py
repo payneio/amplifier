@@ -643,3 +643,54 @@ class TestProviderPreferenceConfigWiring:
         assert result_config["temperature"] == 0.3
         # Existing protected key untouched
         assert result_config["api_key"] == "sk-test"
+
+
+class TestFilterTools:
+    def test_exclude_removes_tools(self) -> None:
+        from amplifier_lib.spawn_utils import filter_tools
+        tools = [{"module": "tool-bash"}, {"module": "tool-web"}, {"module": "tool-fs"}]
+        result = filter_tools(tools, {"exclude_tools": ["tool-web"]})
+        assert [t["module"] for t in result] == ["tool-bash", "tool-fs"]
+
+    def test_inherit_allowlist(self) -> None:
+        from amplifier_lib.spawn_utils import filter_tools
+        tools = [{"module": "tool-bash"}, {"module": "tool-web"}, {"module": "tool-fs"}]
+        result = filter_tools(tools, {"inherit_tools": ["tool-bash"]})
+        assert [t["module"] for t in result] == ["tool-bash"]
+
+    def test_explicit_preserved_despite_exclude(self) -> None:
+        from amplifier_lib.spawn_utils import filter_tools
+        tools = [{"module": "tool-bash"}, {"module": "tool-web"}]
+        result = filter_tools(tools, {"exclude_tools": ["tool-bash"]}, agent_explicit_tools=["tool-bash"])
+        assert [t["module"] for t in result] == ["tool-bash", "tool-web"]
+
+    def test_empty_inheritance_returns_all(self) -> None:
+        from amplifier_lib.spawn_utils import filter_tools
+        tools = [{"module": "tool-bash"}]
+        result = filter_tools(tools, {})
+        assert result == tools
+
+    def test_empty_tools_returns_empty(self) -> None:
+        from amplifier_lib.spawn_utils import filter_tools
+        result = filter_tools([], {"exclude_tools": ["tool-bash"]})
+        assert result == []
+
+
+class TestFilterHooks:
+    def test_exclude_removes_hooks(self) -> None:
+        from amplifier_lib.spawn_utils import filter_hooks
+        hooks = [{"module": "hooks-logging"}, {"module": "hooks-approval"}]
+        result = filter_hooks(hooks, {"exclude_hooks": ["hooks-logging"]})
+        assert [h["module"] for h in result] == ["hooks-approval"]
+
+    def test_inherit_allowlist(self) -> None:
+        from amplifier_lib.spawn_utils import filter_hooks
+        hooks = [{"module": "hooks-logging"}, {"module": "hooks-approval"}]
+        result = filter_hooks(hooks, {"inherit_hooks": ["hooks-approval"]})
+        assert [h["module"] for h in result] == ["hooks-approval"]
+
+    def test_explicit_preserved_despite_exclude(self) -> None:
+        from amplifier_lib.spawn_utils import filter_hooks
+        hooks = [{"module": "hooks-logging"}, {"module": "hooks-approval"}]
+        result = filter_hooks(hooks, {"exclude_hooks": ["hooks-logging"]}, agent_explicit_hooks=["hooks-logging"])
+        assert [h["module"] for h in result] == ["hooks-logging", "hooks-approval"]

@@ -521,3 +521,76 @@ async def apply_provider_preferences_with_resolution(
         list({p.get("module", "?") for p in providers}),
     )
     return mount_plan
+
+
+# ---------------------------------------------------------------------------
+# Tool / hook inheritance filtering
+# ---------------------------------------------------------------------------
+
+
+def filter_tools(
+    tools: list[dict[str, Any]],
+    tool_inheritance: dict[str, list[str]],
+    agent_explicit_tools: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Filter tools based on inheritance policy.
+
+    Supports two modes:
+
+    - ``exclude_tools``: inherit all EXCEPT listed modules (blocklist)
+    - ``inherit_tools``: inherit ONLY listed modules (allowlist)
+
+    Agent explicitly-declared tools are always preserved regardless of filtering.
+    """
+    if not tools:
+        return []
+
+    exclude = tool_inheritance.get("exclude_tools", [])
+    inherit = tool_inheritance.get("inherit_tools")
+    explicit = set(agent_explicit_tools or [])
+
+    if inherit is not None:
+        return [
+            t
+            for t in tools
+            if t.get("module") in inherit or t.get("module") in explicit
+        ]
+    if exclude:
+        return [
+            t
+            for t in tools
+            if t.get("module") not in exclude or t.get("module") in explicit
+        ]
+    return list(tools)
+
+
+def filter_hooks(
+    hooks: list[dict[str, Any]],
+    hook_inheritance: dict[str, list[str]],
+    agent_explicit_hooks: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Filter hooks based on inheritance policy.
+
+    Same semantics as :func:`filter_tools` but for hooks.
+    Uses ``exclude_hooks`` / ``inherit_hooks`` keys.
+    """
+    if not hooks:
+        return []
+
+    exclude = hook_inheritance.get("exclude_hooks", [])
+    inherit = hook_inheritance.get("inherit_hooks")
+    explicit = set(agent_explicit_hooks or [])
+
+    if inherit is not None:
+        return [
+            h
+            for h in hooks
+            if h.get("module") in inherit or h.get("module") in explicit
+        ]
+    if exclude:
+        return [
+            h
+            for h in hooks
+            if h.get("module") not in exclude or h.get("module") in explicit
+        ]
+    return list(hooks)

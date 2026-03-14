@@ -87,6 +87,8 @@ from amplifier_lib.spawn_utils import ProviderPreference
 from amplifier_lib.spawn_utils import apply_provider_preferences
 from amplifier_lib.spawn_utils import apply_provider_preferences_with_resolution
 from amplifier_lib.spawn_utils import is_glob_pattern
+from amplifier_lib.spawn_utils import filter_hooks
+from amplifier_lib.spawn_utils import filter_tools
 from amplifier_lib.spawn_utils import resolve_model_pattern
 from amplifier_lib.sources.protocol import SourceHandlerProtocol
 from amplifier_lib.sources.protocol import SourceHandlerWithStatusProtocol
@@ -188,4 +190,6 @@ __all__ = [
     "apply_provider_preferences_with_resolution",
     "is_glob_pattern",
     "resolve_model_pattern",
+    "filter_tools",
+    "filter_hooks",
 ]

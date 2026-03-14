@@ -174,121 +174,23 @@ async def _spawn_with_event_forwarding(
 ) -> dict[str, Any]:
     """Spawn a child session with EventBus integration for SSE streaming.
 
-    Replicates the essential logic of ``PreparedBundle.spawn()`` but wraps
-    the child session in a ``SessionHandle`` so its streaming events are
-    forwarded to the EventBus.  This allows SSE subscribers on the parent
-    session (``GET /events?session=<parent_id>``) to receive child session
-    events in real time.
-
-    Reference implementations:
-        - ``amplifier_lib/bundle.py`` — ``PreparedBundle.spawn()``
-        - ``amplifier-app-cli/session_spawner.py`` — ``spawn_sub_session()``
+    Uses ``PreparedBundle.create_child_session()`` for the common setup
+    (compose, mount plan, create session, initialize, system prompt), then
+    adds daemon-specific wiring: persistence hooks, SessionHandle registration,
+    and EventBus parent-child linking for SSE streaming.
     """
-    from amplifier_lib.runtime import AmplifierSession
     from amplifier_lib.core import HookResult
 
-    # 1. Compose child bundle with parent bundle
-    effective_bundle = prepared.bundle.compose(child_bundle)
-
-    # 2. Create mount plan from composed bundle
-    child_mount_plan = effective_bundle.to_mount_plan()
-
-    # 3. Merge orchestrator config override
-    if orchestrator_config:
-        orch = child_mount_plan.setdefault("orchestrator", {})
-        orch.setdefault("config", {}).update(orchestrator_config)
-
-    # 4. Apply provider preferences (fallback chain)
-    if provider_preferences:
-        from amplifier_lib import (  # type: ignore[import]
-            apply_provider_preferences_with_resolution,
-        )
-
-        child_mount_plan = await apply_provider_preferences_with_resolution(
-            child_mount_plan,
-            provider_preferences,
-            parent_session.coordinator if parent_session else None,
-        )
-
-    # 5. Create child AmplifierSession
-    child_session = AmplifierSession(
-        child_mount_plan,
+    # Steps 1-11: common spawn sequence (compose, mount, init, system prompt)
+    child_session = await prepared.create_child_session(
+        child_bundle=child_bundle,
+        parent_session=parent_session,
         session_id=sub_session_id,
-        parent_id=parent_session.session_id if parent_session else None,
-        approval_system=(
-            getattr(
-                getattr(parent_session, "coordinator", None),
-                "approval_system",
-                None,
-            )
-            if parent_session
-            else None
-        ),
-        display_system=(
-            getattr(
-                getattr(parent_session, "coordinator", None),
-                "display_system",
-                None,
-            )
-            if parent_session
-            else None
-        ),
+        orchestrator_config=orchestrator_config,
+        parent_messages=parent_messages,
+        provider_preferences=provider_preferences,
+        self_delegation_depth=self_delegation_depth,
     )
-
-    # 6. Mount module resolver from parent PreparedBundle
-    await child_session.coordinator.mount("module-source-resolver", prepared.resolver)
-
-    # 7. Inherit working directory from parent session
-    if parent_session:
-        parent_wd = parent_session.coordinator.get_capability("session.working_dir")
-        effective_cwd = (
-            Path(parent_wd)
-            if parent_wd
-            else (getattr(prepared.bundle, "base_path", None) or Path.cwd())
-        )
-    else:
-        effective_cwd = getattr(prepared.bundle, "base_path", None) or Path.cwd()
-    child_session.coordinator.register_capability(
-        "session.working_dir",
-        str(Path(effective_cwd).resolve()),
-    )
-
-    # 8. Initialize child session (mounts modules from mount plan)
-    await child_session.initialize()
-
-    # 9. Register self-delegation depth for recursion limiting
-    if self_delegation_depth > 0:
-        child_session.coordinator.register_capability(
-            "self_delegation_depth",
-            self_delegation_depth,
-        )
-
-    # 10. Inject parent messages for context inheritance (new sessions only)
-    if parent_messages and not sub_session_id:
-        child_context = child_session.coordinator.get("context")
-        if child_context and hasattr(child_context, "set_messages"):
-            await child_context.set_messages(parent_messages)
-
-    # 11. Set up system prompt from composed bundle
-    try:
-        if effective_bundle.instruction or getattr(effective_bundle, "context", None):
-            factory = prepared._create_system_prompt_factory(
-                effective_bundle,
-                child_session,
-            )
-            context = child_session.coordinator.get("context")
-            if context and hasattr(context, "set_system_prompt_factory"):
-                await context.set_system_prompt_factory(factory)
-            elif context:
-                resolved_prompt = await factory()
-                await context.add_message(
-                    {"role": "system", "content": resolved_prompt},
-                )
-    except (AttributeError, TypeError):
-        logger.debug(
-            "Could not set system prompt via _create_system_prompt_factory",
-            exc_info=True,
-        )
 
     # ------------------------------------------------------------------
     # Persistence — mirror what SessionManager.create() does for parents
@@ -298,7 +200,9 @@ async def _spawn_with_event_forwarding(
     #      child gets its own on-disk session directory and persistence hooks.
     #      Without this, GET /sessions/{child_id}/transcript returns 404
     #      because resolve_session_dir() only looks on disk.
-    child_working_dir = parent_handle.working_dir or str(effective_cwd)
+    child_working_dir = parent_handle.working_dir or (
+        child_session.coordinator.get_capability("session.working_dir") or str(Path.cwd())
+    )
     child_project_id = ""
 
     if session_manager.projects_dir:

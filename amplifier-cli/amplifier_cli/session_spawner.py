@@ -60,130 +60,9 @@ def _extract_bundle_context(session: "AmplifierSession") -> dict | None:
     }
 
 
-def _filter_tools(
-    config: dict,
-    tool_inheritance: dict[str, list[str]],
-    agent_explicit_tools: list[str] | None = None,
-) -> dict:
-    """Filter tools in config based on tool inheritance policy.
-
-    Args:
-        config: Session config containing "tools" list
-        tool_inheritance: Policy dict with either:
-            - "exclude_tools": list of tool module names to exclude
-            - "inherit_tools": list of tool module names to include (allowlist)
-        agent_explicit_tools: Optional list of tool module names explicitly declared
-            by the agent. These are preserved even if they would be excluded.
-            Formula: final_tools = (inherited - excluded) + explicit
-
-    Returns:
-        New config dict with filtered tools list
-    """
-    tools = config.get("tools", [])
-    if not tools:
-        return config
-
-    exclude_tools = tool_inheritance.get("exclude_tools", [])
-    inherit_tools = tool_inheritance.get("inherit_tools")
-
-    # Get explicit tool module names (these are always preserved)
-    explicit_modules = set(agent_explicit_tools or [])
-
-    if inherit_tools is not None:
-        # Allowlist mode: only include specified tools OR explicit
-        filtered_tools = [
-            t
-            for t in tools
-            if t.get("module") in inherit_tools or t.get("module") in explicit_modules
-        ]
-    elif exclude_tools:
-        # Blocklist mode: exclude specified tools UNLESS explicit
-        filtered_tools = [
-            t
-            for t in tools
-            if t.get("module") not in exclude_tools
-            or t.get("module") in explicit_modules
-        ]
-    else:
-        # No filtering
-        return config
-
-    # Return new config with filtered tools
-    new_config = dict(config)
-    new_config["tools"] = filtered_tools
-
-    logger.debug(
-        "Filtered tools: %d -> %d (exclude=%s, inherit=%s)",
-        len(tools),
-        len(filtered_tools),
-        exclude_tools,
-        inherit_tools,
-    )
-
-    return new_config
+from amplifier_lib.spawn_utils import filter_hooks, filter_tools
 
 
-def _filter_hooks(
-    config: dict,
-    hook_inheritance: dict[str, list[str]],
-    agent_explicit_hooks: list[str] | None = None,
-) -> dict:
-    """Filter hooks in config based on hook inheritance policy.
-
-    Args:
-        config: Session config containing "hooks" list
-        hook_inheritance: Policy dict with either:
-            - "exclude_hooks": list of hook module names to exclude
-            - "inherit_hooks": list of hook module names to include (allowlist)
-        agent_explicit_hooks: Optional list of hook module names explicitly declared
-            by the agent. These are preserved even if they would be excluded.
-            Formula: final_hooks = (inherited - excluded) + explicit
-
-    Returns:
-        New config dict with filtered hooks list
-    """
-    hooks = config.get("hooks", [])
-    if not hooks:
-        return config
-
-    exclude_hooks = hook_inheritance.get("exclude_hooks", [])
-    inherit_hooks = hook_inheritance.get("inherit_hooks")
-
-    # Get explicit hook module names (these are always preserved)
-    explicit_modules = set(agent_explicit_hooks or [])
-
-    if inherit_hooks is not None:
-        # Allowlist mode: only include specified hooks OR explicit
-        filtered_hooks = [
-            h
-            for h in hooks
-            if h.get("module") in inherit_hooks or h.get("module") in explicit_modules
-        ]
-    elif exclude_hooks:
-        # Blocklist mode: exclude specified hooks UNLESS explicit
-        filtered_hooks = [
-            h
-            for h in hooks
-            if h.get("module") not in exclude_hooks
-            or h.get("module") in explicit_modules
-        ]
-    else:
-        # No filtering
-        return config
-
-    # Return new config with filtered hooks
-    new_config = dict(config)
-    new_config["hooks"] = filtered_hooks
-
-    logger.debug(
-        "Filtered hooks: %d -> %d (exclude=%s, inherit=%s)",
-        len(hooks),
-        len(filtered_hooks),
-        exclude_hooks,
-        inherit_hooks,
-    )
-
-    return new_config
 
 
 async def spawn_sub_session(
@@ -248,18 +127,16 @@ async def spawn_sub_session(
 
     # Apply tool inheritance filtering if specified
     if tool_inheritance and "tools" in merged_config:
-        # Get agent's explicit tool modules to preserve them
         agent_tool_modules = [t.get("module") for t in agent_config.get("tools", [])]
-        merged_config = _filter_tools(
-            merged_config, tool_inheritance, agent_tool_modules
+        merged_config["tools"] = filter_tools(
+            merged_config["tools"], tool_inheritance, agent_tool_modules
         )
 
     # Apply hook inheritance filtering if specified
     if hook_inheritance and "hooks" in merged_config:
-        # Get agent's explicit hook modules to preserve them
         agent_hook_modules = [h.get("module") for h in agent_config.get("hooks", [])]
-        merged_config = _filter_hooks(
-            merged_config, hook_inheritance, agent_hook_modules
+        merged_config["hooks"] = filter_hooks(
+            merged_config["hooks"], hook_inheritance, agent_hook_modules
         )
 
     # Apply provider preferences if specified (ordered fallback chain)

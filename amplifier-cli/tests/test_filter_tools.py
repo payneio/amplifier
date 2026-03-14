@@ -12,7 +12,23 @@ Fix: both agents.yaml and the fallback default in DelegateTool.__init__
      now use "tool-delegate" (the module name).
 """
 
-from amplifier_cli.session_spawner import _filter_tools
+from amplifier_lib.spawn_utils import filter_tools
+
+
+def _filter_tools(config, inheritance, explicit=None, *, agent_explicit_tools=None):
+    """Compat wrapper: old tests pass config dicts, lib takes tools list."""
+    tools = config.get("tools", [])
+    if not tools:
+        return config
+    exclude = inheritance.get("exclude_tools", [])
+    inherit = inheritance.get("inherit_tools")
+    if not exclude and inherit is None:
+        return config
+    effective_explicit = agent_explicit_tools or explicit
+    filtered = filter_tools(tools, inheritance, effective_explicit)
+    new_config = dict(config)
+    new_config["tools"] = filtered
+    return new_config
 
 
 # ---------------------------------------------------------------------------

@@ -1170,6 +1170,137 @@ class PreparedBundle:
 
         return session
 
+    async def create_child_session(
+        self,
+        child_bundle: Bundle,
+        *,
+        compose: bool = True,
+        parent_session: Any = None,
+        session_id: str | None = None,
+        orchestrator_config: dict[str, Any] | None = None,
+        parent_messages: list[dict[str, Any]] | None = None,
+        session_cwd: Path | None = None,
+        provider_preferences: list[ProviderPreference] | None = None,
+        self_delegation_depth: int = 0,
+    ) -> Any:
+        """Create and initialize a child session without executing.
+
+        Performs the common spawn sequence (compose, mount plan, create session,
+        mount resolver, set working dir, initialize, inject messages, set system
+        prompt) and returns the initialized AmplifierSession.
+
+        Apps that need to insert custom wiring (EventBus, persistence hooks,
+        display nesting, cancellation propagation) between initialization and
+        execution should use this method instead of :meth:`spawn`.
+
+        :meth:`spawn` is a thin wrapper around this method that adds
+        execute + cleanup.
+
+        Args:
+            child_bundle: Bundle to spawn (already resolved by app layer).
+            compose: Whether to compose child with parent bundle (default True).
+            parent_session: Parent session for lineage tracking and UX inheritance.
+            session_id: Optional session ID for resuming existing session.
+            orchestrator_config: Optional orchestrator config override.
+            parent_messages: Optional messages to inject into child context.
+            session_cwd: Optional working directory override.
+            provider_preferences: Optional ordered provider/model preferences.
+            self_delegation_depth: Current delegation depth for depth limiting.
+
+        Returns:
+            Initialized AmplifierSession ready for app-specific wiring
+            and then ``execute()``.
+        """
+        # Compose with parent if requested
+        effective_bundle = child_bundle
+        if compose:
+            effective_bundle = self.bundle.compose(child_bundle)
+
+        # Get mount plan and create session
+        child_mount_plan = effective_bundle.to_mount_plan()
+
+        # Merge orchestrator config if provided (recipe-level override)
+        if orchestrator_config:
+            if "orchestrator" not in child_mount_plan:
+                child_mount_plan["orchestrator"] = {}
+            if "config" not in child_mount_plan["orchestrator"]:
+                child_mount_plan["orchestrator"]["config"] = {}
+            child_mount_plan["orchestrator"]["config"].update(orchestrator_config)
+
+        # Apply provider preferences if specified
+        if provider_preferences:
+            child_mount_plan = await apply_provider_preferences_with_resolution(
+                child_mount_plan,
+                provider_preferences,
+                parent_session.coordinator if parent_session else None,
+            )
+
+        from amplifier_lib.runtime import AmplifierSession
+
+        child_session = AmplifierSession(
+            child_mount_plan,
+            session_id=session_id,
+            parent_id=parent_session.session_id if parent_session else None,
+            approval_system=getattr(
+                getattr(parent_session, "coordinator", None), "approval_system", None
+            )
+            if parent_session
+            else None,
+            display_system=getattr(
+                getattr(parent_session, "coordinator", None), "display_system", None
+            )
+            if parent_session
+            else None,
+        )
+
+        # Mount resolver and initialize
+        await child_session.coordinator.mount("module-source-resolver", self.resolver)
+
+        # Register session working directory capability
+        effective_child_cwd: Path
+        if session_cwd:
+            effective_child_cwd = session_cwd
+        elif parent_session:
+            parent_wd = parent_session.coordinator.get_capability("session.working_dir")
+            effective_child_cwd = (
+                Path(parent_wd) if parent_wd else (self.bundle.base_path or Path.cwd())
+            )
+        else:
+            effective_child_cwd = self.bundle.base_path or Path.cwd()
+        child_session.coordinator.register_capability(
+            "session.working_dir", str(effective_child_cwd.resolve())
+        )
+
+        await child_session.initialize()
+
+        # Register self_delegation_depth as a coordinator capability
+        if self_delegation_depth > 0:
+            child_session.coordinator.register_capability(
+                "self_delegation_depth", self_delegation_depth
+            )
+
+        # Inject parent messages if provided (new sessions only, not resume)
+        if parent_messages and not session_id:
+            child_context = child_session.coordinator.get("context")
+            if child_context and hasattr(child_context, "set_messages"):
+                await child_context.set_messages(parent_messages)
+
+        # Register system prompt factory for dynamic @mention reprocessing
+        if effective_bundle.instruction or effective_bundle.context:
+            factory = self._create_system_prompt_factory(
+                effective_bundle, child_session, session_cwd=session_cwd
+            )
+            context = child_session.coordinator.get("context")
+            if context and hasattr(context, "set_system_prompt_factory"):
+                await context.set_system_prompt_factory(factory)
+            elif context:
+                resolved_prompt = await factory()
+                await context.add_message(
+                    {"role": "system", "content": resolved_prompt}
+                )
+
+        return child_session
+
     async def spawn(
         self,
         child_bundle: Bundle,
@@ -1252,106 +1383,17 @@ class PreparedBundle:
                 ],
             )
         """
-        # Compose with parent if requested
-        effective_bundle = child_bundle
-        if compose:
-            effective_bundle = self.bundle.compose(child_bundle)
-
-        # Get mount plan and create session
-        child_mount_plan = effective_bundle.to_mount_plan()
-
-        # Merge orchestrator config if provided (recipe-level override)
-        if orchestrator_config:
-            # Ensure orchestrator section exists
-            if "orchestrator" not in child_mount_plan:
-                child_mount_plan["orchestrator"] = {}
-            if "config" not in child_mount_plan["orchestrator"]:
-                child_mount_plan["orchestrator"]["config"] = {}
-            # Merge recipe config into mount plan (recipe takes precedence)
-            child_mount_plan["orchestrator"]["config"].update(orchestrator_config)
-
-        # Apply provider preferences if specified
-        # This is done before session creation so the mount plan has the right provider
-        # We need to initialize a temporary session to resolve model patterns
-        if provider_preferences:
-            child_mount_plan = await apply_provider_preferences_with_resolution(
-                child_mount_plan,
-                provider_preferences,
-                # Pass parent session's coordinator for model resolution if available
-                parent_session.coordinator if parent_session else None,
-            )
-
-        from amplifier_lib.runtime import AmplifierSession
-
-        child_session = AmplifierSession(
-            child_mount_plan,
+        child_session = await self.create_child_session(
+            child_bundle,
+            compose=compose,
+            parent_session=parent_session,
             session_id=session_id,
-            parent_id=parent_session.session_id if parent_session else None,
-            approval_system=getattr(
-                getattr(parent_session, "coordinator", None), "approval_system", None
-            )
-            if parent_session
-            else None,
-            display_system=getattr(
-                getattr(parent_session, "coordinator", None), "display_system", None
-            )
-            if parent_session
-            else None,
+            orchestrator_config=orchestrator_config,
+            parent_messages=parent_messages,
+            session_cwd=session_cwd,
+            provider_preferences=provider_preferences,
+            self_delegation_depth=self_delegation_depth,
         )
-
-        # Mount resolver and initialize
-        await child_session.coordinator.mount("module-source-resolver", self.resolver)
-
-        # Register session working directory capability for child session
-        # Inherit from parent session if available, otherwise use session_cwd or defaults
-        effective_child_cwd: Path
-        if session_cwd:
-            effective_child_cwd = session_cwd
-        elif parent_session:
-            # Try to inherit working_dir from parent session
-            parent_wd = parent_session.coordinator.get_capability("session.working_dir")
-            effective_child_cwd = (
-                Path(parent_wd) if parent_wd else (self.bundle.base_path or Path.cwd())
-            )
-        else:
-            effective_child_cwd = self.bundle.base_path or Path.cwd()
-        child_session.coordinator.register_capability(
-            "session.working_dir", str(effective_child_cwd.resolve())
-        )
-
-        await child_session.initialize()
-
-        # Register self_delegation_depth as a coordinator capability
-        # tool-delegate reads this via coordinator.get_capability("self_delegation_depth")
-        if self_delegation_depth > 0:
-            child_session.coordinator.register_capability(
-                "self_delegation_depth", self_delegation_depth
-            )
-
-        # Inject parent messages if provided (for context inheritance)
-        # This allows child sessions to have awareness of parent's conversation history.
-        # Only inject for new sessions, not when resuming (session_id provided).
-        if parent_messages and not session_id:
-            child_context = child_session.coordinator.get("context")
-            if child_context and hasattr(child_context, "set_messages"):
-                await child_context.set_messages(parent_messages)
-
-        # Register system prompt factory for dynamic @mention reprocessing
-        # Note: For spawned sessions, we still want dynamic system prompts so that
-        # any @mentioned files are fresh (though spawn sessions are typically short-lived)
-        if effective_bundle.instruction or effective_bundle.context:
-            factory = self._create_system_prompt_factory(
-                effective_bundle, child_session, session_cwd=session_cwd
-            )
-            context = child_session.coordinator.get("context")
-            if context and hasattr(context, "set_system_prompt_factory"):
-                await context.set_system_prompt_factory(factory)
-            elif context:
-                # FALLBACK: Pre-resolve @mentions for context managers without factory support
-                resolved_prompt = await factory()
-                await context.add_message(
-                    {"role": "system", "content": resolved_prompt}
-                )
 
         # Capture orchestrator:complete event data from child session
         from amplifier_lib.core.models import HookResult

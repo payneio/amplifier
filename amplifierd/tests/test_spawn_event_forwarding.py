@@ -132,7 +132,7 @@ def _make_mock_bundle(agents: dict[str, dict] | None = None) -> MagicMock:
 
 
 def _make_mock_prepared(bundle: MagicMock | None = None) -> MagicMock:
-    """Create a mock PreparedBundle with bundle, resolver, and spawn()."""
+    """Create a mock PreparedBundle with bundle, resolver, spawn(), and create_child_session()."""
     prepared = MagicMock()
     prepared.bundle = bundle or _make_mock_bundle()
     prepared.resolver = MagicMock()
@@ -144,6 +144,10 @@ def _make_mock_prepared(bundle: MagicMock | None = None) -> MagicMock:
             "turn_count": 1,
             "metadata": {},
         }
+    )
+    # create_child_session returns a mock session (used by _spawn_with_event_forwarding)
+    prepared.create_child_session = AsyncMock(
+        return_value=_make_mock_session(session_id="child-1")
     )
     return prepared
 
@@ -273,8 +277,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            result = await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        result = await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -319,21 +324,22 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            await _spawn_with_event_forwarding(
-                prepared=prepared,
-                child_bundle=MagicMock(),
-                agent_name="test-agent",
-                instruction="test",
-                parent_session=_make_mock_session(session_id="parent-ef-2"),
-                sub_session_id="child-ef-2",
-                orchestrator_config=None,
-                parent_messages=None,
-                provider_preferences=None,
-                self_delegation_depth=0,
-                session_manager=manager,
-                parent_handle=parent_handle,
-            )
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        await _spawn_with_event_forwarding(
+            prepared=prepared,
+            child_bundle=MagicMock(),
+            agent_name="test-agent",
+            instruction="test",
+            parent_session=_make_mock_session(session_id="parent-ef-2"),
+            sub_session_id="child-ef-2",
+            orchestrator_config=None,
+            parent_messages=None,
+            provider_preferences=None,
+            self_delegation_depth=0,
+            session_manager=manager,
+            parent_handle=parent_handle,
+        )
 
         assert tree_wired_during_execute, (
             "EventBus tree should be wired before child execution starts"
@@ -373,8 +379,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            result = await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        result = await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -434,8 +441,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -466,10 +474,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with (
-            patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session),
-            pytest.raises(RuntimeError, match="boom"),
-        ):
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        with pytest.raises(RuntimeError, match="boom"):
             await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
@@ -500,8 +507,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            result = await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        result = await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -532,8 +540,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -578,8 +587,9 @@ class TestSpawnWithEventForwarding:
 
         from amplifierd.spawn import _spawn_with_event_forwarding
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            await _spawn_with_event_forwarding(
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        await _spawn_with_event_forwarding(
                 prepared=prepared,
                 child_bundle=MagicMock(),
                 agent_name="test-agent",
@@ -651,12 +661,13 @@ class TestSpawnFnEndToEnd:
         consumer_task = asyncio.create_task(_consume())
         await asyncio.sleep(0.05)
 
-        with patch("amplifier_lib.runtime.AmplifierSession", return_value=child_session):
-            result = await spawn_fn(
-                agent_name="self",
-                instruction="e2e test",
-                parent_session=parent_session,
-            )
+        prepared.create_child_session = AsyncMock(return_value=child_session)
+
+        result = await spawn_fn(
+            agent_name="self",
+            instruction="e2e test",
+            parent_session=parent_session,
+        )
 
         await asyncio.wait_for(consumer_task, timeout=2.0)
 
