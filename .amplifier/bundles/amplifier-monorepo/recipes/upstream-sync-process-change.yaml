@@ -1,0 +1,110 @@
+# =============================================================================
+# Sub-recipe: Process a single upstream change unit
+# =============================================================================
+#
+# Called by upstream-sync.yaml for each change in the manifest.
+# Analyzes the change, extracts the determination, and conditionally
+# implements the adaptation.
+#
+# Not intended to be run standalone -- use upstream-sync.yaml instead.
+#
+# =============================================================================
+# CHANGELOG
+# =============================================================================
+#
+# v1.0.0 (2026-03-14):
+#   - Initial implementation
+#     * Analysis via upstream-analyst agent
+#     * Bash extraction of DETERMINATION for conditional logic
+#     * Conditional implementation via upstream-adapter agent
+#     * Success recording to transient JSONL log for tracking step
+#
+# =============================================================================
+
+name: "upstream-sync-process-change"
+description: "Analyze a single upstream change and conditionally adapt it into the monorepo"
+version: "1.0.0"
+tags: ["upstream", "sync", "sub-recipe"]
+
+context:
+  change:  # Required: change unit dict from manifest
+    repo: ""
+    type: ""
+    ref: ""
+    title: ""
+    url: ""
+    sha: ""
+    diff_url: ""
+
+steps:
+  # -- Step 1: Analyze the change with upstream-analyst -----------------------
+  - id: "analyze"
+    agent: "amplifier-monorepo:upstream-analyst"
+    timeout: 300
+    output: "analysis"
+    prompt: |
+      Analyze this upstream change and determine how it should be incorporated
+      into our refactored monorepo.
+
+      Change details:
+        Repository: {{change.repo}}
+        Type:       {{change.type}}
+        Reference:  {{change.ref}}
+        Title:      {{change.title}}
+        URL:        {{change.url}}
+        Diff URL:   {{change.diff_url}}
+
+      Fetch and read the diff from the URL above to understand exactly what changed.
+      Cross-reference against the refactor mappings at
+      upstream/refactor-mappings.md
+      and the detailed refactor docs in upstream/refactor/.
+
+      Produce your DETERMINATION (SKIP, ADAPT, or DIRECT) with full justification
+      and an adaptation plan if applicable.
+
+  # -- Step 2: Extract determination for conditional logic --------------------
+  - id: "extract-determination"
+    type: "bash"
+    timeout: 10
+    output: "determination"
+    env:
+      ANALYSIS_TEXT: "{{analysis}}"
+    command: |
+      echo "$ANALYSIS_TEXT" | grep -oP 'DETERMINATION:\s*\K[A-Z]+' | head -1 || echo "SKIP"
+
+  # -- Step 3: Implement the adaptation (skipped for DETERMINATION: SKIP) -----
+  - id: "implement"
+    condition: "{{determination}} != 'SKIP'"
+    agent: "amplifier-monorepo:upstream-adapter"
+    timeout: 600
+    output: "adaptation"
+    prompt: |
+      Implement this upstream change adaptation in the monorepo.
+
+      Change details:
+        Repository: {{change.repo}}
+        Type:       {{change.type}}
+        Reference:  {{change.ref}}
+        Title:      {{change.title}}
+        URL:        {{change.url}}
+        Diff URL:   {{change.diff_url}}
+
+      Analyst's determination and adaptation plan:
+      {{analysis}}
+
+      IMPORTANT: Before making any changes, ensure you start from a clean main branch
+      (git checkout main). Create your feature branch from main. After pushing and
+      creating the PR, return to main (git checkout main) so the next change can
+      be processed cleanly.
+
+  # -- Step 4: Record success for tracking -----------------------------------
+  - id: "record-success"
+    type: "bash"
+    timeout: 10
+    env:
+      CHANGE_REPO: "{{change.repo}}"
+      CHANGE_SHA: "{{change.sha}}"
+    command: |
+      # Ensure we're on main (not a feature branch) before writing
+      git checkout main 2>/dev/null || true
+      printf '{"repo":"%s","sha":"%s"}\n' "$CHANGE_REPO" "$CHANGE_SHA" >> .amplifier/.upstream-sync-success.jsonl

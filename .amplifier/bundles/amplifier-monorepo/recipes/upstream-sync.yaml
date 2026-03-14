@@ -1,0 +1,310 @@
+# =============================================================================
+# UPSTREAM SYNC RECIPE
+# =============================================================================
+#
+# Pulls in changes from 5 upstream GitHub repos into the refactored monorepo.
+# For each new upstream change (PR or commit), analyzes whether/how to
+# incorporate it, then creates a separate monorepo PR for each relevant change.
+#
+# Usage:
+#   amplifier run "execute @amplifier-monorepo:recipes/upstream-sync.yaml"
+#
+# Prerequisites:
+#   - gh CLI installed and authenticated (https://cli.github.com)
+#   - jq installed
+#   - Git configured with push access to this repo
+#   - upstream/sources.md contains last-synced HEADs
+#
+# Agents required:
+#   - amplifier-monorepo:repo-auditor      (reconciles reference docs)
+#   - amplifier-monorepo:upstream-analyst   (analyzes changes)
+#   - amplifier-monorepo:upstream-adapter   (implements adaptations)
+#
+# Typical runtime: varies by number of upstream changes (2-5 min per change)
+#
+# =============================================================================
+# CHANGELOG
+# =============================================================================
+#
+# v1.0.0 (2026-03-14):
+#   - Initial recipe implementation
+#     * Reconcile: audits codebase against reference docs, fixes stale info
+#     * Discovery: parses sources.md, fetches new commits via gh API,
+#       groups by merged PR, outputs ordered manifest
+#     * Processing: foreach over manifest calling sub-recipe for
+#       analysis (upstream-analyst) + conditional implementation (upstream-adapter)
+#     * Tracking: updates sources.md HEADs after all changes processed
+#
+#   - DESIGN NOTE: sources.md is updated per-repo to the last contiguous
+#     successfully-processed change. If change 1 succeeds, 2 fails, 3 succeeds:
+#     HEAD advances only to change 1. Changes 2+ are retried on the next run.
+#     Success is tracked via .amplifier/.upstream-sync-success.jsonl (transient).
+#
+# =============================================================================
+
+name: "upstream-sync"
+description: "Sync upstream repo changes into the refactored monorepo, creating one PR per change"
+version: "1.0.0"
+tags: ["upstream", "sync", "monorepo", "maintenance"]
+
+steps:
+  # ==========================================================================
+  # Step 0: Reconcile reference docs with current codebase state
+  # ==========================================================================
+  - id: "reconcile"
+    agent: "amplifier-monorepo:repo-auditor"
+    timeout: 300
+    output: "reconcile_result"
+    prompt: |
+      Audit the monorepo's current state and update any stale reference
+      documentation before we process upstream changes.
+
+      Check these files for accuracy:
+      - upstream/refactor-mappings.md
+      - upstream/adaptations.md (append-only for local changes not in the log)
+
+      Scan the actual codebase to verify:
+      - amplifierd migration status (check for remaining amplifier_core imports)
+      - amplifier-cli migration status
+      - amplifier-lib/core/ contents
+      - Any new file relocations not documented
+
+      Update anything that's stale and commit. If everything is current, say so.
+
+  # ==========================================================================
+  # Step 1: Discover new upstream changes
+  # ==========================================================================
+  - id: "discover-changes"
+    type: "bash"
+    timeout: 120
+    parse_json: true
+    output: "manifest"
+    command: |
+      set -euo pipefail
+
+      # -- Clear transient success log from prior runs -------------------------
+      rm -f .amplifier/.upstream-sync-success.jsonl
+
+      # -- Verify prerequisites ----------------------------------------------
+      if ! command -v gh >/dev/null 2>&1; then
+        echo "ERROR: gh CLI not found. Install from https://cli.github.com" >&2
+        echo "[]"; exit 0
+      fi
+      if ! command -v jq >/dev/null 2>&1; then
+        echo "ERROR: jq not found." >&2
+        echo "[]"; exit 0
+      fi
+      if ! gh auth status >/dev/null 2>&1; then
+        echo "ERROR: gh CLI not authenticated. Run 'gh auth login'." >&2
+        echo "[]"; exit 0
+      fi
+
+      # -- Ensure we are on main ---------------------------------------------
+      git checkout main 2>/dev/null || {
+        echo "ERROR: Cannot checkout main branch." >&2
+        echo "[]"; exit 0
+      }
+
+      # -- Ensure adaptations log exists (committed on main) -----------------
+      if [[ ! -f upstream/adaptations.md ]]; then
+        mkdir -p upstream
+        printf '# Upstream Adaptations Log\n\n' > upstream/adaptations.md
+        printf '| Date | Repo | Change | Action | Description |\n' >> upstream/adaptations.md
+        printf '|------|------|--------|--------|-------------|\n' >> upstream/adaptations.md
+        git add upstream/adaptations.md
+        git commit -m "chore: initialize upstream adaptations log"
+      fi
+
+      # -- Parse upstream/sources.md for last-synced HEADs -------------------
+      # Requires bash 4+ for associative arrays
+      declare -A REPO_HEAD
+      current_repo=""
+      while IFS= read -r line; do
+        trimmed=$(echo "$line" | sed 's/^[[:space:]]*//')
+        if [[ "$trimmed" =~ ^-\ ([a-zA-Z0-9_-]+)$ ]]; then
+          current_repo="${BASH_REMATCH[1]}"
+        elif [[ "$trimmed" =~ ^-\ HEAD:\ ([a-f0-9]+)$ ]] && [[ -n "$current_repo" ]]; then
+          REPO_HEAD["$current_repo"]="${BASH_REMATCH[1]}"
+        fi
+      done < upstream/sources.md
+
+      # -- Process repos in dependency order ----------------------------------
+      REPOS=("amplifier-core" "amplifier-foundation" "amplifier-app-cli" "amplifierd" "amplifier")
+      MANIFEST="[]"
+
+      for repo in "${REPOS[@]}"; do
+        base_sha="${REPO_HEAD[$repo]:-}"
+        if [[ -z "$base_sha" ]]; then
+          echo "WARNING: No HEAD found for $repo in sources.md -- skipping" >&2
+          continue
+        fi
+
+        owner_repo="microsoft/$repo"
+
+        # Get current main branch HEAD
+        current_sha=$(gh api "repos/$owner_repo/commits/main" --jq '.sha' 2>/dev/null) || {
+          echo "WARNING: Cannot reach repos/$owner_repo -- skipping" >&2
+          continue
+        }
+
+        if [[ "$current_sha" == "$base_sha" ]]; then
+          echo "INFO: $repo is up to date" >&2
+          continue
+        fi
+
+        echo "INFO: $repo has new commits (${base_sha:0:7}...${current_sha:0:7})" >&2
+
+        # Get commits between stored HEAD and current main
+        commits_json=$(gh api "repos/$owner_repo/compare/${base_sha}...${current_sha}" \
+          --jq '[.commits[] | {sha: .sha, msg: (.commit.message | split("\n")[0])}]' \
+          2>/dev/null) || {
+          echo "WARNING: Failed to compare for $repo -- skipping" >&2
+          continue
+        }
+
+        commit_count=$(echo "$commits_json" | jq 'length')
+        [[ "$commit_count" -eq 0 ]] && continue
+
+        # Group commits by merged PR; standalone commits become individual units
+        seen_prs=""
+        for i in $(seq 0 $((commit_count - 1))); do
+          sha=$(echo "$commits_json" | jq -r ".[$i].sha")
+          msg=$(echo "$commits_json" | jq -r ".[$i].msg")
+
+          # Check if this commit belongs to a merged PR
+          pr_json=$(gh api "repos/$owner_repo/commits/$sha/pulls" \
+            --jq '[.[] | select(.merged_at != null)][0] // empty' 2>/dev/null) || true
+
+          if [[ -n "$pr_json" ]] && [[ "$pr_json" != "null" ]]; then
+            pr_number=$(echo "$pr_json" | jq -r '.number')
+
+            # Deduplicate: skip if we already recorded this PR
+            if echo "$seen_prs" | grep -qw "$pr_number" 2>/dev/null; then
+              sleep 0.3; continue
+            fi
+            seen_prs="$seen_prs $pr_number"
+
+            pr_title=$(echo "$pr_json" | jq -r '.title')
+            pr_url=$(echo "$pr_json" | jq -r '.html_url')
+            merge_sha=$(echo "$pr_json" | jq -r '.merge_commit_sha // empty')
+            [[ -z "$merge_sha" ]] && merge_sha="$sha"
+
+            unit=$(jq -n \
+              --arg repo "$repo" --arg type "pr" \
+              --arg ref "PR #$pr_number" --arg title "$pr_title" \
+              --arg url "$pr_url" --arg sha "$merge_sha" \
+              --arg diff_url "https://github.com/$owner_repo/pull/$pr_number.diff" \
+              '{repo:$repo,type:$type,ref:$ref,title:$title,url:$url,sha:$sha,diff_url:$diff_url}')
+          else
+            # Standalone commit (no merged PR)
+            unit=$(jq -n \
+              --arg repo "$repo" --arg type "commit" \
+              --arg ref "${sha:0:7}" --arg title "$msg" \
+              --arg url "https://github.com/$owner_repo/commit/$sha" \
+              --arg sha "$sha" \
+              --arg diff_url "https://github.com/$owner_repo/commit/$sha.diff" \
+              '{repo:$repo,type:$type,ref:$ref,title:$title,url:$url,sha:$sha,diff_url:$diff_url}')
+          fi
+
+          MANIFEST=$(echo "$MANIFEST" | jq --argjson u "$unit" '. + [$u]')
+          sleep 0.3  # Rate-limit GitHub API calls
+        done
+      done
+
+      total=$(echo "$MANIFEST" | jq 'length')
+      if [[ "$total" -eq 0 ]]; then
+        echo "INFO: No new upstream changes found. Everything is up to date." >&2
+      else
+        echo "INFO: Found $total change unit(s) to process." >&2
+      fi
+      echo "$MANIFEST"
+
+  # ==========================================================================
+  # Step 2: Process each change (analysis + conditional implementation)
+  # ==========================================================================
+  - id: "process-changes"
+    foreach: "{{manifest}}"
+    as: "change"
+    type: "recipe"
+    recipe: "upstream-sync-process-change.yaml"
+    context:
+      change: "{{change}}"
+    collect: "results"
+    max_iterations: 200
+    on_error: "continue"
+
+  # ==========================================================================
+  # Step 3: Update upstream/sources.md with latest processed HEADs
+  # ==========================================================================
+  - id: "update-tracking"
+    type: "bash"
+    timeout: 60
+    output: "tracking_update"
+    env:
+      MANIFEST_JSON: "{{manifest}}"
+    command: |
+      set -euo pipefail
+
+      SUCCESS_LOG=".amplifier/.upstream-sync-success.jsonl"
+
+      if [[ ! -f "$SUCCESS_LOG" ]] || [[ ! -s "$SUCCESS_LOG" ]]; then
+        echo "No successful changes recorded -- sources.md unchanged."
+        rm -f "$SUCCESS_LOG"
+        exit 0
+      fi
+
+      # Ensure we are on main before committing
+      git checkout main 2>/dev/null || { echo "ERROR: Cannot checkout main." >&2; exit 1; }
+
+      export TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+      # Find the safe HEAD per repo: last contiguous success in manifest order.
+      # If changes for a repo are [ok, ok, FAIL, ok], advance HEAD to change 2 only.
+      python3 -c "
+      import json, re, os
+
+      manifest = json.loads(os.environ['MANIFEST_JSON'])
+      ts = os.environ['TIMESTAMP']
+
+      # Load success set: {(repo, sha), ...}
+      successes = set()
+      with open('$SUCCESS_LOG') as f:
+          for line in f:
+              line = line.strip()
+              if line:
+                  entry = json.loads(line)
+                  successes.add((entry['repo'], entry['sha']))
+
+      # Walk manifest in order; per repo, find last contiguous success
+      safe_head = {}  # repo -> sha (advances only while contiguous)
+      for item in manifest:
+          key = (item['repo'], item['sha'])
+          if key in successes:
+              safe_head[item['repo']] = item['sha']
+          else:
+              # Contiguous streak broken for this repo -- stop advancing
+              # (but don't clear; keep the last safe SHA)
+              pass
+
+      if not safe_head:
+          print('No contiguous successes found -- sources.md unchanged.')
+          raise SystemExit(0)
+
+      with open('upstream/sources.md') as f:
+          content = f.read()
+
+      for repo, sha in safe_head.items():
+          p = r'(- ' + re.escape(repo) + r'\n  - source: [^\n]+\n  - HEAD: )[^\n]+'
+          content = re.sub(p, r'\g<1>' + sha, content)
+          p = r'(- ' + re.escape(repo) + r'\n  - source: [^\n]+\n  - HEAD: [^\n]+\n  - last updated: )[^\n]+'
+          content = re.sub(p, r'\g<1>' + ts, content)
+          print(f'Updated {repo} -> {sha[:12]}...')
+
+      with open('upstream/sources.md', 'w') as f:
+          f.write(content)
+      "
+
+      git add upstream/sources.md
+      git commit -m "chore: update upstream tracking to latest processed commits"
+      rm -f "$SUCCESS_LOG"
+      echo "Committed sources.md with updated HEADs."

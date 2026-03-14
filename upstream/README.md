@@ -4,8 +4,9 @@ We follow those upstream repos and periodically incorporate any new commits into
 
 To help with this, we keep docs about the major refactorings we have done in the upstream/refactor/ directory.
 
-## Quick Lookup for Important File Relocations
+## Key Reference Files
 
-While all files may have been modified from upstream sources, the following is a list of files that have been relocated. If there is an upstream change that needs to be incorporated, this is how to find where the new location is. This is not all file movements, though, just think of this as a quick lookup for some important files.
-
-- amplifier:docs/ > docs/
+- **refactor-mappings.md** -- Complete upstream-to-monorepo mapping table: which repos map to which directories, what was eliminated vs kept, import translations, and migration status. This is the primary reference for incorporating upstream changes.
+- **sources.md** -- Last-synced HEAD SHA per upstream repo. Updated automatically by the upstream-sync recipe.
+- **adaptations.md** -- Running log of changes incorporated from upstream.
+- **refactor/** -- Detailed decision records for each major refactoring (00-04).

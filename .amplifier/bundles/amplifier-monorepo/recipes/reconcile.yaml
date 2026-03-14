@@ -1,0 +1,25 @@
+name: "reconcile"
+description: "Audit the monorepo and update stale reference docs (refactor mappings, README, adaptations log)"
+version: "1.0.0"
+tags: ["upstream", "maintenance", "docs"]
+
+steps:
+  - id: "audit"
+    agent: "amplifier-monorepo:repo-auditor"
+    timeout: 300
+    output: "result"
+    prompt: |
+      Audit the monorepo's current state and update any stale reference
+      documentation.
+
+      Check these files for accuracy:
+      - upstream/refactor-mappings.md
+      - upstream/adaptations.md (append-only for local changes not in the log)
+
+      Scan the actual codebase to verify:
+      - amplifierd migration status (check for remaining amplifier_core imports)
+      - amplifier-cli migration status
+      - amplifier-lib/core/ contents
+      - Any new file relocations not documented
+
+      Update anything that's stale and commit. If everything is current, say so.
