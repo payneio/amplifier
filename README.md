@@ -5,16 +5,13 @@
 > [!CAUTION]
 > This project is a research demonstrator. It is in early development and may change significantly. Using permissive AI tools on your computer requires careful attention to security considerations and careful human supervision, and even then things can still go wrong. Use it with caution, and at your own risk, we have NOT built in the safety systems yet. We are performing our _active exploration_ in the open for others to join in the conversation and exploration, not as a product or "official release".
 
-> [!NOTE]
-> **Looking for the earlier Claude Code-based version?** The previous version of Amplifier, built on top of Claude Code, has been moved to the [`amplifier-claude`](https://github.com/microsoft/amplifier/tree/amplifier-claude) branch.
-
 ---
 
 ## What is Amplifier?
 
-Amplifier brings AI assistance to your command line with a modular, extensible architecture.
+Amplifier is a modular agent orchestrator.
 
-**This CLI is _just one_ interface**—the reference implementation. The real power is the modular platform underneath. Soon you'll see web interfaces, mobile apps, voice-driven coding, and even Amplifier-to-Amplifier collaborative experiences. The community will build custom interfaces, mixing and matching modules dynamically to craft tailored AI experiences.
+**The CLI is _just one_ interface**—the reference implementation. The real power is the modular platform underneath. Soon you'll see web interfaces, mobile apps, voice-driven coding, and even Amplifier-to-Amplifier collaborative experiences. The community will build custom interfaces, mixing and matching modules dynamically to craft tailored AI experiences.
 
 ---
 
