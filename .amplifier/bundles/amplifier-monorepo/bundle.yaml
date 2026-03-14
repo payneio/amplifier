@@ -2,3 +2,9 @@ bundle:
   name: amplifier-monorepo
   version: 0.1.0
   description: Project-local recipes and tooling for managing the Amplifier monorepo
+
+agents:
+  include:
+    - amplifier-monorepo:upstream-analyst
+    - amplifier-monorepo:upstream-adapter
+    - amplifier-monorepo:repo-auditor
