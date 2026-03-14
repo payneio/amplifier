@@ -75,7 +75,7 @@ steps:
   - id: "implement"
     condition: "{{determination}} != 'SKIP'"
     agent: "amplifier-monorepo:upstream-adapter"
-    timeout: 600
+    timeout: 1200
     output: "adaptation"
     prompt: |
       Implement this upstream change adaptation in the monorepo.
