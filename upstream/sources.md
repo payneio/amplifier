@@ -2,21 +2,21 @@
 
 - amplifier
   - source: https://github.com/microsoft/amplifier@main
-  - HEAD: 07dad486aab7547cdc6ba6246744257cbd37fa8b
-  - last updated: 2026-03-13T17:26:31Z
+  - HEAD: 382319d868451a789e2c2b26d41de39813e3c23b
+  - last updated: 2026-03-14T16:27:02Z
 - amplifier-core
   - source: https://github.com/microsoft/amplifier-core@main
-  - HEAD: 87b97654bbe8814b5292bb238b1cc1e655d82d90
-  - last updated: 2026-03-13T17:26:31Z
+  - HEAD: 5902f3e1fe5cffc92266de91991f63ab3cb66708
+  - last updated: 2026-03-14T16:27:02Z
 - amplifierd
   - source: https://github.com/microsoft/amplifierd@main
-  - HEAD: 1bd9b24d31360d4b0145aa00750c48ea08da13c8
-  - last updated: 2026-03-13T17:26:31Z
+  - HEAD: 7bbabb2103ea03b8ba59f4388ea6f334d05b243c
+  - last updated: 2026-03-14T16:27:02Z
 - amplifier-app-cli
   - source: https://github.com/microsoft/amplifier-app-cli@main
-  - HEAD: f70024106a0d7af24af5237ad1292a69be07c644
-  - last updated: 2026-03-13T17:26:31Z
+  - HEAD: 1d84e62fa5d8a85d5a1a3a9306731de7fc773878
+  - last updated: 2026-03-14T16:27:02Z
 - amplifier-foundation
   - source: https://github.com/microsoft/amplifier-foundation@main
-  - HEAD: 0a3974053d7968851dbb062074fde27cb0a8dec8
-  - last updated: 2026-03-13T17:26:31Z
+  - HEAD: bca039b0c0364452e9dacea772554b866bf5407a
+  - last updated: 2026-03-14T16:27:02Z
