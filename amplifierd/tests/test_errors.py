@@ -1,6 +1,6 @@
 """Tests for LLM/Bundle error mapping to RFC 7807 Problem Details."""
 
-from amplifier_core.llm_errors import (
+from amplifier_lib.core.llm_errors import (
     AbortError,
     ConfigurationError,
     ContextLengthError,

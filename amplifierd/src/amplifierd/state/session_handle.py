@@ -115,52 +115,32 @@ class SessionHandle:
     def _wire_events(self) -> None:
         """Forward kernel events to EventBus for SSE streaming.
 
-        Registers async hook handlers on the session's coordinator for each
-        known kernel event. Each handler publishes the event to EventBus so
-        SSE subscribers receive it in real time.
+        Registers a single wildcard hook on the session's coordinator that
+        forwards every kernel event to the EventBus so SSE subscribers
+        receive them in real time.
         """
-        try:
-            from amplifier_core import HookResult
-            from amplifier_core.events import ALL_EVENTS
-        except ImportError:
-            logger.debug("amplifier_core not available; skipping event wiring")
-            return
+        from amplifier_lib.core import HookResult
+        from amplifier_lib.core.events import ALL_EVENTS
 
         coordinator = self._session.coordinator
         hooks = getattr(coordinator, "hooks", None)
         if hooks is None:
             return
 
-        # Delegate events are not included in ALL_EVENTS — add them explicitly
-        _delegate_events = [
-            "delegate:agent_spawned",
-            "delegate:agent_resumed",
-            "delegate:agent_completed",
-            "delegate:error",
-        ]
-        all_events = list(ALL_EVENTS) + _delegate_events
+        async def _on_event(name: str, data: dict[str, Any]) -> HookResult:
+            self._event_bus.publish(
+                session_id=self.session_id,
+                event_name=name,
+                data=data,
+                correlation_id=self._correlation_id,
+            )
+            return HookResult(action="continue")
 
-        registered = 0
-        for event_name in all_events:
-
-            async def _on_event(
-                name: str, data: dict[str, Any], _evt: str = event_name
-            ) -> HookResult:
-                self._event_bus.publish(
-                    session_id=self.session_id,
-                    event_name=_evt,
-                    data=data,
-                    correlation_id=self._correlation_id,
-                )
-                return HookResult(action="continue")
-
-            try:
-                hooks.register(event_name, _on_event, name=f"amplifierd_eventbus_{event_name}")
-                registered += 1
-            except Exception:
-                logger.debug("Failed to register hook for event %s", event_name, exc_info=True)
-
-        logger.debug("Wired %d event hooks for session %s", registered, self.session_id)
+        try:
+            hooks.register(ALL_EVENTS, _on_event, name="amplifierd_eventbus_all")
+            logger.debug("Wired wildcard event hook for session %s", self.session_id)
+        except Exception:
+            logger.debug("Failed to register wildcard event hook", exc_info=True)
 
     def _wire_display(self) -> None:
         """Wire an EventBusDisplaySystem onto the coordinator.

@@ -5,7 +5,7 @@ transcript.jsonl and metadata.json incrementally during execution.
 
 I/O functions (write_transcript, load_transcript, etc.) live in
 amplifier_lib.session.persistence.  This module keeps only the hook
-classes that depend on amplifier_core types.
+classes that depend on amplifier_lib.core types.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from amplifier_lib.core import HookResult
 from amplifier_lib.session.persistence import (
     load_metadata,
     load_transcript,
@@ -42,8 +43,6 @@ class TranscriptSaveHook:
         self._last_count = 0
 
     async def __call__(self, event: str, data: dict[str, Any]) -> Any:
-        from amplifier_core.models import HookResult
-
         try:
             # Workaround: tool:post fires before context update.
             # Yielding one tick lets the orchestrator add the result first.
@@ -87,8 +86,6 @@ class MetadataSaveHook:
         self._initial_metadata = initial_metadata
 
     async def __call__(self, event: str, data: dict[str, Any]) -> Any:
-        from amplifier_core.models import HookResult
-
         try:
             context = self._session.coordinator.get("context")
             if not context or not hasattr(context, "get_messages"):

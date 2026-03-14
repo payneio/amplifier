@@ -84,26 +84,17 @@ class TestHealthEndpoint:
         data = resp.json()
         assert data["active_sessions"] == 0
 
-    def test_health_has_rust_engine_field(self, client: TestClient) -> None:
-        """GET /health includes rust_engine boolean field."""
-        resp = client.get("/health")
-        assert resp.status_code == 200
-        data = resp.json()
-        assert "rust_engine" in data
-        assert isinstance(data["rust_engine"], bool)
-
-
 @pytest.mark.unit
 class TestInfoEndpoint:
     """Tests for GET /info."""
 
     def test_info_returns_200(self, client: TestClient) -> None:
-        """GET /info returns 200 with version and amplifier_core_version."""
+        """GET /info returns 200 with version and amplifier_lib_version."""
         resp = client.get("/info")
         assert resp.status_code == 200
         data = resp.json()
         assert "version" in data
-        assert "amplifier_core_version" in data
+        assert "amplifier_lib_version" in data
 
     def test_info_has_capabilities(self, client: TestClient) -> None:
         """GET /info includes capabilities list."""

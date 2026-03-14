@@ -89,24 +89,22 @@ def _make_child_session(
     async def _execute(prompt: str) -> str:
         """Simulate orchestrator execution: emit events through hooks.
 
-        Event names match amplifier_core.events.ALL_EVENTS:
+        Event names match amplifier_lib.core.events vocabulary:
         content_block:start, content_block:delta, content_block:end,
         orchestrator:complete.
+
+        Fires both event-specific and wildcard ("*") handlers to match
+        the real HookRegistry dispatch behavior.
         """
-        for h in list(_hooks.get("content_block:start", [])):
-            await h("content_block:start", {"type": "text"})
-
-        for h in list(_hooks.get("content_block:delta", [])):
-            await h("content_block:delta", {"text": execute_return})
-
-        for h in list(_hooks.get("content_block:end", [])):
-            await h("content_block:end", {})
-
-        for h in list(_hooks.get("orchestrator:complete", [])):
-            await h(
-                "orchestrator:complete",
-                {"status": "success", "turn_count": 1, "metadata": {}},
-            )
+        events = [
+            ("content_block:start", {"type": "text"}),
+            ("content_block:delta", {"text": execute_return}),
+            ("content_block:end", {}),
+            ("orchestrator:complete", {"status": "success", "turn_count": 1, "metadata": {}}),
+        ]
+        for event_name, event_data in events:
+            for h in list(_hooks.get(event_name, [])) + list(_hooks.get("*", [])):
+                await h(event_name, event_data)
 
         return execute_return
 

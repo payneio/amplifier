@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import importlib.metadata
 import time
 
-import amplifier_core
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
@@ -38,26 +38,15 @@ class HealthResponse(BaseModel):
     version: str
     uptime_seconds: float
     active_sessions: int
-    rust_engine: bool
 
 
 class InfoResponse(BaseModel):
     """Response model for GET /info."""
 
     version: str
-    amplifier_core_version: str
-    rust_available: bool
+    amplifier_lib_version: str
     capabilities: list[str]
     module_types: list[str]
-
-
-def _rust_available() -> bool:
-    """Check if the Rust engine is available."""
-    try:
-        return bool(getattr(amplifier_core, "rust_available", False))
-    except Exception:
-        # Any failure means Rust engine isn't usable
-        return False
 
 
 @health_router.get("/health", response_model=HealthResponse)
@@ -74,7 +63,6 @@ async def health(request: Request) -> HealthResponse:
         version=amplifierd.__version__,
         uptime_seconds=uptime_seconds,
         active_sessions=active_sessions,
-        rust_engine=_rust_available(),
     )
 
 
@@ -83,8 +71,7 @@ async def info() -> InfoResponse:
     """Return daemon info: version, capabilities, module types."""
     return InfoResponse(
         version=amplifierd.__version__,
-        amplifier_core_version=amplifier_core.__version__,
-        rust_available=_rust_available(),
+        amplifier_lib_version=importlib.metadata.version("amplifier-lib"),
         capabilities=CAPABILITIES,
         module_types=MODULE_TYPES,
     )

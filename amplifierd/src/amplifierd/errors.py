@@ -4,64 +4,31 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-try:
-    from amplifier_core.llm_errors import (
-        AbortError,
-        AccessDeniedError,
-        AuthenticationError,
-        ConfigurationError,
-        ContentFilterError,
-        ContextLengthError,
-        InvalidRequestError,
-        InvalidToolCallError,
-        LLMError,
-        LLMTimeoutError,
-        NetworkError,
-        NotFoundError,
-        ProviderUnavailableError,
-        QuotaExceededError,
-        RateLimitError,
-        StreamError,
-    )
-
-    _HAS_AMPLIFIER_CORE = True
-except ImportError:
-    AbortError = None  # type: ignore[assignment,misc]
-    AccessDeniedError = None  # type: ignore[assignment,misc]
-    AuthenticationError = None  # type: ignore[assignment,misc]
-    ConfigurationError = None  # type: ignore[assignment,misc]
-    ContentFilterError = None  # type: ignore[assignment,misc]
-    ContextLengthError = None  # type: ignore[assignment,misc]
-    InvalidRequestError = None  # type: ignore[assignment,misc]
-    InvalidToolCallError = None  # type: ignore[assignment,misc]
-    LLMError = None  # type: ignore[assignment,misc]
-    LLMTimeoutError = None  # type: ignore[assignment,misc]
-    NetworkError = None  # type: ignore[assignment,misc]
-    NotFoundError = None  # type: ignore[assignment,misc]
-    ProviderUnavailableError = None  # type: ignore[assignment,misc]
-    QuotaExceededError = None  # type: ignore[assignment,misc]
-    RateLimitError = None  # type: ignore[assignment,misc]
-    StreamError = None  # type: ignore[assignment,misc]
-    _HAS_AMPLIFIER_CORE = False
-
-try:
-    from amplifier_lib.exceptions import (
-        BundleDependencyError,
-        BundleError,
-        BundleLoadError,
-        BundleNotFoundError,
-        BundleValidationError,
-    )
-
-    _HAS_AMPLIFIER_LIB = True
-except ImportError:
-    BundleDependencyError = None  # type: ignore[assignment,misc]
-    BundleError = None  # type: ignore[assignment,misc]
-    BundleLoadError = None  # type: ignore[assignment,misc]
-    BundleNotFoundError = None  # type: ignore[assignment,misc]
-    BundleValidationError = None  # type: ignore[assignment,misc]
-    _HAS_AMPLIFIER_LIB = False
-
+from amplifier_lib.core.llm_errors import (
+    AbortError,
+    AccessDeniedError,
+    AuthenticationError,
+    ConfigurationError,
+    ContentFilterError,
+    ContextLengthError,
+    InvalidRequestError,
+    InvalidToolCallError,
+    LLMError,
+    LLMTimeoutError,
+    NetworkError,
+    NotFoundError,
+    ProviderUnavailableError,
+    QuotaExceededError,
+    RateLimitError,
+    StreamError,
+)
+from amplifier_lib.exceptions import (
+    BundleDependencyError,
+    BundleError,
+    BundleLoadError,
+    BundleNotFoundError,
+    BundleValidationError,
+)
 from fastapi.responses import JSONResponse
 
 from amplifierd.models.errors import ProblemDetail
@@ -70,41 +37,32 @@ if TYPE_CHECKING:
     from fastapi import FastAPI, Request
 
 # Ordered list: subclasses before parents so isinstance matches the most specific type first.
-# Only populated when amplifier-core is available.
-LLM_ERROR_MAP: list[tuple[type, int, str]] = (
-    [
-        (QuotaExceededError, 429, "quota-exceeded"),
-        (RateLimitError, 429, "rate-limit"),
-        (AccessDeniedError, 502, "provider-access-denied"),
-        (AuthenticationError, 502, "provider-auth"),
-        (ContextLengthError, 413, "context-too-large"),
-        (ContentFilterError, 422, "content-filtered"),
-        (InvalidRequestError, 400, "invalid-request"),
-        (NetworkError, 503, "network-error"),
-        (ProviderUnavailableError, 503, "provider-unavailable"),
-        (LLMTimeoutError, 504, "provider-timeout"),
-        (NotFoundError, 502, "provider-not-found"),
-        (StreamError, 502, "stream-error"),
-        (AbortError, 499, "aborted"),
-        (InvalidToolCallError, 502, "invalid-tool-call"),
-        (ConfigurationError, 500, "configuration-error"),
-        (LLMError, 502, "llm-error"),
-    ]
-    if _HAS_AMPLIFIER_CORE
-    else []
-)
+LLM_ERROR_MAP: list[tuple[type, int, str]] = [
+    (QuotaExceededError, 429, "quota-exceeded"),
+    (RateLimitError, 429, "rate-limit"),
+    (AccessDeniedError, 502, "provider-access-denied"),
+    (AuthenticationError, 502, "provider-auth"),
+    (ContextLengthError, 413, "context-too-large"),
+    (ContentFilterError, 422, "content-filtered"),
+    (InvalidRequestError, 400, "invalid-request"),
+    (NetworkError, 503, "network-error"),
+    (ProviderUnavailableError, 503, "provider-unavailable"),
+    (LLMTimeoutError, 504, "provider-timeout"),
+    (NotFoundError, 502, "provider-not-found"),
+    (StreamError, 502, "stream-error"),
+    (AbortError, 499, "aborted"),
+    (InvalidToolCallError, 502, "invalid-tool-call"),
+    (ConfigurationError, 500, "configuration-error"),
+    (LLMError, 502, "llm-error"),
+]
 
-BUNDLE_ERROR_MAP: list[tuple[type, int, str]] = (
-    [
-        (BundleNotFoundError, 404, "bundle-not-found"),
-        (BundleLoadError, 422, "bundle-load-error"),
-        (BundleValidationError, 422, "bundle-validation-error"),
-        (BundleDependencyError, 422, "bundle-dependency-error"),
-        (BundleError, 500, "bundle-error"),
-    ]
-    if _HAS_AMPLIFIER_LIB
-    else []
-)
+BUNDLE_ERROR_MAP: list[tuple[type, int, str]] = [
+    (BundleNotFoundError, 404, "bundle-not-found"),
+    (BundleLoadError, 422, "bundle-load-error"),
+    (BundleValidationError, 422, "bundle-validation-error"),
+    (BundleDependencyError, 422, "bundle-dependency-error"),
+    (BundleError, 500, "bundle-error"),
+]
 
 _BASE_URI = "https://amplifier.dev/errors"
 
@@ -203,26 +161,22 @@ def build_problem_detail(exc: LLMError | BundleError, instance: str) -> ProblemD
 def register_error_handlers(app: FastAPI) -> None:
     """Register FastAPI exception handlers for LLMError and BundleError."""
 
-    if _HAS_AMPLIFIER_CORE:
+    @app.exception_handler(LLMError)
+    async def llm_error_handler(request: Request, exc: LLMError) -> JSONResponse:
+        pd = build_problem_detail(exc, instance=str(request.url.path))
+        headers: dict[str, str] = {}
+        if isinstance(exc, RateLimitError) and exc.retry_after is not None:
+            headers["Retry-After"] = str(int(exc.retry_after))
+        return JSONResponse(
+            status_code=pd.status,
+            content=pd.model_dump(exclude_none=True),
+            headers=headers or None,
+        )
 
-        @app.exception_handler(LLMError)
-        async def llm_error_handler(request: Request, exc: LLMError) -> JSONResponse:
-            pd = build_problem_detail(exc, instance=str(request.url.path))
-            headers: dict[str, str] = {}
-            if isinstance(exc, RateLimitError) and exc.retry_after is not None:
-                headers["Retry-After"] = str(int(exc.retry_after))
-            return JSONResponse(
-                status_code=pd.status,
-                content=pd.model_dump(exclude_none=True),
-                headers=headers or None,
-            )
-
-    if _HAS_AMPLIFIER_LIB:
-
-        @app.exception_handler(BundleError)
-        async def bundle_error_handler(request: Request, exc: BundleError) -> JSONResponse:
-            pd = build_problem_detail(exc, instance=str(request.url.path))
-            return JSONResponse(
-                status_code=pd.status,
-                content=pd.model_dump(exclude_none=True),
-            )
+    @app.exception_handler(BundleError)
+    async def bundle_error_handler(request: Request, exc: BundleError) -> JSONResponse:
+        pd = build_problem_detail(exc, instance=str(request.url.path))
+        return JSONResponse(
+            status_code=pd.status,
+            content=pd.model_dump(exclude_none=True),
+        )
