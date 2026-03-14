@@ -13,3 +13,4 @@ Changes incorporated from upstream repos into the monorepo.
 | 2025-07-15 | amplifier-foundation | PR #127 | ADAPT | Add explicit on_error handlers to all validation recipe steps in bundles/amplifier-bundle-foundation/recipes/ (4 files, 36 additions + 1 change: validate-recipes on_error "continue"→"fail") |
 | 2025-07-14 | amplifier-app-cli | PR #143 | ADAPT | Wire general config overrides into resolve_bundle_config(); package rename amplifier_app_cli→amplifier_cli in all paths/imports; settings method already exists, only wiring was missing |
 | 2025-07-15 | amplifier-foundation | bca039b | ADAPT | Add "Creating Tool Modules" section + troubleshooting to BUNDLE_GUIDE.md; translated amplifier_core references to amplifier_lib |
+| 2025-07-16 | amplifier-app-cli | PR #144 | ADAPT | Extract _remove_stale_uv_lock to shared uv_utils.py; add guard in update_executor before uv Popen; translate amplifier_app_cli→amplifier_cli |
