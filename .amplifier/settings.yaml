@@ -1,0 +1,3 @@
+bundle:
+  app:
+    - "./.amplifier/bundles/amplifier-monorepo"

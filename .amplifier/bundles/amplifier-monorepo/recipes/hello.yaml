@@ -1,0 +1,10 @@
+name: hello
+description: Smoke test -- verifies the project bundle is discoverable and recipes execute.
+version: 1.0.0
+
+steps:
+  - id: greet
+    agent: foundation:explorer
+    prompt: |
+      Say "Hello from amplifier-monorepo!" and confirm the project bundle is working.
+    timeout: 60
