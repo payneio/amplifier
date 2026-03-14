@@ -5,7 +5,7 @@
 | Upstream Repo | Monorepo Location(s) | Notes |
 |---------------|----------------------|-------|
 | `microsoft/amplifier` | `docs/` (docs), `bundles/amplifier/` (bundle assets) | Simplest mapping |
-| `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~420 lines survived) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation) |
+| `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~480 lines survived) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation) |
 | `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/amplifier-bundle-foundation/` (bundle config) | Split into two halves |
 | `microsoft/amplifier-app-cli` | `amplifier-cli/` | All `amplifier_core` imports rewritten to `amplifier_lib` |
 | `microsoft/amplifierd` | `amplifierd/` | Fully migrated to `amplifier_lib` (no `amplifier-core` dependency) |
@@ -34,8 +34,8 @@
 - `pyproject.toml` version bumps, CI, release tooling -- not applicable
 
 ### KEPT (changes here may be relevant)
-- `models.py` (~130 lines) -> `amplifier-lib/amplifier_lib/core/models.py` -- ToolResult, HookResult, ModelInfo
-- `hooks.py` (~190 lines) -> `amplifier-lib/amplifier_lib/core/hooks.py` -- HookRegistry, emit semantics
+- `models.py` (~159 lines) -> `amplifier-lib/amplifier_lib/core/models.py` -- ToolResult, HookResult, ModelInfo
+- `hooks.py` (~232 lines) -> `amplifier-lib/amplifier_lib/core/hooks.py` -- HookRegistry, emit semantics
 - `events.py` (~90 lines) -> `amplifier-lib/amplifier_lib/core/events.py` -- 35 event constants
 
 ### ADDED (built during migration, not in upstream core)
@@ -89,5 +89,6 @@
 Fully migrated to `amplifier_lib`. No `amplifier-core` dependency remains.
 All source files under `amplifierd/src/amplifierd/` import from `amplifier_lib`.
 
-Note: The installed `.venv/` still contains a cached `amplifier_core` package but
-the source code and `pyproject.toml` have no references to it.
+Note: The `uv.lock` and installed `.venv/` still contain stale `amplifier_core`
+references (lock file not regenerated after migration), but the source code and
+`pyproject.toml` have no references to it.
