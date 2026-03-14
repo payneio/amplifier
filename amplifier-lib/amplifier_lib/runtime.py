@@ -104,6 +104,11 @@ class Coordinator:
         self._current_turn_injections: int = 0
 
     @property
+    def session_id(self) -> str | None:
+        """Session ID (delegated to the owning AmplifierSession)."""
+        return getattr(self.session, "session_id", None)
+
+    @property
     def hooks(self) -> HookRegistry:
         return self.mount_points["hooks"]
 
