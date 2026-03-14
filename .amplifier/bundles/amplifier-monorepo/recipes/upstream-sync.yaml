@@ -228,7 +228,13 @@ steps:
     type: "recipe"
     recipe: "upstream-sync-process-change.yaml"
     context:
-      change: "{{change}}"
+      change_repo: "{{change.repo}}"
+      change_type: "{{change.type}}"
+      change_ref: "{{change.ref}}"
+      change_title: "{{change.title}}"
+      change_url: "{{change.url}}"
+      change_sha: "{{change.sha}}"
+      change_diff_url: "{{change.diff_url}}"
     collect: "results"
     max_iterations: 200
     on_error: "continue"

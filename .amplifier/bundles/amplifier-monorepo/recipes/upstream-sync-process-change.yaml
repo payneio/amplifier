@@ -27,14 +27,13 @@ version: "1.0.0"
 tags: ["upstream", "sync", "sub-recipe"]
 
 context:
-  change:  # Required: change unit dict from manifest
-    repo: ""
-    type: ""
-    ref: ""
-    title: ""
-    url: ""
-    sha: ""
-    diff_url: ""
+  change_repo: ""
+  change_type: ""
+  change_ref: ""
+  change_title: ""
+  change_url: ""
+  change_sha: ""
+  change_diff_url: ""
 
 steps:
   # -- Step 1: Analyze the change with upstream-analyst -----------------------
@@ -47,12 +46,12 @@ steps:
       into our refactored monorepo.
 
       Change details:
-        Repository: {{change.repo}}
-        Type:       {{change.type}}
-        Reference:  {{change.ref}}
-        Title:      {{change.title}}
-        URL:        {{change.url}}
-        Diff URL:   {{change.diff_url}}
+        Repository: {{change_repo}}
+        Type:       {{change_type}}
+        Reference:  {{change_ref}}
+        Title:      {{change_title}}
+        URL:        {{change_url}}
+        Diff URL:   {{change_diff_url}}
 
       Fetch and read the diff from the URL above to understand exactly what changed.
       Cross-reference against the refactor mappings at
@@ -82,12 +81,12 @@ steps:
       Implement this upstream change adaptation in the monorepo.
 
       Change details:
-        Repository: {{change.repo}}
-        Type:       {{change.type}}
-        Reference:  {{change.ref}}
-        Title:      {{change.title}}
-        URL:        {{change.url}}
-        Diff URL:   {{change.diff_url}}
+        Repository: {{change_repo}}
+        Type:       {{change_type}}
+        Reference:  {{change_ref}}
+        Title:      {{change_title}}
+        URL:        {{change_url}}
+        Diff URL:   {{change_diff_url}}
 
       Analyst's determination and adaptation plan:
       {{analysis}}
@@ -102,8 +101,8 @@ steps:
     type: "bash"
     timeout: 10
     env:
-      CHANGE_REPO: "{{change.repo}}"
-      CHANGE_SHA: "{{change.sha}}"
+      CHANGE_REPO: "{{change_repo}}"
+      CHANGE_SHA: "{{change_sha}}"
     command: |
       # Ensure we're on main (not a feature branch) before writing
       git checkout main 2>/dev/null || true
