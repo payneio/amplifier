@@ -1522,31 +1522,23 @@ async def interactive_chat(
             double Ctrl+C could be mishandled because the first state update might
             not complete before the second signal arrives.
 
-            The CancellationToken's request_graceful() and request_immediate() methods
-            are synchronous, so we call them directly here.
+            The CancellationToken's cancel(immediate=) method is synchronous,
+            so we call it directly here.
             """
             cancellation = session.coordinator.cancellation
 
             if cancellation.is_cancelled:
                 # Second Ctrl+C - request immediate cancellation
                 # SYNC state update to avoid race condition with rapid double Ctrl+C
-                cancellation.request_immediate()
+                cancellation.cancel(immediate=True)
                 console.print("\n[bold red]Cancelling immediately...[/bold red]")
             else:
                 # First Ctrl+C - request graceful cancellation
                 # SYNC state update to ensure state is set before any second signal
-                cancellation.request_graceful()
-                # Show what's running
-                running_tools = cancellation.running_tool_names
-                if running_tools:
-                    tools_str = ", ".join(running_tools)
-                    console.print(
-                        f"\n[yellow]Cancelling after [bold]{tools_str}[/bold] completes... (Ctrl+C again to force)[/yellow]"
-                    )
-                else:
-                    console.print(
-                        "\n[yellow]Cancelling after current operation completes... (Ctrl+C again to force)[/yellow]"
-                    )
+                cancellation.cancel()
+                console.print(
+                    "\n[yellow]Cancelling after current operation completes... (Ctrl+C again to force)[/yellow]"
+                )
 
         original_handler = signal.signal(signal.SIGINT, sigint_handler)
 
