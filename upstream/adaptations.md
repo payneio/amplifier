@@ -14,3 +14,4 @@ Changes incorporated from upstream repos into the monorepo.
 | 2025-07-14 | amplifier-app-cli | PR #143 | ADAPT | Wire general config overrides into resolve_bundle_config(); package rename amplifier_app_cli→amplifier_cli in all paths/imports; settings method already exists, only wiring was missing |
 | 2025-07-15 | amplifier-foundation | bca039b | ADAPT | Add "Creating Tool Modules" section + troubleshooting to BUNDLE_GUIDE.md; translated amplifier_core references to amplifier_lib |
 | 2025-07-16 | amplifier-app-cli | PR #144 | ADAPT | Extract _remove_stale_uv_lock to shared uv_utils.py; add guard in update_executor before uv Popen; translate amplifier_app_cli→amplifier_cli |
+| 2025-07-15 | amplifierd | PR #23 | ADAPT | SSE reliability: logging, keepalive sentinels via EventBus timeout, sequence IDs in SSE output, per-event error isolation, disconnect detection — applies to routes/events.py, state/event_bus.py, tests/test_events_route.py |

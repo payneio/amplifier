@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -30,14 +31,17 @@ class TestEventGenerator:
                 data={"hello": "world"},
             )
 
+        mock_request = MagicMock()
+        mock_request.is_disconnected = AsyncMock(return_value=False)
+
         task = asyncio.create_task(publish_after_delay())
-        gen = _event_generator(event_bus)
+        gen = _event_generator(event_bus, request=mock_request)
         sse_chunk = await asyncio.wait_for(gen.__anext__(), timeout=2.0)
         await gen.aclose()
         await task
 
-        # Verify SSE format: 'event: {name}\ndata: {json}\n\n'
-        assert sse_chunk.startswith("event: test:event\n")
+        # Verify SSE format: 'id: {seq}\nevent: {name}\ndata: {json}\n\n'
+        assert sse_chunk.startswith("id: 1\nevent: test:event\n")
         assert "data: " in sse_chunk
         assert sse_chunk.endswith("\n\n")
 

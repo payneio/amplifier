@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter, Request
@@ -10,30 +11,40 @@ from starlette.responses import StreamingResponse
 
 from amplifierd.state.event_bus import EventBus
 
-events_router = APIRouter(tags=["events"])
+logger = logging.getLogger(__name__)
 
-_KEEPALIVE_INTERVAL: float = 15.0
+events_router = APIRouter(tags=["events"])
 
 
 async def _event_generator(
     event_bus: EventBus,
+    request: Request,
     session_id: str | None = None,
     filter_patterns: list[str] | None = None,
 ) -> AsyncGenerator[str]:
     """Yield SSE-formatted strings by subscribing to the EventBus.
 
     Each event is serialized via ``event.to_sse_dict()`` with
-    ``json.dumps(ensure_ascii=False)``.  A keepalive comment is sent
-    every ``_KEEPALIVE_INTERVAL`` seconds to prevent proxy timeouts.
+    ``json.dumps(ensure_ascii=False)``.  A keepalive comment (``None``
+    sentinel from the bus) is forwarded to prevent proxy timeouts.
     """
     async for event in event_bus.subscribe(
         session_id=session_id,
         filter_patterns=filter_patterns,
     ):
-        sse_dict = event.to_sse_dict()
-        name = sse_dict.get("event", event.event_name)
-        data = json.dumps(sse_dict, ensure_ascii=False)
-        yield f"event: {name}\ndata: {data}\n\n"
+        if await request.is_disconnected():
+            logger.info("SSE client disconnected; closing generator")
+            break
+        if event is None:
+            yield ": keepalive\n\n"
+            continue
+        try:
+            sse_dict = event.to_sse_dict()
+            name = sse_dict.get("event", event.event_name)
+            data = json.dumps(sse_dict, ensure_ascii=False)
+            yield f"id: {event.sequence}\nevent: {name}\ndata: {data}\n\n"
+        except Exception:
+            logger.exception("Failed to serialize SSE event %r; skipping", event.event_name)
 
 
 @events_router.get("/events")
@@ -53,6 +64,7 @@ async def stream_events(
     return StreamingResponse(
         _event_generator(
             event_bus=event_bus,
+            request=request,
             session_id=session,
             filter_patterns=filter_patterns,
         ),
