@@ -47,10 +47,11 @@ Append a single line to the table in `upstream/adaptations.md`:
 | <date> | <repo> | <change-ref> | <ADAPT/DIRECT> | <brief description of what was adapted> |
 ```
 
-Keep entries concise -- one line per change, no paragraphs.
+Keep entries concise -- one line per change, no paragraphs. Make sure the date is today's date.
 
 ## Rules
 
+- If SKIP and no other changes were made than `upstream/adaptations.md`, commit directly to main without a PR.
 - One branch and one PR per upstream change -- never batch multiple upstream changes
 - The PR must be self-contained: accepting or rejecting it should not affect other PRs
 - Do not modify `upstream/sources.md` -- that is updated separately after all changes are processed
