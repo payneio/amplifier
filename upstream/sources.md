@@ -1,17 +1,22 @@
 # Git Repo References
 
-- https://github.com/microsoft/amplifier@main
+- amplifier
+  - source: https://github.com/microsoft/amplifier@main
   - HEAD: 07dad486aab7547cdc6ba6246744257cbd37fa8b
   - last updated: 2026-03-13T17:26:31Z
-- https://github.com/microsoft/amplifier-foundation@main
-  - HEAD: 0a3974053d7968851dbb062074fde27cb0a8dec8
-  - last updated: 2026-03-13T17:26:31Z
-- https://github.com/microsoft/amplifier-app-cli@main
-  - HEAD: f70024106a0d7af24af5237ad1292a69be07c644
-  - last updated: 2026-03-13T17:26:31Z
-- https://github.com/microsoft/amplifier-core@main
+- amplifier-core
+  - source: https://github.com/microsoft/amplifier-core@main
   - HEAD: 87b97654bbe8814b5292bb238b1cc1e655d82d90
   - last updated: 2026-03-13T17:26:31Z
-- https://github.com/microsoft/amplifierd@main
+- amplifierd
+  - source: https://github.com/microsoft/amplifierd@main
   - HEAD: 1bd9b24d31360d4b0145aa00750c48ea08da13c8
+  - last updated: 2026-03-13T17:26:31Z
+- amplifier-app-cli
+  - source: https://github.com/microsoft/amplifier-app-cli@main
+  - HEAD: f70024106a0d7af24af5237ad1292a69be07c644
+  - last updated: 2026-03-13T17:26:31Z
+- amplifier-foundation
+  - source: https://github.com/microsoft/amplifier-foundation@main
+  - HEAD: 0a3974053d7968851dbb062074fde27cb0a8dec8
   - last updated: 2026-03-13T17:26:31Z
