@@ -26,6 +26,17 @@
 # CHANGELOG
 # =============================================================================
 #
+# v1.1.0 (2026-03-15):
+#   - Reconcile step improvements
+#     * Added reconcile-baseline bash step: reads upstream/.reconcile-head
+#       to scope the audit to commits since the last reconcile run
+#     * Reconcile agent step is now conditional (skipped when no relevant
+#       local commits exist) and has a precise prompt explaining that these
+#       docs are the maps upstream-analyst/adapter rely on for integration
+#     * Added update-reconcile-tracking step: advances the baseline in
+#       upstream/.reconcile-head after each run (committed, analogous to
+#       how sources.md tracks upstream HEADs)
+#
 # v1.0.0 (2026-03-14):
 #   - Initial recipe implementation
 #     * Reconcile: audits codebase against reference docs, fixes stale info
@@ -44,32 +55,121 @@
 
 name: "upstream-sync"
 description: "Sync upstream repo changes into the refactored monorepo, creating one PR per change"
-version: "1.0.0"
+version: "1.1.0"
 tags: ["upstream", "sync", "monorepo", "maintenance"]
 
 steps:
   # ==========================================================================
-  # Step 0: Reconcile reference docs with current codebase state
+  # Step 0a: Determine reconcile baseline (what local commits are new?)
+  # ==========================================================================
+  - id: "reconcile-baseline"
+    type: "bash"
+    timeout: 30
+    parse_json: true
+    output: "reconcile_info"
+    command: |
+      set -euo pipefail
+
+      TRACKING_FILE="upstream/.reconcile-head"
+      current_head=$(git rev-parse HEAD)
+
+      # Read last-reconciled HEAD, or fall back to the first commit that
+      # created refactor-mappings.md (covers the initial run)
+      if [[ -f "$TRACKING_FILE" ]]; then
+        baseline=$(tr -d '[:space:]' < "$TRACKING_FILE")
+      else
+        baseline=$(git log --reverse --format='%H' \
+          -- upstream/refactor-mappings.md 2>/dev/null | head -1)
+      fi
+
+      if [[ -z "$baseline" ]]; then
+        jq -n --arg head "$current_head" \
+          '{has_changes: "false", baseline: "", head: $head,
+            commit_summary: "No baseline found."}'
+        exit 0
+      fi
+
+      if [[ "$baseline" == "$current_head" ]]; then
+        jq -n --arg b "$baseline" --arg head "$current_head" \
+          '{has_changes: "false", baseline: $b, head: $head,
+            commit_summary: "No new commits since last reconcile."}'
+        exit 0
+      fi
+
+      # Commits in directories that affect the reference docs
+      commit_log=$(git log --oneline "$baseline..HEAD" \
+        -- amplifier-lib/ amplifier-cli/ amplifierd/ bundles/ \
+           docs/ upstream/refactor/ 2>/dev/null || echo "")
+
+      if [[ -z "$commit_log" ]]; then
+        jq -n --arg b "$baseline" --arg head "$current_head" \
+          '{has_changes: "false", baseline: $b, head: $head,
+            commit_summary: "No relevant commits since last reconcile."}'
+      else
+        jq -n --arg b "$baseline" --arg head "$current_head" \
+          --arg summary "$commit_log" \
+          '{has_changes: "true", baseline: $b, head: $head,
+            commit_summary: $summary}'
+      fi
+
+  # ==========================================================================
+  # Step 0b: Reconcile reference docs with recent local changes
   # ==========================================================================
   - id: "reconcile"
+    condition: "{{reconcile_info.has_changes}} == 'true'"
     agent: "amplifier-monorepo:repo-auditor"
     timeout: 300
     output: "reconcile_result"
     prompt: |
-      Audit the monorepo's current state and update any stale reference
-      documentation before we process upstream changes.
+      Review local monorepo commits since the last reconcile and update the
+      reference documentation that upstream-sync agents rely on when
+      integrating changes from the upstream repositories.
 
-      Check these files for accuracy:
-      - upstream/refactor-mappings.md
-      - upstream/adaptations.md (append-only for local changes not in the log)
+      upstream/refactor-mappings.md and upstream/adaptations.md are the
+      primary references that the upstream-analyst and upstream-adapter
+      agents consult to determine where upstream changes land in the
+      monorepo, what code has been eliminated, and how imports translate.
+      When these docs drift from reality, upstream changes get mis-applied
+      or use stale import paths. Keeping them accurate ensures that the
+      next round of upstream integrations maps cleanly onto the current
+      monorepo structure.
 
-      Scan the actual codebase to verify:
-      - amplifierd migration status (check for remaining amplifier_core imports)
-      - amplifier-cli migration status
-      - amplifier-lib/core/ contents
-      - Any new file relocations not documented
+      Baseline commit: {{reconcile_info.baseline}}
+      Current HEAD:    {{reconcile_info.head}}
 
-      Update anything that's stale and commit. If everything is current, say so.
+      Commits to review (monorepo structure changes since last reconcile):
+      {{reconcile_info.commit_summary}}
+
+      Review the diffs for these commits and update:
+
+      1. upstream/refactor-mappings.md — if any commits moved or renamed
+         files, added or removed modules in amplifier_lib/, introduced new
+         import translations, changed what upstream code is eliminated vs
+         kept, or altered directory structure.
+
+      2. upstream/adaptations.md — append entries for any commits that made
+         significant structural changes outside of upstream-sync, manually
+         incorporated upstream work, or completed previously-incomplete
+         migrations.
+
+      Only update what's actually changed. Commit if updates were made;
+      otherwise report that the docs are current and stop.
+
+  # ==========================================================================
+  # Step 0c: Advance reconcile baseline so next run skips these commits
+  # ==========================================================================
+  - id: "update-reconcile-tracking"
+    type: "bash"
+    timeout: 30
+    command: |
+      set -euo pipefail
+      git checkout main 2>/dev/null || true
+      head=$(git rev-parse HEAD)
+      echo "$head" > upstream/.reconcile-head
+      git add upstream/.reconcile-head
+      if ! git diff --cached --quiet; then
+        git commit -m "chore: advance reconcile baseline to ${head:0:12}"
+      fi
 
   # ==========================================================================
   # Step 1: Discover new upstream changes

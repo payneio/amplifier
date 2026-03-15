@@ -88,7 +88,3 @@
 
 Fully migrated to `amplifier_lib`. No `amplifier-core` dependency remains.
 All source files under `amplifierd/src/amplifierd/` import from `amplifier_lib`.
-
-Note: The `uv.lock` and installed `.venv/` still contain stale `amplifier_core`
-references (lock file not regenerated after migration), but the source code and
-`pyproject.toml` have no references to it.
