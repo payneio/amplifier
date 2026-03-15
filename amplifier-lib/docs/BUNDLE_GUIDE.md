@@ -8,16 +8,17 @@
 
 A **bundle** is a composable unit of configuration that produces a mount plan for AmplifierSession. Bundles package:
 
+- **Instructions** - System prompts and context
+- **Context** - Content used by the agent
+- **Providers** - LLM backend configurations
 - **Tools** - Capabilities the agent can use
 - **Agents** - Sub-agent definitions for task delegation
 - **Hooks** - Observability and control mechanisms
-- **Providers** - LLM backend configurations
-- **Instructions** - System prompts and context
-- **Spawn Policy** - Controls what tools spawned agents inherit
+- **Skills** - A way to bundle expertise
+- **Recipes** - Workflows for your agent
+- **Modules** - Additional Python functionality
 
-Bundles are the primary way to share and compose AI agent configurations.
-
-**Key insight**: Bundles are **configuration**, not Python packages. A bundle repo does not need a root `pyproject.toml`.
+Bundles are the primary way to share and compose AI agent behaviors.
 
 ---
 
