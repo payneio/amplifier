@@ -15,7 +15,6 @@ This is app-layer policy - the foundation library knows nothing about specific b
 
 from __future__ import annotations
 
-import importlib
 import logging
 from pathlib import Path
 
@@ -79,17 +78,9 @@ class AppBundleDiscovery:
             logger.debug(f"Loaded user bundle '{name}' → {uri}")
 
     def _register_well_known_bundles(self) -> None:
-        """Register well-known bundles with the registry.
-
-        For each well-known bundle, resolves the URI (local package → remote fallback)
-        and registers it with the BundleRegistry.
-        """
+        """Register well-known bundles with the registry."""
         for name, bundle_info in WELL_KNOWN_BUNDLES.items():
-            # Try local package first (faster for editable installs)
-            uri = self._find_packaged_bundle(bundle_info["package"])
-            if not uri:
-                # Fallback to remote URI (always works)
-                uri = bundle_info["remote"]
+            uri = bundle_info["remote"]
             self._registry.register({name: uri})
             logger.debug(f"Registered well-known bundle '{name}' → {uri}")
 
@@ -156,42 +147,6 @@ class AppBundleDiscovery:
         logger.debug(f"Bundle '{name}' not found in any search path")
         return None
 
-    def _find_packaged_bundle(self, package_name: str) -> str | None:
-        """Find a bundle co-located with a Python package.
-
-        Convention: Bundle root is the parent directory of the Python package.
-        This works for editable installs where the package lives in:
-            repo-root/package_name/__init__.py
-        And the bundle.md is at:
-            repo-root/bundle.md
-
-        Args:
-            package_name: Python package name (e.g., "amplifier_lib").
-
-        Returns:
-            file:// URI for the bundle, or None if not found.
-        """
-        try:
-            pkg = importlib.import_module(package_name)
-            if pkg.__file__ is None:
-                return None
-
-            pkg_dir = Path(pkg.__file__).parent
-            bundle_root = pkg_dir.parent  # Go up from package/ to repo root
-
-            # Check for bundle definition file
-            if (bundle_root / "bundle.md").exists():
-                return f"file://{bundle_root.resolve()}"
-            if (bundle_root / "bundle.yaml").exists():
-                return f"file://{bundle_root.resolve()}"
-
-        except ImportError:
-            logger.debug(f"Package '{package_name}' not installed")
-        except Exception as e:
-            logger.debug(f"Error finding packaged bundle '{package_name}': {e}")
-
-        return None
-
     def _find_in_path(self, base_path: Path, name: str) -> str | None:
         """Search for bundle in a single base path.
 
@@ -213,8 +168,7 @@ class AppBundleDiscovery:
         name_path = Path(name)
         target_dir = base_path / name_path
 
-        # Check directory bundle formats - return directory URI for consistency
-        # with _find_packaged_bundle() which also returns directory URIs
+        # Check directory bundle formats
         if target_dir.is_dir():
             bundle_md = target_dir / "bundle.md"
             if bundle_md.exists():
@@ -444,7 +398,7 @@ class AppBundleDiscovery:
 
         # Well-known bundles
         for name, info in WELL_KNOWN_BUNDLES.items():
-            uri = self._find_packaged_bundle(info.get("package", "")) or info["remote"]
+            uri = info["remote"]
             categories["well_known"].append(
                 {
                     "name": name,

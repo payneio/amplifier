@@ -11,48 +11,39 @@ from __future__ import annotations
 # Well-known bundles
 # ---------------------------------------------------------------------------
 # Each entry maps bundle name -> info dict with:
-#   - package: Python package name (for local editable install check)
-#   - remote: Git URL (fallback when package not installed)
+#   - remote: Git URL for the bundle source
 #   - show_in_list: Whether to show in default `bundle list` output
 
 WELL_KNOWN_BUNDLES: dict[str, dict[str, str | bool]] = {
     "foundation": {
-        "package": "amplifier_lib",
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main",
+        "remote": "git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation",
         "show_in_list": True,
     },
     "recipes": {
-        "package": "",
         "remote": "git+https://github.com/microsoft/amplifier-bundle-recipes@main",
         "show_in_list": False,
     },
     "design-intelligence": {
-        "package": "",
         "remote": "git+https://github.com/microsoft/amplifier-bundle-design-intelligence@main",
         "show_in_list": False,
     },
     "exp-delegation": {
-        "package": "",
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=experiments/delegation-only",
+        "remote": "git+https://github.com/payneio/amplifier@main#subdirectory=bundles/experiments/delegation-only",
         "show_in_list": True,
     },
     "amplifier-dev": {
-        "package": "",
-        "remote": "git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=bundles/amplifier-dev.yaml",
+        "remote": "git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/bundles/amplifier-dev.yaml",
         "show_in_list": True,
     },
     "notify": {
-        "package": "",
         "remote": "git+https://github.com/microsoft/amplifier-bundle-notify@main",
         "show_in_list": False,
     },
     "modes": {
-        "package": "",
         "remote": "git+https://github.com/microsoft/amplifier-bundle-modes@main",
         "show_in_list": False,
     },
     "distro": {
-        "package": "",
         "remote": "git+https://github.com/microsoft/amplifier-bundle-distro@main",
         "show_in_list": False,
     },
