@@ -16,7 +16,7 @@ bundle:
 tools:
   # New delegate tool with enhanced features
   - module: tool-delegate
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/tool-delegate
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/tool-delegate
     config:
       features:
         self_delegation:

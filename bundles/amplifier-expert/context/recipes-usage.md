@@ -121,7 +121,7 @@ Complete workflow to generate an activity report for all Amplifier ecosystem rep
 
 ```bash
 # 1. Clone/update amplifier if needed
-gh repo clone microsoft/amplifier ./amplifier 2>/dev/null || (cd amplifier && git pull)
+gh repo clone payneio/amplifier ./amplifier 2>/dev/null || (cd amplifier && git pull)
 
 # 2. Extract repos from MODULES.md
 grep -oE 'https://github.com/microsoft/[^)>\s"]+' amplifier/docs/MODULES.md | \

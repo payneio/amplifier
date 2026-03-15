@@ -5,9 +5,9 @@ bundle:
 
 agents:
   include:
-    - amplifier:amplifier-expert
+    - amplifier-expert:amplifier-expert
 
 context:
   include:
-    - amplifier:context/ecosystem-overview.md
+    - amplifier-expert:context/ecosystem-overview.md
     # recipes-usage.md demoted to soft reference (load on demand) - see amplifier-expert.md

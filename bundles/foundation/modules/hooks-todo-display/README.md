@@ -48,7 +48,7 @@ Visual progress display for todo list tool calls. Renders todo lists with progre
 ```yaml
 hooks:
   - module: hooks-todo-display
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/hooks-todo-display
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/hooks-todo-display
     config:
       # Display modes: "full" (default), "condensed", "auto", "none"
       # mode: full
@@ -87,7 +87,7 @@ This module is included in the `behavior-todo-reminder` bundle by default. To us
 ```yaml
 hooks:
   - module: hooks-todo-display
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/hooks-todo-display
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/hooks-todo-display
     config:
       mode: full  # or "condensed", "auto", "none"
 ```
@@ -99,7 +99,7 @@ To disable the visual display and fall back to generic tool output:
 ```yaml
 hooks:
   - module: hooks-todo-display
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/hooks-todo-display
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/hooks-todo-display
     config:
       mode: none
 ```

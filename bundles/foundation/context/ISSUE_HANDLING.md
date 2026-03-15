@@ -149,7 +149,7 @@ Detailed explanation of:
 
 Fixes: [issue-tracker]#[issue-number]
 
-Generated with [Amplifier](https://github.com/microsoft/amplifier)
+Generated with [Amplifier](https://github.com/payneio/amplifier)
 Co-Authored-By: Amplifier <240397093+microsoft-amplifier@users.noreply.github.com>
 ```
 

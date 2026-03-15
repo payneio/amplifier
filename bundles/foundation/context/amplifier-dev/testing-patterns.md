@@ -75,13 +75,12 @@ Then run Amplifier normally - it will use your local sources.
 For testing changes that span multiple repos or need isolation:
 
 ```bash
-# Create shadow environment with local sources
+# Create shadow environment with local monorepo
 amplifier-shadow create \
-  --local ~/repos/amplifier-core:microsoft/amplifier-core \
-  --local ~/repos/amplifier-foundation:microsoft/amplifier-foundation
+  --local ~/repos/amplifier:payneio/amplifier
 
 # Execute commands in the shadow
-amplifier-shadow exec <shadow-id> "uv tool install git+https://github.com/microsoft/amplifier"
+amplifier-shadow exec <shadow-id> "uv tool install git+https://github.com/payneio/amplifier"
 amplifier-shadow exec <shadow-id> "amplifier run 'test my changes'"
 
 # Clean up
@@ -97,7 +96,7 @@ amplifier-shadow destroy <shadow-id>
 
 1. **OS-level isolation** - Sandboxed filesystem (bubblewrap on Linux, sandbox-exec on macOS)
 2. **Local source snapshots** - Your uncommitted changes captured as bare git repos
-3. **Git URL rewriting** - `git clone https://github.com/microsoft/amplifier-core` fetches from local snapshot
+3. **Git URL rewriting** - `git clone https://github.com/payneio/amplifier` fetches from local snapshot
 4. **Full network access** - Can still reach PyPI, other dependencies
 
 ### When to Use Shadow
@@ -114,12 +113,12 @@ amplifier-shadow destroy <shadow-id>
 
 # 2. Create shadow with those changes
 amplifier-shadow create \
-  --local ~/repos/amplifier-core:microsoft/amplifier-core \
+  --local ~/repos/amplifier:payneio/amplifier \
   --local ~/repos/amplifier-module-xyz:microsoft/amplifier-module-xyz \
   --name my-test
 
 # 3. Test in shadow
-amplifier-shadow exec my-test "uv tool install git+https://github.com/microsoft/amplifier"
+amplifier-shadow exec my-test "uv tool install git+https://github.com/payneio/amplifier"
 amplifier-shadow exec my-test "amplifier run 'verify changes work'"
 # or run tests
 amplifier-shadow exec my-test "cd /workspace && pytest tests/"

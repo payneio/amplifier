@@ -75,7 +75,7 @@ steps:
           try:
               subprocess.run(
                   [sys.executable, "-m", "pip", "install", "-q", 
-                   "git+https://github.com/microsoft/amplifier-foundation@main"],
+                   "git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib"],
                   check=True,
                   capture_output=True
               )

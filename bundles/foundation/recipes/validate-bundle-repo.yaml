@@ -99,7 +99,7 @@ description: |
   If running on a system with externally-managed Python (PEP 668), use uvx:
   ```bash
   # Install deps ephemerally via uvx
-  uvx --with hatchling --with "git+https://github.com/microsoft/amplifier-foundation@main" \
+  uvx --with hatchling --with "git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib" \
       amplifier tool invoke recipes operation=execute \
       recipe_path=foundation:recipes/validate-bundle-repo.yaml \
       context='{"repo_path": "/path/to/repo"}'
@@ -108,7 +108,7 @@ description: |
   Or install directly (if pip works):
   ```bash
   pip install hatchling
-  pip install git+https://github.com/microsoft/amplifier-foundation@main
+  pip install "git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib"
   ```
   
   **v3.1.0 Enhancements:**
@@ -205,10 +205,10 @@ steps:
               results["install_instructions"]["standard"].append("pip install hatchling")
           if not foundation_available:
               results["install_instructions"]["standard"].append(
-                  "pip install git+https://github.com/microsoft/amplifier-core@main"
+                  "pip install \"git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib\""
               )
               results["install_instructions"]["standard"].append(
-                  "pip install git+https://github.com/microsoft/amplifier-foundation@main"
+                  "pip install \"git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib\""
               )
           
           # PEP 668 commands (with --break-system-packages)
@@ -218,10 +218,10 @@ steps:
               )
           if not foundation_available:
               results["install_instructions"]["pep668"].append(
-                  "pip install --break-system-packages git+https://github.com/microsoft/amplifier-core@main"
+                  "pip install --break-system-packages \"git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib\""
               )
               results["install_instructions"]["pep668"].append(
-                  "pip install --break-system-packages git+https://github.com/microsoft/amplifier-foundation@main"
+                  "pip install --break-system-packages \"git+https://github.com/payneio/amplifier@main#subdirectory=amplifier-lib\""
               )
 
       # Check 3: pip wheel capability

@@ -19,7 +19,7 @@ This hook module observes conversation progress and automatically generates huma
 ```yaml
 hooks:
   - module: hooks-session-naming
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/hooks-session-naming
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/hooks-session-naming
     config:
       initial_trigger_turn: 2        # Generate name after this turn (default: 2)
       update_interval_turns: 5       # Update description every N turns (default: 5)

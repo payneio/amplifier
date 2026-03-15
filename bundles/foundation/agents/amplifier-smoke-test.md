@@ -282,9 +282,9 @@ VERDICT: {PASS|FAIL}
 
 | Symptom | Likely Cause | Fix |
 |---------|--------------|-----|
-| `amplifier` command not found | CLI not installed as tool | Use `uv tool install git+https://github.com/microsoft/amplifier` |
+| `amplifier` command not found | CLI not installed as tool | Use `uv tool install git+https://github.com/payneio/amplifier` |
 | `No providers mounted` | Settings.yaml missing | Create `~/.amplifier/settings.yaml` with provider config |
-| Import fails for `amplifier_core` | Package not installed | Install with `uv pip install git+https://github.com/microsoft/amplifier-core` |
+| Import fails for `amplifier_core` | Package not installed | Install with `uv pip install "git+https://github.com/payneio/amplifier#subdirectory=amplifier-lib"` |
 | Commit mismatch | Local repo has uncommitted changes | This is expected - snapshot includes working tree changes |
 | Provider module not found | Provider not installed | Run `amplifier provider install <name> -q` |
 

@@ -4,14 +4,14 @@ This document provides Amplifier-specific patterns for testing local changes in 
 
 ## Common Amplifier Testing Scenarios
 
-### Testing amplifier-core Changes
+### Testing amplifier-lib (Core) Changes
 
 ```python
-# Create shadow with local amplifier-core
-shadow.create(local_sources=["~/repos/amplifier-core:microsoft/amplifier-core"])
+# Create shadow with local amplifier monorepo
+shadow.create(local_sources=["~/repos/amplifier:payneio/amplifier"])
 
-# Install amplifier - it will use YOUR local amplifier-core as a dependency
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+# Install amplifier - it will use YOUR local code
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Verify local code is installed (check commit in output)
 # Look for: amplifier-core @ git+...@<your-snapshot-commit>
@@ -27,44 +27,42 @@ shadow.exec(shadow_id, 'amplifier --version')
 ### Testing amplifier-foundation Changes
 
 ```python
-# Create shadow with local foundation
-shadow.create(local_sources=["~/repos/amplifier-foundation:microsoft/amplifier-foundation"])
+# Create shadow with local monorepo (includes foundation bundles)
+shadow.create(local_sources=["~/repos/amplifier:payneio/amplifier"])
 
 # Install amplifier 
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Verify bundle loading works with your changes
 shadow.exec(shadow_id, "python -c 'from amplifier_lib import load_bundle; print(\"OK\")'")
 ```
 
-### Testing amplifier-app-cli Changes
+### Testing amplifier-cli Changes
 
 ```python
-# Create shadow with local CLI
-shadow.create(local_sources=["~/repos/amplifier-app-cli:microsoft/amplifier-app-cli"])
+# Create shadow with local monorepo (includes CLI)
+shadow.create(local_sources=["~/repos/amplifier:payneio/amplifier"])
 
 # Install amplifier (uses your local CLI)
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Test CLI changes
 shadow.exec(shadow_id, "amplifier --version")
 shadow.exec(shadow_id, "amplifier --help")
 ```
 
-### Testing Multi-Repo Changes
+### Testing Monorepo Changes
 
-When testing changes that span multiple Amplifier repos:
+In the monorepo, core, CLI, and bundles are all in a single repo:
 
 ```python
-# Create shadow with ALL affected repos
+# Create shadow with local monorepo
 shadow.create(local_sources=[
-    "~/repos/amplifier-core:microsoft/amplifier-core",
-    "~/repos/amplifier-foundation:microsoft/amplifier-foundation",
-    "~/repos/amplifier-app-cli:microsoft/amplifier-app-cli"
+    "~/repos/amplifier:payneio/amplifier"
 ])
 
-# Install - all dependencies use local snapshots
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+# Install - uses your local code for everything
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Verify each repo's changes are included (check commits in install output)
 ```
@@ -78,7 +76,7 @@ For testing changes to specific modules (providers, tools, hooks):
 shadow.create(local_sources=["~/repos/amplifier-module-tool-xyz:microsoft/amplifier-module-tool-xyz"])
 
 # Option 1: Install via bundle that uses the module
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Option 2: Install module directly for testing
 shadow.exec(shadow_id, "uv pip install git+https://github.com/microsoft/amplifier-module-tool-xyz")
@@ -96,7 +94,7 @@ For testing changes to bundles:
 shadow.create(local_sources=["~/repos/amplifier-bundle-xyz:microsoft/amplifier-bundle-xyz"])
 
 # Install amplifier
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # Add and use the bundle
 shadow.exec(shadow_id, "amplifier bundle add git+https://github.com/microsoft/amplifier-bundle-xyz")
@@ -149,13 +147,13 @@ shadow.exec(shadow_id, "env | grep -E '(ANTHROPIC|OPENAI|AZURE|GOOGLE)_'")
 
 ```python
 # Get snapshot commits from creation
-result = shadow.create(local_sources=["~/repos/amplifier-core:microsoft/amplifier-core"])
-expected_commit = result["snapshot_commits"]["microsoft/amplifier-core"]
+result = shadow.create(local_sources=["~/repos/amplifier:payneio/amplifier"])
+expected_commit = result["snapshot_commits"]["payneio/amplifier"]
 
 # After installation, check what was installed
-install_output = shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+install_output = shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
-# Look for: amplifier-core @ git+https://...@{expected_commit}
+# Look for: amplifier-lib @ git+https://...@{expected_commit}
 # If commit matches, local code is being used!
 ```
 
@@ -190,7 +188,7 @@ print(f"amplifier_core loaded from: {amplifier_core.__file__}")
 
 The CLI isn't installed as a tool:
 ```python
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 ```
 
 ### "No providers mounted"
@@ -210,7 +208,7 @@ shadow.exec(shadow_id, "amplifier provider install anthropic -q")
 
 Package not installed:
 ```python
-shadow.exec(shadow_id, "uv pip install git+https://github.com/microsoft/amplifier-core")
+shadow.exec(shadow_id, "uv pip install \"git+https://github.com/payneio/amplifier#subdirectory=amplifier-lib\"")
 ```
 
 ### Commit Mismatch
@@ -221,7 +219,7 @@ If installed commit differs from snapshot commit, this may be expected:
 
 Check your working directory status:
 ```bash
-cd ~/repos/amplifier-core
+cd ~/repos/amplifier
 git status  # Shows if you have uncommitted changes
 ```
 
@@ -241,17 +239,16 @@ shadow.exec(shadow_id, "amplifier provider install openai -q")
 Full integration test for Amplifier changes:
 
 ```python
-# 1. Create shadow with all local changes
+# 1. Create shadow with local monorepo
 shadow.create(
     local_sources=[
-        "~/repos/amplifier-core:microsoft/amplifier-core",
-        "~/repos/amplifier-foundation:microsoft/amplifier-foundation"
+        "~/repos/amplifier:payneio/amplifier"
     ],
     name="integration-test"
 )
 
 # 2. Install Amplifier
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 
 # 3. Configure provider
 shadow.exec(shadow_id, '''mkdir -p ~/.amplifier && cat > ~/.amplifier/settings.yaml << 'EOF'

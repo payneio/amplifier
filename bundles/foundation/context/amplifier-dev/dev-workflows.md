@@ -131,7 +131,7 @@ git push origin feat/use-new-capability
 
 ### Adding a New Bundle
 
-For bundle structure, composition patterns, and the context sink pattern, consult `foundation:foundation-expert` or see [BUNDLE_GUIDE.md](https://github.com/microsoft/amplifier-foundation/blob/main/docs/BUNDLE_GUIDE.md).
+For bundle structure, composition patterns, and the context sink pattern, consult `foundation:foundation-expert` or see [BUNDLE_GUIDE.md](https://github.com/payneio/amplifier/blob/main/docs/BUNDLE_GUIDE.md).
 
 **Key steps:**
 1. Create the bundle repo on GitHub (`microsoft/amplifier-bundle-newbundle`)
@@ -150,7 +150,7 @@ type: short description
 
 Longer explanation if needed.
 
-🤖 Generated with [Amplifier](https://github.com/microsoft/amplifier)
+🤖 Generated with [Amplifier](https://github.com/payneio/amplifier)
 
 Co-Authored-By: Amplifier <240397093+microsoft-amplifier@users.noreply.github.com>
 ```

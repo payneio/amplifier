@@ -52,8 +52,8 @@ context:
   # Working directory for intermediate files
   working_dir: "./ai_working/repo-audit"
   
-  # Reference content location (amplifier-core as source of truth)
-  reference_repo: "microsoft/amplifier-core"
+  # Reference content location (monorepo as source of truth)
+  reference_repo: "payneio/amplifier"
 
 steps:
   # ==========================================================================
@@ -111,7 +111,7 @@ steps:
   - id: "fetch-modules-md"
     type: "bash"
     command: |
-      curl -sL --retry 3 --retry-delay 2 "https://raw.githubusercontent.com/microsoft/amplifier/main/docs/MODULES.md" > "{{working_dir}}/MODULES.md"
+      curl -sL --retry 3 --retry-delay 2 "https://raw.githubusercontent.com/payneio/amplifier/main/docs/MODULES.md" > "{{working_dir}}/MODULES.md"
       if [ -s "{{working_dir}}/MODULES.md" ]; then
         echo "Fetched MODULES.md ($(wc -c < "{{working_dir}}/MODULES.md") bytes)"
       else

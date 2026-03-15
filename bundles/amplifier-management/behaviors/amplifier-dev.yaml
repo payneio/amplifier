@@ -5,4 +5,4 @@ bundle:
 
 context:
   include:
-    - amplifier:context/development-hygiene.md
+    - amplifier-management:context/development-hygiene.md

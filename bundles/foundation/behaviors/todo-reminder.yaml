@@ -15,7 +15,7 @@ hooks:
       priority: 10
 
   - module: hooks-todo-display
-    source: git+https://github.com/microsoft/amplifier-foundation@main#subdirectory=modules/hooks-todo-display
+    source: git+https://github.com/payneio/amplifier@main#subdirectory=bundles/foundation/modules/hooks-todo-display
     config:
       # Display modes: "full" (default), "condensed", "auto", "none"
       # - full: Shows all items with progress bar (default)

@@ -21,9 +21,9 @@ provider_preferences:
 
 tools:
   - module: tool-bash
-    source: git+https://github.com/microsoft/amplifier-module-tool-bash@main
+    source: git+https://github.com/payneio/amplifier-module-tool-bash@main
   - module: tool-filesystem
-    source: git+https://github.com/microsoft/amplifier-module-tool-filesystem@main
+    source: git+https://github.com/payneio/amplifier-module-tool-filesystem@main
 ---
 
 # Git Operations Agent
@@ -136,7 +136,7 @@ When creating commits, use this format:
 
 <optional body explaining why>
 
-🤖 Generated with [Amplifier](https://github.com/microsoft/amplifier)
+🤖 Generated with [Amplifier](https://github.com/payneio/amplifier)
 
 Co-Authored-By: Amplifier <240397093+microsoft-amplifier@users.noreply.github.com>
 ```
@@ -153,7 +153,7 @@ When creating PRs:
 ## Test plan
 <checklist of testing done/needed>
 
-🤖 Generated with [Amplifier](https://github.com/microsoft/amplifier)
+🤖 Generated with [Amplifier](https://github.com/payneio/amplifier)
 ```
 
 **Note:** The `Co-Authored-By:` trailer belongs in **commit messages only** (where GitHub parses it for contributor attribution). In PR descriptions, it's just displayed as text with no effect.

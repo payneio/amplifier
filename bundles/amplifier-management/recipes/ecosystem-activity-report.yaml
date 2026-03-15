@@ -462,7 +462,7 @@ steps:
       set -euo pipefail
       
       # Fetch from GitHub API (authoritative source)
-      gh api repos/microsoft/amplifier/contents/docs/MODULES.md \
+      gh api repos/payneio/amplifier/contents/docs/MODULES.md \
         --jq '.content' | base64 -d > {{working_dir}}/discovery/MODULES.md
       
       # Get file info

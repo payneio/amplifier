@@ -12,9 +12,9 @@ bundle:
     - Multi-agent collaboration patterns
 
 includes:
-  # Ecosystem expert behaviors (provides @amplifier: and @core: namespaces)
-  - bundle: git+https://github.com/microsoft/amplifier@main#subdirectory=behaviors/amplifier-expert.yaml
-  - bundle: git+https://github.com/microsoft/amplifier-core@main#subdirectory=behaviors/core-expert.yaml
+  # Ecosystem expert behaviors (provides @amplifier-expert: and @core: namespaces)
+  - bundle: amplifier-expert:behaviors/amplifier-expert
+  - bundle: core:behaviors/core-expert
   # Foundation expert behavior
   - bundle: foundation:behaviors/foundation-expert
   # Foundation behaviors

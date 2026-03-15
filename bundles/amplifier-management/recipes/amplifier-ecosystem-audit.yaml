@@ -149,7 +149,7 @@ stages:
         parse_json: true
         command: |
           # Fetch MODULES.md and extract community repos
-          curl -sL --retry 3 "https://raw.githubusercontent.com/microsoft/amplifier/main/docs/MODULES.md" > "{{working_dir}}/MODULES.md"
+          curl -sL --retry 3 "https://raw.githubusercontent.com/payneio/amplifier/main/docs/MODULES.md" > "{{working_dir}}/MODULES.md"
           
           # Extract community repos from tables (non-microsoft repos)
           # Look for GitHub URLs that aren't microsoft org

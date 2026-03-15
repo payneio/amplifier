@@ -63,7 +63,7 @@ tags: ["github", "analysis", "commits", "prs", "git", "activity"]
 # Usage (CLI - explicit repo):
 #   amplifier tool invoke recipes operation=execute \
 #     recipe_path=repo-activity-analysis.yaml \
-#     context='{"repo_url": "https://github.com/microsoft/amplifier-core"}'
+#     context='{"repo_url": "https://github.com/payneio/amplifier"}'
 #
 # Usage (CLI - custom date range):
 #   amplifier tool invoke recipes operation=execute \

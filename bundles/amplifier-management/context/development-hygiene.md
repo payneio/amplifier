@@ -6,7 +6,7 @@ This guide explains how the Amplifier CLI installation works and the correct pat
 
 ### Installation Flow
 
-1. **Entry point**: `uv tool install git+https://github.com/microsoft/amplifier`
+1. **Entry point**: `uv tool install git+https://github.com/payneio/amplifier`
 2. **Tool directory**: Creates `~/.local/share/uv/tools/amplifier/` (bin, lib, site-packages)
 3. **Cache directory**: Clones `amplifier-core`, `amplifier-app-cli`, and other packages to `~/.amplifier/cache/`
 4. **Editable installs**: The site-packages contain **links** pointing to the cache versions
@@ -74,7 +74,7 @@ amplifier reset --full -y
 1. Cleans UV cache
 2. Uninstalls amplifier via `uv tool uninstall`
 3. Removes specified ~/.amplifier contents
-4. **Reinstalls** from `git+https://github.com/microsoft/amplifier`
+4. **Reinstalls** from `git+https://github.com/payneio/amplifier`
 5. Launches fresh amplifier
 
 The reinstall step is what makes this safe - it repopulates everything from scratch.
@@ -136,12 +136,12 @@ For testing local changes in complete isolation, use **shadow environments** (av
 ```python
 # Create isolated environment with your local changes
 shadow.create(local_sources=[
-    "~/repos/amplifier-core:microsoft/amplifier-core",
+    "~/repos/amplifier:payneio/amplifier",
     "~/repos/amplifier-module-xyz:microsoft/amplifier-module-xyz"
 ])
 
 # Install and test in the shadow - uses YOUR local code
-shadow.exec(shadow_id, "uv tool install git+https://github.com/microsoft/amplifier")
+shadow.exec(shadow_id, "uv tool install git+https://github.com/payneio/amplifier")
 shadow.exec(shadow_id, "amplifier run 'test my changes'")
 
 # Clean up

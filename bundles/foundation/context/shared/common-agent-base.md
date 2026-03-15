@@ -26,7 +26,7 @@ Problem-solving methodology: See foundation:context/shared/PROBLEM_SOLVING_PHILO
 When creating git commit messages, always insert the following at the end of your commit message:
 
 ```
-🤖 Generated with [Amplifier](https://github.com/microsoft/amplifier)
+🤖 Generated with [Amplifier](https://github.com/payneio/amplifier)
 
 Co-Authored-By: Amplifier <240397093+microsoft-amplifier@users.noreply.github.com>
 ```

@@ -4,9 +4,9 @@
 
 | Upstream Repo | Monorepo Location(s) | Notes |
 |---------------|----------------------|-------|
-| `microsoft/amplifier` | `docs/` (docs), `bundles/amplifier/` (bundle assets) | Simplest mapping |
-| `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~480 lines survived) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation) |
-| `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/foundation/` (bundle config) | Split into two halves |
+| `microsoft/amplifier` | `docs/` (docs), `bundles/amplifier-management/` (recipes, operational tooling), `bundles/amplifier-expert/` (expert agent) | Bundle assets split into management + expert |
+| `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~480 lines survived), `bundles/core/` (kernel expert bundle) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation); bundle content brought in |
+| `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/foundation/` (bundle config) + `bundles/experiments/` (experimental bundles) | Split into library + bundle + experiments |
 | `microsoft/amplifier-app-cli` | `amplifier-cli/` | All `amplifier_core` imports rewritten to `amplifier_lib` |
 | `microsoft/amplifierd` | `amplifierd/` | Fully migrated to `amplifier_lib` (no `amplifier-core` dependency) |
 

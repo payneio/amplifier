@@ -134,7 +134,7 @@ context:
   target_document_path: ""               # Path to document within repo (e.g., "docs/DESIGN.md")
   
   # Optional inputs with defaults
-  landing_repo_url: "https://github.com/microsoft/amplifier"  # Landing repo with governance rules
+  landing_repo_url: "https://github.com/payneio/amplifier"  # Landing repo with governance rules
   working_dir: "./outline_working"       # Working directory for cloned repos and outputs
   output_dir: "./outlines"               # Directory for final outline files
   
