@@ -6,7 +6,7 @@
 |---------------|----------------------|-------|
 | `microsoft/amplifier` | `docs/` (docs), `bundles/amplifier/` (bundle assets) | Simplest mapping |
 | `microsoft/amplifier-core` | `amplifier-lib/amplifier_lib/core/` (~480 lines survived) | ~95% was eliminated (Rust, WASM, gRPC, coordinator, loader, session, validation) |
-| `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/amplifier-bundle-foundation/` (bundle config) | Split into two halves |
+| `microsoft/amplifier-foundation` | `amplifier-lib/` (Python library) + `bundles/foundation/` (bundle config) | Split into two halves |
 | `microsoft/amplifier-app-cli` | `amplifier-cli/` | All `amplifier_core` imports rewritten to `amplifier_lib` |
 | `microsoft/amplifierd` | `amplifierd/` | Fully migrated to `amplifier_lib` (no `amplifier-core` dependency) |
 
@@ -61,7 +61,7 @@
 - `updates/` -- update checking
 - `runtime.py` -- Session, Coordinator, module loader (absorbed from core)
 
-### Bundle config -> `bundles/amplifier-bundle-foundation/`
+### Bundle config -> `bundles/foundation/`
 - `agents/` (16 files) -- agent definitions
 - `behaviors/` (12 files) -- behavior configs
 - `bundles/` (4 files) -- bundle presets

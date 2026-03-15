@@ -10,7 +10,7 @@ Amplifier is an agent library that allows developers to compose agents from modu
 
 Amplifier lets you compose agents from the ground up with with your own orchestration loop and context-management, and providers, then layering on your desired context, tools, hooks, skills, recipes, and subagents. These behaviors are composable, allowing developers to rapidly experiment with different agent behaviors for unlimited scenarios.
 
-This repo includes a basic bundle (Amplifier basic) you can extend, a popular "batteries-included" bundle (the [foundation bundle](./bundles/amplifier-bundle-foundation)), and [a list of community bundles we like](./docs/MODULES.md).
+This repo includes a basic bundle (Amplifier basic) you can extend, a popular "batteries-included" bundle (the [foundation bundle](./bundles/foundation)), and [a list of community bundles we like](./docs/MODULES.md).
 
 Once your agent is composed, Amplifier manages interactive sessions for you, using the LLM model providers of your choice.
 

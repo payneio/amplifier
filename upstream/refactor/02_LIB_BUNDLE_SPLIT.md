@@ -44,7 +44,7 @@ Single external dependency: `pyyaml`. No `amplifier-core`.
 
 505 tests pass. 22 test files. 508 test functions.
 
-### Bundle: `amplifier-bundle-foundation/` (81 files, ~19,600 lines)
+### Bundle: `bundles/foundation/` (81 files, ~19,600 lines)
 
 The runtime configuration. Nothing here is importable as a Python package.
 
@@ -68,7 +68,7 @@ dependency is `amplifier_lib.core` (for `HookResult` and `ToolResult`).
 ## The dependency direction
 
 ```
-amplifier-bundle-foundation
+bundles/foundation
     │
     │  modules import from
     ▼
@@ -148,7 +148,7 @@ amplifier-sdk/
 │   ├── tests/                         505 passing, 3 skipped
 │   └── pyproject.toml                 depends on: pyyaml
 │
-├── amplifier-bundle-foundation/     Bundle (runtime config)
+├── bundles/foundation/               Bundle (runtime config)
 │   ├── agents/                        16 agent definitions
 │   ├── behaviors/                     12 behavior configs
 │   ├── context/                       19 context documents
