@@ -2,8 +2,8 @@
 
 - amplifier
   - source: https://github.com/microsoft/amplifier@main
-  - HEAD: 382319d868451a789e2c2b26d41de39813e3c23b
-  - last updated: 2026-03-14T16:27:02Z
+  - HEAD: daa46709435abd1d98635fe7e029ba103c7e180a
+  - last updated: 2026-03-15T11:48:48Z
 - amplifier-core
   - source: https://github.com/microsoft/amplifier-core@main
   - HEAD: 5902f3e1fe5cffc92266de91991f63ab3cb66708
@@ -18,5 +18,5 @@
   - last updated: 2026-03-14T16:27:02Z
 - amplifier-foundation
   - source: https://github.com/microsoft/amplifier-foundation@main
-  - HEAD: bca039b0c0364452e9dacea772554b866bf5407a
-  - last updated: 2026-03-14T16:27:02Z
+  - HEAD: a92a10177e9b3d5d4c79504e576fd4c35a456f36
+  - last updated: 2026-03-15T11:48:48Z
